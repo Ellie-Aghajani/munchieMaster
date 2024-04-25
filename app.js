@@ -5,8 +5,12 @@ app.get('/', (req, res) => {
     res.send('Welcome to Munchimaster!');
 })
 
-app.get('/recepies', (req, res) => {
+app.get('/api/recepies', (req, res) => {
     res.send(['soup', 'pizza', 'chicken']);
+});
+
+app.get('/api/recepies/:id', (req, res)=>{
+    res.send(req.params.id);
 })
 
 const port = process.env.PORT || 3000;
