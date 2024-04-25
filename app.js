@@ -38,9 +38,32 @@ app.post('/api/recepies', (req, res) => {
 });
 
 
+
 app.get('/api/recepies/:id', (req, res)=>{
     const recepie = recepies.find(r => r.id === parseInt(req.params.id));
     if(!recepie) res.status(404).send('The recepie with the given id was not found');
+    res.send(recepie);
+});
+
+app.put('/api/recepies/:id', (req, res)=>{
+    // Look up the r
+    const recepie = recepies.find((r)=>r.id === parseInt(req.params.id));
+    // If not existing, return 404
+    if(!recepie) res.status(404).send('recepie not found');
+    res.send(recepie);
+    // Validate
+    const schema = Joi.object({
+        name: Joi.string().min(3).required()
+    })
+    const {error, value} = schema.validate(req.body);
+    // If invalid, return 400 - Bad request
+    if(error) {
+        res.status(400).send(error.details[0].message);
+        return;
+    }
+    // Update r
+    recepie.name = req.body.name;
+    // Return the updated r
     res.send(recepie);
 })
 
