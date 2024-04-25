@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.json());
 const recepies = [
     {id: 1, name:'pizza'},
     {id: 2, name:'rice'},
@@ -15,6 +16,16 @@ app.get('/', (req, res) => {
 app.get('/api/recepies', (req, res) => {
     res.send(recepies);
 });
+
+app.post('/api/recepies', (req, res) => {
+    const recepie = {
+        id: recepies.length + 1,
+        name:req.body.name
+    };
+    recepies.push(recepie);
+    res.send(recepie);
+});
+
 
 app.get('/api/recepies/:id', (req, res)=>{
     const recepie = recepies.find(r => r.id === parseInt(req.params.id));
