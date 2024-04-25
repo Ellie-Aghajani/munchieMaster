@@ -19,12 +19,14 @@ app.get('/api/recepies', (req, res) => {
 });
 
 app.post('/api/recepies', (req, res) => {
-    const schema = {
-        name: Joi.string().min(3).required
-    }
-    const result = Joi.validate(req.body, schema);
-    if(result.error) {
-        res.status(400).send(result.error);
+    const schema = Joi.object({
+        name:Joi.string().min(3).required()
+    });
+    const {error, value} = schema.validate(req.body);
+
+
+    if(error) {
+        res.status(400).send(error.details[0].message);
         return;
     }
     const recepie = {
