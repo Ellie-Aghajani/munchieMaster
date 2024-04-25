@@ -1,4 +1,5 @@
 const express = require('express');
+const Joi = require('joi');
 const app = express();
 app.use(express.json());
 const recepies = [
@@ -18,8 +19,12 @@ app.get('/api/recepies', (req, res) => {
 });
 
 app.post('/api/recepies', (req, res) => {
-    if(!req.body.name || req.body.name.length < 3) {
-        res.status(400).send('name is not valid');
+    const schema = {
+        name: Joi.string().min(3).required
+    }
+    const result = Joi.validate(req.body, schema);
+    if(result.error) {
+        res.status(400).send(result.error);
         return;
     }
     const recepie = {
