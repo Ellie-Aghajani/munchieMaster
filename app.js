@@ -18,6 +18,10 @@ app.get('/api/recepies', (req, res) => {
 });
 
 app.post('/api/recepies', (req, res) => {
+    if(!req.body.name || req.body.name.length < 3) {
+        res.status(400).send('name is not valid');
+        return;
+    }
     const recepie = {
         id: recepies.length + 1,
         name:req.body.name
