@@ -17,6 +17,8 @@
   "homepage": "https://github.com/Ellie-Aghajani/munchieMaster#readme",
   "description": "",
   "dependencies": {
+    "config": "^3.3.11",
+    "debug": "^4.3.4",
     "node-modules": "^1.0.1"
   }
 }
