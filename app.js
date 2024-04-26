@@ -1,9 +1,20 @@
+const morgan = require("morgan") ;
+const helmet = require ( 'helmet');
 const express = require('express');
 const Joi = require('joi');
 const app = express();
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static("public"));
+app.use(helmet());
+
+if(app.get('env') === 'development'){
+    //enable morgan only in development env
+    app.use(morgan('tiny'));
+    console.log('morgan enabled...');
+
+}
 
 const recepies = [
     {id: 1, name:'pizza'},
