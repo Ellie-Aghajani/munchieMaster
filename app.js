@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const express = require('express');
 const startupDebugger = require('debug')('app:startup') ; 
 //in terminal: export DEBUG=app:startup,app:db, to cancel: DEBUG=
@@ -6,16 +7,20 @@ const config = require('config');
 const morgan = require("morgan") ;
 const helmet = require ( 'helmet');
 const logger = require('./middleware/logger');
-const recepies = require('./routs/recepies');
+const recipes = require('./routs/recipes');
 const Joi = require('joi');
 const home = require('./routs/home');
 const app = express();
+
+mongoose.connect('mongodb://localhost/munchieMaster')
+    .then(() => console.log('Connected to mongodb...'))
+    .catch(err => console.error('Could not connect to mongodb...', err));
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static("public"));
 app.use(helmet());
-app.use('./api/recepies', recepies);
+app.use('./api/recipes', recipes);
 app.use('./', home);
 app.use (logger);
 
