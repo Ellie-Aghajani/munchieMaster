@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'); //node_8.mongo data validation_7.mp4
 const express = require('express');
+const Joi = require('joi');
 const router = express.Router();
 
 
@@ -43,7 +44,7 @@ router.put('/:id', async (req, res)=>{
 });
 
 router.delete('/:id', async(req, res)=>{
-    const recipe = await Recipe.findByIdAndRemove(req.params.id);
+    const recipe = await Recipe.findOneAndDelete(req.params.id);
     if (!recipe)return res.status(404).send('recipe not found');
     res.send(recipe);
 })
