@@ -1,17 +1,8 @@
 const mongoose = require('mongoose'); //node_8.mongo data validation_7.mp4
 const express = require('express');
-const Joi = require('joi');
 const router = express.Router();
+const { Recipe, validate} = require('../models/recipe');
 
-
-const Recipe = mongoose.model('Recipe', new mongoose.Schema({
-    name:{
-        type: String,
-        required: true,
-        minLength:5,
-        maxLength:50,
-    }
-}));
 
 
 
@@ -22,7 +13,7 @@ router.get('/',async (req, res) => {
 
 router.post('/', async (req, res) => {
 
-    const {error} = validateRecipe(req.body);
+    const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
    
     let recipe = new Recipe ({ name:req.body.name });
@@ -34,7 +25,7 @@ router.post('/', async (req, res) => {
 
 
 router.put('/:id', async (req, res)=>{
-    const {error} = validateRecipe(req.body);
+    const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
     
     const recipe = await Recipe.findByIdAndUpdate(req.params.id,{ name: req.body.name}, {new: true});
@@ -55,12 +46,6 @@ router.get('/:id', async(req, res)=>{
     res.send(recipe);
 });
 
-function validateRecipe(recipe){
-    const schema = Joi.object({
-        name: Joi.string().min(3).required()
-    });
-    return schema.validate(recipe);
-};
 
 
 module.exports = router;
