@@ -7,10 +7,10 @@ const config = require('config');
 const morgan = require("morgan") ;
 const helmet = require ( 'helmet');
 const logger = require('./middleware/logger');
-const recipes = require('./routs/recipes');
-const customers = require('./routs/customers');
+const recipes = require('./routes/recipes');
+const customers = require('./routes/customers');
 const Joi = require('joi');
-const home = require('./routs/home');
+const home = require('./routes/home');
 const app = express();
 
 mongoose.connect('mongodb://localhost/munchieMaster')
