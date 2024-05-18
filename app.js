@@ -9,6 +9,7 @@ const helmet = require ( 'helmet');
 const logger = require('./middleware/logger');
 const recipes = require('./routes/recipes');
 const customers = require('./routes/customers');
+const meals = require('./routes/meals');
 const Joi = require('joi');
 const home = require('./routes/home');
 const app = express();
@@ -23,6 +24,7 @@ app.use(express.static("public"));
 app.use(helmet());
 app.use('/api/recipes', recipes);
 app.use('/api/customers', customers);
+app.use('/api/meals', meals);
 app.use('/', home);
 app.use (logger);
 
