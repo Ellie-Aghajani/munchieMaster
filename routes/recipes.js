@@ -2,6 +2,7 @@ const mongoose = require('mongoose'); //node_8.mongo data validation_7.mp4
 const express = require('express');
 const router = express.Router();
 const { Recipe, validate} = require('../models/recipe');
+const { Meal } = require('../models/meal');
 
 
 
@@ -16,7 +17,16 @@ router.post('/', async (req, res) => {
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
    
-    let recipe = new Recipe ({ name:req.body.name });
+    const meal = await Meal.findById(req.body.mealId);
+    if(!meal) return res.status(400).send('Invalid meal.');
+
+    let recipe = new Recipe ({
+        name:req.body.name,
+        meal:{ 
+            _id: meal._id,
+            name:meal.name,
+        }
+     });
     recipe = await recipe.save()
     res.send(recipe);
 });
