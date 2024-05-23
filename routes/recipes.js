@@ -20,14 +20,14 @@ router.post('/', async (req, res) => {
     const meal = await Meal.findById(req.body.mealId);
     if(!meal) return res.status(400).send('Invalid meal.');
 
-    let recipe = new Recipe ({
+    const recipe = new Recipe ({ //const not let because mongodb driver sets the objectId here and no need to reset the variable later
         name:req.body.name,
         meal:{ 
             _id: meal._id,
             name:meal.name,
         }
      });
-    recipe = await recipe.save()
+    await recipe.save()
     res.send(recipe);
 });
 
