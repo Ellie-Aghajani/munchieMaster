@@ -14,6 +14,7 @@ const recipes = require('./routes/recipes');
 const customers = require('./routes/customers');
 const meals = require('./routes/meals');
 const purchases = require('./routes/purchases');
+const users = require('./routes/users');
 const home = require('./routes/home');
 const Fawn = require('fawn');
 
@@ -28,6 +29,7 @@ app.use('/api/recipes', recipes);
 app.use('/api/customers', customers);
 app.use('/api/meals', meals);
 app.use('/api/purchases', purchases);
+app.use('/api/users', users);
 app.use('/', home);
 app.use (logger);
 
