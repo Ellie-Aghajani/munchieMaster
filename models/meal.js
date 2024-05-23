@@ -6,7 +6,7 @@ const mealSchema = new mongoose.Schema({
         type: String,
         required: true,
         minLength:5,
-        maxLength:50,
+        maxLength:50
     }
 });
 
