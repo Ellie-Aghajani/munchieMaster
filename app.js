@@ -1,4 +1,4 @@
-
+const config = require('config');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
@@ -6,7 +6,6 @@ const express = require('express');
 const startupDebugger = require('debug')('app:startup') ; 
 //in terminal: export DEBUG=app:startup,app:db, to cancel: DEBUG=
 const dbDebugger = require('debug')('app: db');
-const config = require('config');
 const morgan = require("morgan") ;
 const helmet = require ( 'helmet');
 const logger = require('./middleware/logger');
@@ -21,6 +20,12 @@ const Fawn = require('fawn');
 
 const app = express();
 
+//in terminal we should set the key like:
+//export munchie_jwtPrivateKey=*****
+if (!config.get('jwtPrivateKey')) {
+    console.log('FATAL ERROR: jwtPrivateKey is not defined.');
+    process.exit(1);
+}
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
