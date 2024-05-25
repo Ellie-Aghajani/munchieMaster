@@ -1,12 +1,13 @@
+const auth = require('../middleware/auth');
 const mongoose = require('mongoose'); //node_8.mongo data validation_7.mp4
 const express = require('express');
 const router = express.Router();
 const {Meal, validate} = require('../models/meal');
 
 
+//(route, middleware, actual route handler)
 
-
-router.get('/',async (req, res) => {
+router.get('/',auth ,async (req, res) => {
     const meals = await Meal.find().sort('name');
     res.send(meals);
 });
