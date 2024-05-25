@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const mongoose = require('mongoose'); //node_8.mongo data validation_7.mp4
 const express = require('express');
 const router = express.Router();
@@ -12,7 +13,7 @@ router.get('/',async (req, res) => {
     res.send(recipes);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);

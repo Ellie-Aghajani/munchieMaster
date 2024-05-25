@@ -7,12 +7,12 @@ const {Meal, validate} = require('../models/meal');
 
 //(route, middleware, actual route handler)
 
-router.get('/',auth ,async (req, res) => {
+router.get('/' ,async (req, res) => {
     const meals = await Meal.find().sort('name');
     res.send(meals);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
