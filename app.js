@@ -1,3 +1,5 @@
+require('express-async-errors');
+const error = require('./middleware/error');
 const config = require('config');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
@@ -20,6 +22,10 @@ const Fawn = require('fawn');
 
 const app = express();
 
+
+// const jwtPrivateKey = config.get('jwtPrivateKey');
+// console.log('jwtPrivateKey:', jwtPrivateKey);
+
 //in terminal we should set the key like:
 //export munchie_jwtPrivateKey=*****
 if (!config.get('jwtPrivateKey')) {
@@ -39,6 +45,7 @@ app.use('/api/users', users);
 app.use('/api/auth', auth);
 app.use('/', home);
 app.use (logger);
+app.use(error);
 
 
 

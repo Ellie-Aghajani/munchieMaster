@@ -9,9 +9,12 @@ const { Meal } = require('../models/meal');
 
 
 
-router.get('/',async (req, res) => {
-    const recipes = await Recipe.find().sort('name');
-    res.send(recipes);
+
+
+router.get('/', async (req, res) => {
+
+        const recipes = await Recipe.find().sort('name');
+        res.send(recipes);
 });
 
 router.post('/', auth, async (req, res) => {
