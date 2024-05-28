@@ -9,3 +9,7 @@ module.exports = function(handler){
     }
 
 }
+
+
+//this middleware function is used to wrap the route handler functions 
+//if the 'express-async-errors npm package is not used
