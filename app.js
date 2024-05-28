@@ -1,4 +1,5 @@
 require('express-async-errors');
+const winston = require('winston'); //logger
 const error = require('./middleware/error');
 const config = require('config');
 const Joi = require('joi');
@@ -22,6 +23,8 @@ const Fawn = require('fawn');
 
 const app = express();
 
+
+winston.add(winston.transports.File, {fileName:'logFile.log'});
 
 // const jwtPrivateKey = config.get('jwtPrivateKey');
 // console.log('jwtPrivateKey:', jwtPrivateKey);
