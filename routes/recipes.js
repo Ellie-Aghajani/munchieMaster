@@ -12,7 +12,7 @@ const { Meal } = require('../models/meal');
 
 
 router.get('/', async (req, res) => {
-
+    // throw new Error('Could not get the genres.');
         const recipes = await Recipe.find().sort('name');
         res.send(recipes);
 });

@@ -1,5 +1,6 @@
 require('express-async-errors');
 const winston = require('winston'); //logger
+require('winston-mongodb');
 const error = require('./middleware/error');
 const config = require('config');
 const Joi = require('joi');
@@ -23,14 +24,35 @@ const Fawn = require('fawn');
 
 const app = express();
 
+// process.on('uncaughtException', (ex) => {
+//     winston.error(ex.message, ex);
+//     process.exit(1);
+// });
+winston.handleExceptions(
+    new winston.transports.File({ filename: 'uncaughtExceptions.log'})
+);
 
-winston.add(winston.transports.File, {fileName:'logFile.log'});
+process.on('unhandledRejection', (ex) => {
+    winston.error(ex.message, ex);
+    process.exit(1);
 
+});
+
+
+winston.add(winston.transports.File, { filename:'logFile.log' });
+
+// winston.add(winston.transports.MongoDB, {db: 'mongodb://localhost/munchieMaster'});
 // const jwtPrivateKey = config.get('jwtPrivateKey');
 // console.log('jwtPrivateKey:', jwtPrivateKey);
 
-//in terminal we should set the key like:
+//in terminal we should set the key lik e:
 //export munchie_jwtPrivateKey=*****
+
+//to test error log:
+// throw new Error('Something failed during startup.');
+// const p = Promise.reject(new Error(' Something failed miserably!'));
+// p.then(()=>console.log('done'));
+
 if (!config.get('jwtPrivateKey')) {
     console.log('FATAL ERROR: jwtPrivateKey is not defined.');
     process.exit(1);
