@@ -4,15 +4,14 @@ require('winston-mongodb');
 const config = require('config');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
-const mongoose = require('mongoose');
 const express = require('express');
 const startupDebugger = require('debug')('app:startup') ; 
 //in terminal: export DEBUG=app:startup,app:db, to cancel: DEBUG=
 const dbDebugger = require('debug')('app: db');
 const morgan = require("morgan") ;
-const Fawn = require('fawn');
 const app = express();
 require('./startup/routes')(app);
+require('./startup/db')();//we call the function
 // process.on('uncaughtException', (ex) => {
 //     winston.error(ex.message, ex);
 //     process.exit(1);
@@ -53,12 +52,6 @@ if(app.get('env') === 'development'){
     startupDebugger('morgan enabled...');
 }
 
-mongoose.connect('mongodb://localhost/munchieMaster')
-    .then(() => {
-        console.log('Connected to mongodb...');
-        // Fawn.init(mongoose);
-    })
-    .catch(err => console.error('Could not connect to mongodb...', err));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`App is listening on port ${port}`));
