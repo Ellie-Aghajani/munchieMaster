@@ -1,43 +1,15 @@
-require('express-async-errors');
-const winston = require('winston'); //logger
-require('winston-mongodb');
 const config = require('config');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const express = require('express');
-const startupDebugger = require('debug')('app:startup') ; 
-//in terminal: export DEBUG=app:startup,app:db, to cancel: DEBUG=
-const dbDebugger = require('debug')('app: db');
-const morgan = require("morgan") ;
 const app = express();
+
+require('./startup/logging');
 require('./startup/routes')(app);
 require('./startup/db')();//we call the function
-// process.on('uncaughtException', (ex) => {
-//     winston.error(ex.message, ex);
-//     process.exit(1);
-// });
-winston.handleExceptions( //error handling recap, node, 11-handling.., 10.mp4
-    new winston.transports.File({ filename: 'uncaughtExceptions.log'})
-);
-
-process.on('unhandledRejection', (ex) => {
-    throw ex;
-});
-
-
-winston.add(winston.transports.File, { filename:'logFile.log' });
-
-// winston.add(winston.transports.MongoDB, {db: 'mongodb://localhost/munchieMaster'});
-// const jwtPrivateKey = config.get('jwtPrivateKey');
-// console.log('jwtPrivateKey:', jwtPrivateKey);
-
 //in terminal we should set the key lik e:
 //export munchie_jwtPrivateKey=*****
 
-//to test error log:
-// throw new Error('Something failed during startup.');
-// const p = Promise.reject(new Error(' Something failed miserably!'));
-// p.then(()=>console.log('done'));
 
 if (!config.get('jwtPrivateKey')) {
     console.log('FATAL ERROR: jwtPrivateKey is not defined.');
