@@ -28,7 +28,7 @@ const app = express();
 //     winston.error(ex.message, ex);
 //     process.exit(1);
 // });
-winston.handleExceptions(
+winston.handleExceptions( //error handling recap, node, 11-handling.., 10.mp4
     new winston.transports.File({ filename: 'uncaughtExceptions.log'})
 );
 
