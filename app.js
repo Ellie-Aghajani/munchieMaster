@@ -33,9 +33,7 @@ winston.handleExceptions(
 );
 
 process.on('unhandledRejection', (ex) => {
-    winston.error(ex.message, ex);
-    process.exit(1);
-
+    throw ex;
 });
 
 
