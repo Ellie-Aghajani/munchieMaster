@@ -11,3 +11,5 @@
 {"level":"info","message":"Connected to mongodb...","timestamp":"2024-05-30T01:11:56.312Z"}
 {"level":"info","message":"Connected to mongodb...","timestamp":"2024-05-30T01:12:24.494Z"}
 {"level":"info","message":"Connected to mongodb...","timestamp":"2024-05-30T01:12:36.816Z"}
+{"level":"info","message":"App is listening on port 3000","timestamp":"2024-06-14T01:02:15.307Z"}
+{"level":"info","message":"Connected to mongodb://localhost/munchieMaster...","timestamp":"2024-06-14T01:02:15.322Z"}

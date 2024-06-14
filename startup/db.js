@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const winston = require('winston');
-
+const config = require('config');
 
 module.exports = function(){
-    mongoose.connect('mongodb://localhost/munchieMaster')
+    const db = config.get('db');
+    mongoose.connect(db)
         .then(() => {
-            winston.info('Connected to mongodb...'); //log as information message using winston
+            winston.info(`Connected to ${db}...`); //log as information message using winston
         })
 }    
 
