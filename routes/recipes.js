@@ -1,3 +1,4 @@
+const validateObjectId = require('../middleware/validateObjectId');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const mongoose = require('mongoose'); //node_8.mongo data validation_7.mp4
@@ -55,7 +56,8 @@ router.delete('/:id', [auth, admin],async(req, res)=>{
     res.send(recipe);
 })
 
-router.get('/:id', async(req, res)=>{
+router.get('/:id',validateObjectId , async(req, res)=>{
+
     const recipe = await Recipe.findById(req.params.id);
     if(!recipe) return res.status(404).send('The recipe with the given id was not found');
     res.send(recipe);
