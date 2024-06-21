@@ -8,7 +8,7 @@ let server;
 
 describe('/api/recipes', () => {
     beforeEach(async()=>{
-        server = require('../..');
+        server = require('../../app');
         await Meal.collection.insertMany([
             { name: 'breakfast' },
         ]);
