@@ -262,3 +262,5 @@
 {"level":"info","message":"Connected to mongodb://localhost/munchieMaster_test...","timestamp":"2024-06-18T03:29:04.993Z"}
 {"level":"info","message":"App is listening on port 3000","timestamp":"2024-06-18T03:33:19.570Z"}
 {"level":"info","message":"Connected to mongodb://localhost/munchieMaster_test...","timestamp":"2024-06-18T03:33:19.598Z"}
+{"level":"info","message":"App is listening on port 3000","timestamp":"2024-06-21T00:34:36.490Z"}
+{"level":"info","message":"Connected to mongodb://localhost/munchieMaster_test...","timestamp":"2024-06-21T00:34:36.517Z"}
