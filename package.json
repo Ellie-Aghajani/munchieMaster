@@ -18,10 +18,12 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "compression": "^1.7.4",
     "config": "^3.3.11",
     "debug": "^4.3.4",
     "express-async-errors": "^2.1.0",
     "fawn": "^2.1.5",
+    "helmet": "^7.1.0",
     "joi-objectid": "^4.0.2",
     "joi-password-complexity": "^5.2.0",
     "jsonwebtoken": "^9.0.2",
