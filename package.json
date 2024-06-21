@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "jest --watchAll --verbose --detectOpenHandles --coverage"
+    "test": "jest --watchAll --verbose --detectOpenHandles --coverage",
+    "start": "node app.js"
+  },
+  "engines":{
+    "node": "16.19.0"
   },
   "repository": {
     "type": "git",

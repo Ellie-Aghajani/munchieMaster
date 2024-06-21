@@ -266,3 +266,11 @@
 {"level":"info","message":"Connected to mongodb://localhost/munchieMaster_test...","timestamp":"2024-06-21T00:34:36.517Z"}
 {"level":"info","message":"App is listening on port 3000","timestamp":"2024-06-21T00:35:09.970Z"}
 {"level":"info","message":"Connected to mongodb://localhost/munchieMaster_test...","timestamp":"2024-06-21T00:35:09.999Z"}
+{"level":"info","message":"App is listening on port 3000","timestamp":"2024-06-21T01:25:58.508Z"}
+{"level":"info","message":"Connected to mongodb://localhost/munchieMaster...","timestamp":"2024-06-21T01:25:58.517Z"}
+{"level":"info","message":"App is listening on port 3000","timestamp":"2024-06-21T01:31:32.594Z"}
+{"level":"info","message":"Connected to mongodb://localhost/munchieMaster...","timestamp":"2024-06-21T01:31:32.603Z"}
+{"level":"info","message":"App is listening on port 3000","timestamp":"2024-06-21T02:08:11.866Z"}
+{"level":"info","message":"Connected to mongodb://localhost/munchieMaster...","timestamp":"2024-06-21T02:08:11.877Z"}
+{"level":"info","message":"App is listening on port 3000","timestamp":"2024-06-21T02:08:52.458Z"}
+{"level":"info","message":"Connected to mongodb://localhost/munchieMaster...","timestamp":"2024-06-21T02:08:52.467Z"}
