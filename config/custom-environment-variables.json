@@ -1,3 +1,4 @@
 {
-    "jwtPrivateKey" : "munchie_jwtPrivateKey"
+    "jwtPrivateKey" : "munchie_jwtPrivateKey",
+    "db": "munchie_db"
 }
