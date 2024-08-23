@@ -6,7 +6,7 @@
     "test": "jest --watchAll --verbose --detectOpenHandles --coverage",
     "start": "node app.js"
   },
-  "engines":{
+  "engines": {
     "node": "16.19.0"
   },
   "repository": {
@@ -24,6 +24,7 @@
     "bcrypt": "^5.1.1",
     "compression": "^1.7.4",
     "config": "^3.3.11",
+    "cors": "^2.8.5",
     "debug": "^4.3.4",
     "express-async-errors": "^2.1.0",
     "fawn": "^2.1.5",

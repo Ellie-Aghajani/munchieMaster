@@ -1,7 +1,15 @@
 
 const winston = require('winston');
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+app.use(express.json());
 
 require('./startup/logging')();
 require('./startup/routes')(app);
