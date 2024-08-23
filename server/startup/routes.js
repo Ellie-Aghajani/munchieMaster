@@ -1,12 +1,12 @@
 const express = require('express');
-const error = require('../middleware/error');
-const recipes = require('../routes/recipes');
-const customers = require('../routes/customers');
-const meals = require('../routes/meals');
-const purchases = require('../routes/purchases');
-const users = require('../routes/users');
-const auth = require('../routes/auth');
-const home = require('../routes/home');
+const error = require('../../middleware/error');
+const recipes = require('../../routes/recipes');
+const customers = require('../../routes/customers');
+const meals = require('../../routes/meals');
+const purchases = require('../../routes/purchases');
+const users = require('../../routes/users');
+const auth = require('../../routes/auth');
+const home = require('../../routes/home');
 
 
 

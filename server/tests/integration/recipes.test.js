@@ -1,7 +1,7 @@
 const request = require('supertest');
-const { Recipe } = require('../../models/recipe');
-const { User } = require('../../models/user');
-const { Meal } = require('../../models/meal');
+const { Recipe } = require('../../../models/recipe');
+const { User } = require('../../../models/user');
+const { Meal } = require('../../../models/meal');
 
 let server;
 
