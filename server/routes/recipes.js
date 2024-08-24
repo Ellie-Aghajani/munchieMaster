@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', auth, async (req, res) => {
+router.post('/', [auth, upload.single('image')], async (req, res) => {
 
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
@@ -42,7 +42,7 @@ router.post('/', auth, async (req, res) => {
 
     const recipe = new Recipe ({ //const not let because mongodb driver sets the objectId here and no need to reset the variable later
         name:req.body.name,
-        image: req.body.image,
+        image: req.file ? `/uploads/${req.file.filename}` : '',
         preparationTime: req.body.preparationTime,
         ingredients: req.body.ingredients,
         directions: req.body.directions,
