@@ -11,6 +11,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+//Serve static files from 'public/uploads'
+app.use('/uploads', express.static('public/uploads'));
+
+
 require('./startup/logging')();
 require('./startup/routes')(app);
 require('./startup/db')();//we call the function
