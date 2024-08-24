@@ -33,10 +33,12 @@ function Recipes() {
           <ListItem key={recipe.id} component={Paper} elevation={2} sx={{ mb: 2, p: 2 }}>
             <ListItemText
               primary={<Typography variant="h6">{recipe.name}</Typography>}
+
               secondary={
                 <Typography variant="body2" color="text.secondary">
-                  Ingredients: {recipe.ingredients.join(', ')}
-                </Typography>
+                  Ingredients: {recipe.ingredients.join(', ')},
+                  
+                </Typography> 
               }
             />
           </ListItem>

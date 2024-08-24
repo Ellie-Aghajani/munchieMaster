@@ -3,12 +3,23 @@ const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const mongoose = require('mongoose'); //node_8.mongo data validation_7.mp4
 const express = require('express');
+const multer = require('multer'); 
 const router = express.Router();
 const { Recipe, validate} = require('../models/recipe');
 const { Meal } = require('../models/meal');
 
 
+// Configure multer storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/uploads'); // Directory where images will be stored
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`); // Save with a timestamp to avoid name conflicts
+    }
+});
 
+const upload = multer({ storage });
 
 
 
