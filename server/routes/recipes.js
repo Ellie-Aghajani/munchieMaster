@@ -31,13 +31,21 @@ router.post('/', auth, async (req, res) => {
 
     const recipe = new Recipe ({ //const not let because mongodb driver sets the objectId here and no need to reset the variable later
         name:req.body.name,
+        image: req.body.image,
+        preparationTime: req.body.preparationTime,
+        ingredients: req.body.ingredients,
+        directions: req.body.directions,
         meal:{ 
             _id: meal._id,
             name:meal.name,
         }
      });
-    await recipe.save()
-    res.send(recipe);
+     try{
+         await recipe.save()
+         res.send(recipe);
+     } catch(ex){
+        res.status(500).send('Could not save recipe.');
+     }
 });
 
 
