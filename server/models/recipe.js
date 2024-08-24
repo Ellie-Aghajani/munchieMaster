@@ -11,6 +11,22 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
         minLength:5,
         maxLength:50,
     },
+    image: {
+        type: String,
+        required: false
+    },
+    preparationTime: {
+        type: String, 
+        required: false
+    },
+    ingredients: {
+        type: [String], 
+        required: true
+    },
+    directions: {
+        type: [String],
+        required: true
+    },
     meal: {
         type:mealSchema,
         required: true
@@ -21,6 +37,10 @@ const Recipe = mongoose.model('Recipe', new mongoose.Schema({
 function validateRecipe(recipe){
     const schema = Joi.object({
         name: Joi.string().min(5).max(50).required(),
+        image: Joi.string().uri().optional(),
+        preparationTime: Joi.string().optional(),
+        ingredients: Joi.array().items(Joi.string()).required(),
+        directions: Joi.array().items(Joi.string()).required(),
         mealId: Joi.objectId().required()
     });
     return schema.validate(recipe);

@@ -13,9 +13,12 @@ const { Meal } = require('../models/meal');
 
 
 router.get('/', async (req, res) => {
-    // throw new Error('Could not get the genres.');
+    try{
         const recipes = await Recipe.find().sort('name');
         res.send(recipes);
+    } catch(ex){
+        res.status(500).send('Could not retrieve recipes.');
+    }
 });
 
 router.post('/', auth, async (req, res) => {
