@@ -55,7 +55,17 @@ router.put('/:id', async (req, res)=>{
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
     
-    const recipe = await Recipe.findByIdAndUpdate(req.params.id,{ name: req.body.name}, {new: true});
+    const recipe = await Recipe.findByIdAndUpdate(
+        req.params.id,
+        { 
+            name: req.body.name,
+            image: req.body.image,
+            preparationTime: req.body.preparationTime,
+            ingredients: req.body.ingredients,
+            directions: req.body.directions
+        }, 
+        {new: true}
+    );
     if(!recipe) return res.status(404).send('recipe not found');
     res.send(recipe);
     
