@@ -3,48 +3,35 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
+  Navigate,
   Link as RouterLink,
 } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
+import NavMenu from "./components/NavMenu";
 import Login from "./components/Login";
 import Recipes from "./components/Recipes";
+import AdminRecipeCreator from "./components/AdminRecipeCreator";
+import { AuthProvider } from "./contexts/AuthContext";
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              MunchieMaster
-            </Typography>
-            <Button color="inherit" component={RouterLink} to="/">
-              Home
-            </Button>
-            <Button color="inherit" component={RouterLink} to="/login">
-              Login
-            </Button>
-            <Button color="inherit" component={RouterLink} to="/recipes">
-              Recipes
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Container>
+    <AuthProvider>
+      <Router>
+        <NavMenu />
+        <div className="App">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route
-              path="/"
-              element={
-                <Typography variant="h2" component="h1" gutterBottom>
-                  Welcome to MunchieMaster
-                </Typography>
-              }
+              path="/admin/create-recipe"
+              element={<AdminRoute component={AdminRecipeCreator} />}
             />
+            <Route path="/" element={<Navigate replace to="/login" />} />
           </Routes>
-        </Container>
-      </div>
-    </Router>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
