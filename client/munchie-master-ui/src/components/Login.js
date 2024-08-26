@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Box,
   TextField,
@@ -8,7 +10,6 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-import axios from "axios";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -16,27 +17,39 @@ function Login() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [isLogin, setIsLogin] = useState(true);
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
-      const endpoint = isLogin ? "/api/auth" : "/api/users";
-      const data = isLogin ? { email, password } : { name, email, password };
-      const response = await axios.post(endpoint, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        baseURL: "http://localhost:3001",
-      });
-      const token = response.data;
-      localStorage.setItem("token", token);
-      window.location = "/recipes";
-    } catch (ex) {
-      if (ex.response && ex.response.status === 400) {
-        setError(ex.response.data);
+      if (isLogin) {
+        const success = await login(email, password);
+        if (success) {
+          navigate("/recipes");
+        } else {
+          setError("Failed to log in");
+        }
+      } else {
+        const success = await register(name, email, password);
+        if (success) {
+          navigate("/recipes");
+        } else {
+          setError("Failed to register");
+        }
       }
+    } catch (error) {
+      setError("An error occurred");
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/recipes");
+    }
+  }, [navigate]);
 
   return (
     <Container maxWidth="xs">
