@@ -2,5 +2,8 @@
     "name": "My Express App - Development",
     "mail": {
         "host": "dev-mail-server"
-    }
+    },
+        "jwtPrivateKey" : "munchie_jwtPrivateKey",
+    "db": "mongodb+srv://mochie:1ZocQqDsWd14bDvi@cluster0.edopw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
 }
