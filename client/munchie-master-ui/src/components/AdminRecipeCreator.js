@@ -3,22 +3,25 @@ import axios from "axios";
 import {
   TextField,
   Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Box,
   Typography,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 
 const AdminRecipeCreator = () => {
-  const [recipe, setRecipe] = useState({
+  const emptRecipe = {
     name: "",
-    ingredients: "",
-    instructions: "",
-    meal: "",
+    ingredients: [],
+    directions: [],
+    preparationTime: "",
     image: null,
-  });
+  };
+  const [recipe, setRecipe] = useState(emptRecipe);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,33 +32,48 @@ const AdminRecipeCreator = () => {
   };
 
   const handleImageChange = (e) => {
-    setRecipe((prevState) => ({
-      ...prevState,
-      image: e.target.files[0],
-    }));
-  };
+    const file = e.target.files[0];
+    if (file) {
+      setIsUploading(true);
+      setRecipe((prevState) => ({
+        ...prevState,
+        image: file,
+      }));
 
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setIsUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setRecipe((prevState) => ({
+        ...prevState,
+        image: null,
+      }));
+      setImagePreview(null);
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    for (const key in recipe) {
-      formData.append(key, recipe[key]);
-    }
-
     try {
-      const response = await axios.post("/api/recipes", formData, {
+      console.log("Form Data:", recipe);
+      const response = await axios.post("/api/recipes", recipe, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       console.log("Recipe created:", response.data);
-      // Reset form or show success message
+      setSuccess(true);
+      setError("");
+      setRecipe(emptRecipe);
     } catch (error) {
       console.error("Error creating recipe:", error);
-      // Show error message
+      setError(
+        "Failed to create recipe. Please try again: " + error.response.data
+      );
     }
   };
-
   return (
     <Box
       component="form"
@@ -65,6 +83,10 @@ const AdminRecipeCreator = () => {
       <Typography variant="h4" gutterBottom>
         Create New Recipe
       </Typography>
+      {error && <Alert severity="error">{error}</Alert>}
+      {success && (
+        <Alert severity="success">Recipe created successfully!</Alert>
+      )}
       <TextField
         fullWidth
         margin="normal"
@@ -77,42 +99,51 @@ const AdminRecipeCreator = () => {
       <TextField
         fullWidth
         margin="normal"
-        name="ingredients"
-        label="Ingredients (comma separated)"
-        multiline
-        rows={4}
-        value={recipe.ingredients}
+        name="preparationTime"
+        label="Prparation Time"
+        value={recipe.preparationTime}
         onChange={handleChange}
         required
       />
       <TextField
         fullWidth
         margin="normal"
-        name="instructions"
-        label="Instructions"
+        name="ingredients"
+        label="Ingredients (one per line)"
         multiline
         rows={4}
-        value={recipe.instructions}
-        onChange={handleChange}
+        value={recipe.ingredients.join("\n")}
+        onChange={(e) =>
+          setRecipe((prev) => ({
+            ...prev,
+            ingredients: e.target.value.split("\n"),
+          }))
+        }
         required
       />
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="meal-select-label">Meal Type</InputLabel>
-        <Select
-          labelId="meal-select-label"
-          name="meal"
-          value={recipe.meal}
-          onChange={handleChange}
-          required
-        >
-          <MenuItem value="">Select Meal Type</MenuItem>
-          <MenuItem value="breakfast">Breakfast</MenuItem>
-          <MenuItem value="lunch">Lunch</MenuItem>
-          <MenuItem value="dinner">Dinner</MenuItem>
-        </Select>
-      </FormControl>
-      <Button variant="contained" component="label" sx={{ mt: 2, mb: 2 }}>
-        Upload Image
+      <TextField
+        fullWidth
+        margin="normal"
+        name="directions"
+        label="Directions (one step per line)"
+        multiline
+        rows={4}
+        value={recipe.directions.join("\n")}
+        onChange={(e) =>
+          setRecipe((prev) => ({
+            ...prev,
+            directions: e.target.value.split("\n"),
+          }))
+        }
+        required
+      />
+      <Button
+        variant="contained"
+        component="label"
+        sx={{ mt: 2, mb: 2 }}
+        disabled={isUploading}
+      >
+        {isUploading ? <CircularProgress size={24} /> : "Upload Image"}
         <input
           type="file"
           hidden
@@ -121,6 +152,21 @@ const AdminRecipeCreator = () => {
           accept="image/*"
         />
       </Button>
+      {isUploading ? (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        imagePreview && (
+          <Box sx={{ mt: 2, mb: 2 }}>
+            <img
+              src={imagePreview}
+              alt="Recipe preview"
+              style={{ maxWidth: "100%", maxHeight: "200px" }}
+            />
+          </Box>
+        )
+      )}
       <Button
         type="submit"
         variant="contained"
