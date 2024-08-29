@@ -14,12 +14,13 @@ import {
   Alert,
 } from "@mui/material";
 import axios from "axios";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { useError } from "../contexts/ErrorContext";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import { useError } from '../contexts/ErrorContext';
+
 function Recipes() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,36 +31,31 @@ function Recipes() {
 
   const fetchRecipes = useCallback(async () => {
     try {
-      const [recipesResponse, savedRecipesResponse, likedRecipesResponse] =
-        await Promise.all([
-          axios.get("/api/recipes", {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            baseURL: "http://localhost:3001",
-          }),
-          axios.get("/api/users/saved-recipes", {
-            headers: {
-              "Content-Type": "application/json",
-              "x-auth-token": localStorage.getItem("token"),
-            },
-            baseURL: "http://localhost:3001",
-          }),
-          axios.get("/api/users/liked-recipes", {
-            headers: {
-              "Content-Type": "application/json",
-              "x-auth-token": localStorage.getItem("token"),
-            },
-            baseURL: "http://localhost:3001",
-          }),
-        ]);
+      const [recipesResponse, savedRecipesResponse, likedRecipesResponse] = await Promise.all([
+        axios.get("/api/recipes", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          baseURL: "http://localhost:3001",
+        }),
+        axios.get("/api/users/saved-recipes", {
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("token"),
+          },
+          baseURL: "http://localhost:3001",
+        }),
+        axios.get("/api/users/liked-recipes", {
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("token"),
+          },
+          baseURL: "http://localhost:3001",
+        })
+      ]);
       setRecipes(recipesResponse.data);
-      setUserSavedRecipes(
-        savedRecipesResponse.data.savedRecipes?.map((recipe) => recipe._id)
-      );
-      setUserLikedRecipes(
-        likedRecipesResponse.data.likedRecipes?.map((recipe) => recipe._id)
-      );
+      setUserSavedRecipes(savedRecipesResponse.data.savedRecipes?.map(recipe => recipe._id));
+      setUserLikedRecipes(likedRecipesResponse.data.likedRecipes?.map(recipe => recipe._id));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -77,26 +73,22 @@ function Recipes() {
 
   const handleLikeRecipe = async (recipeId) => {
     try {
-      const response = await axios.post(
-        `/api/recipes/${recipeId}/like`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("token"),
-          },
-          baseURL: "http://localhost:3001",
-        }
-      );
+      const response = await axios.post(`/api/recipes/${recipeId}/like`, {}, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": localStorage.getItem("token"),
+        },
+        baseURL: "http://localhost:3001",
+      });
       if (response.data.success) {
-        setUserLikedRecipes((prevLiked) =>
-          prevLiked.includes(recipeId)
-            ? prevLiked.filter((id) => id !== recipeId)
+        setUserLikedRecipes(prevLiked => 
+          prevLiked.includes(recipeId) 
+            ? prevLiked.filter(id => id !== recipeId)
             : [...prevLiked, recipeId]
         );
-        setRecipes((prevRecipes) =>
-          prevRecipes.map((recipe) =>
-            recipe._id === recipeId
+        setRecipes(prevRecipes => 
+          prevRecipes.map(recipe => 
+            recipe._id === recipeId 
               ? { ...recipe, likeCount: response.data.likeCount }
               : recipe
           )
@@ -110,8 +102,7 @@ function Recipes() {
 
   const handleSaveRecipe = async (recipeId) => {
     try {
-      const response = await axios.post(
-        "/api/users/save-recipe",
+      const response = await axios.post('/api/users/save-recipe', 
         { recipeId },
         {
           headers: {
@@ -122,14 +113,14 @@ function Recipes() {
         }
       );
       if (response.data.success) {
-        setUserSavedRecipes((prevSaved) =>
-          prevSaved.includes(recipeId)
-            ? prevSaved.filter((id) => id !== recipeId)
+        setUserSavedRecipes(prevSaved => 
+          prevSaved.includes(recipeId) 
+            ? prevSaved.filter(id => id !== recipeId)
             : [...prevSaved, recipeId]
         );
-        setRecipes((prevRecipes) =>
-          prevRecipes.map((recipe) =>
-            recipe._id === recipeId
+        setRecipes(prevRecipes => 
+          prevRecipes.map(recipe => 
+            recipe._id === recipeId 
               ? { ...recipe, savedBy: response.data.savedByCount }
               : recipe
           )
@@ -141,13 +132,7 @@ function Recipes() {
     }
   };
   if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
+    return (      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />
       </Box>
     );
@@ -156,11 +141,11 @@ function Recipes() {
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Box
         sx={{
-          backgroundColor: "#f0f8ff",
+          backgroundColor: '#f0f8ff',
           borderRadius: 4,
           padding: 3,
           marginBottom: 6,
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         }}
       >
         <Typography
@@ -168,11 +153,11 @@ function Recipes() {
           component="h1"
           align="center"
           sx={{
-            fontWeight: "bold",
-            color: "#2c3e50",
-            textTransform: "uppercase",
+            fontWeight: 'bold',
+            color: '#2c3e50',
+            textTransform: 'uppercase',
             letterSpacing: 2,
-            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
+            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)',
           }}
         >
           Recipes
@@ -181,9 +166,7 @@ function Recipes() {
       <Grid container spacing={4}>
         {recipes.map((recipe) => (
           <Grid item key={recipe._id} xs={12} sm={6} md={4}>
-            <Card
-              sx={{ height: "100%", display: "flex", flexDirection: "column" }}
-            >
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardMedia
                 component="img"
                 height="200"
@@ -204,52 +187,40 @@ function Recipes() {
                   Ingredients: {recipe.ingredients.slice(0, 3).join(", ")}
                   {recipe.ingredients.length > 3 && "..."}
                 </Typography>
-
-                <Paper
-                  elevation={3}
+        
+                <Paper 
+                  elevation={3} 
                   sx={{
                     maxHeight: 200,
-                    overflowY: "auto",
+                    overflowY: 'auto',
                     padding: 2,
-                    backgroundColor: "#f8f8f8",
+                    backgroundColor: '#f8f8f8',
                     borderRadius: 2,
-                    "&::-webkit-scrollbar": {
-                      width: "6px",
+                    '&::-webkit-scrollbar': {
+                      width: '6px',
                     },
-                    "&::-webkit-scrollbar-track": {
-                      backgroundColor: "#f1f1f1",
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#f1f1f1',
                     },
-                    "&::-webkit-scrollbar-thumb": {
-                      backgroundColor: "#888",
-                      borderRadius: "3px",
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                      borderRadius: '3px',
                     },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                      backgroundColor: "#555",
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
                     },
                   }}
                 >
                   {recipe.directions.map((step, index) => (
-                    <Box
-                      key={index}
-                      sx={{ mb: 2, display: "flex", alignItems: "flex-start" }}
-                    >
+                    <Box key={index} sx={{ mb: 2, display: 'flex', alignItems: 'flex-start' }}>
                       <Typography variant="body2">{step}</Typography>
                     </Box>
                   ))}
                 </Paper>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  mt={2}
-                >
+                <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
                   <Box>
                     <IconButton onClick={() => handleLikeRecipe(recipe._id)}>
-                      {userLikedRecipes.includes(recipe._id) ? (
-                        <FavoriteIcon color="error" />
-                      ) : (
-                        <FavoriteBorderIcon />
-                      )}
+                      {userLikedRecipes.includes(recipe._id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
                     </IconButton>
                     <Typography variant="body2" component="span">
                       {recipe.likeCount} likes
@@ -257,11 +228,7 @@ function Recipes() {
                   </Box>
                   <Box>
                     <IconButton onClick={() => handleSaveRecipe(recipe._id)}>
-                      {userSavedRecipes.includes(recipe._id) ? (
-                        <BookmarkIcon color="primary" />
-                      ) : (
-                        <BookmarkBorderIcon />
-                      )}
+                      {userSavedRecipes.includes(recipe._id) ? <BookmarkIcon color="primary" /> : <BookmarkBorderIcon />}
                     </IconButton>
                     <Typography variant="body2" component="span">
                       {userSavedRecipes.includes(recipe._id) ? "Saved" : "Save"}
@@ -273,20 +240,11 @@ function Recipes() {
           </Grid>
         ))}
       </Grid>
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={() => setError(null)}
-      >
-        <Alert
-          onClose={() => setError(null)}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
+        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
           {error}
         </Alert>
       </Snackbar>
     </Container>
-  );
-}
+  );}
 export default Recipes;

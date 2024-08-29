@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
-import { Snackbar, Alert, Typography } from "@mui/material";
+import React, { createContext, useState, useContext } from 'react';
+import { Snackbar, Alert, Typography } from '@mui/material';
 
 const ErrorContext = createContext();
 
@@ -13,16 +13,8 @@ export function ErrorProvider({ children }) {
   return (
     <ErrorContext.Provider value={{ showError }}>
       {children}
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={() => setError(null)}
-      >
-        <Alert
-          onClose={() => setError(null)}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
+        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
           <Typography variant="body1">{error?.message}</Typography>
           {error?.data && (
             <Typography variant="body2" sx={{ mt: 1 }}>

@@ -29,6 +29,9 @@ const NavMenu = () => {
             <Button color="inherit" component={Link} to="/recipes">
               Recipes
             </Button>
+            <Button color="inherit" component={Link} to="/profile">
+              Profile
+            </Button>
             {currentUser.isAdmin && (
               <Button
                 color="inherit"

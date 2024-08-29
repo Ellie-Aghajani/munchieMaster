@@ -39,7 +39,7 @@ const AdminRecipeCreator = () => {
         ...prevState,
         image: file,
       }));
-
+    
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -69,12 +69,9 @@ const AdminRecipeCreator = () => {
       setRecipe(emptRecipe);
     } catch (error) {
       console.error("Error creating recipe:", error);
-      setError(
-        "Failed to create recipe. Please try again: " + error.response.data
-      );
-    }
-  };
-  return (
+      setError("Failed to create recipe. Please try again: " + error.response.data);
+    } 
+  };  return (
     <Box
       component="form"
       onSubmit={handleSubmit}
@@ -84,9 +81,7 @@ const AdminRecipeCreator = () => {
         Create New Recipe
       </Typography>
       {error && <Alert severity="error">{error}</Alert>}
-      {success && (
-        <Alert severity="success">Recipe created successfully!</Alert>
-      )}
+      {success && <Alert severity="success">Recipe created successfully!</Alert>}
       <TextField
         fullWidth
         margin="normal"
@@ -112,13 +107,8 @@ const AdminRecipeCreator = () => {
         label="Ingredients (one per line)"
         multiline
         rows={4}
-        value={recipe.ingredients.join("\n")}
-        onChange={(e) =>
-          setRecipe((prev) => ({
-            ...prev,
-            ingredients: e.target.value.split("\n"),
-          }))
-        }
+        value={recipe.ingredients.join('\n')}
+        onChange={(e) => setRecipe(prev => ({ ...prev, ingredients: e.target.value.split('\n') }))}
         required
       />
       <TextField
@@ -128,13 +118,8 @@ const AdminRecipeCreator = () => {
         label="Directions (one step per line)"
         multiline
         rows={4}
-        value={recipe.directions.join("\n")}
-        onChange={(e) =>
-          setRecipe((prev) => ({
-            ...prev,
-            directions: e.target.value.split("\n"),
-          }))
-        }
+        value={recipe.directions.join('\n')}
+        onChange={(e) => setRecipe(prev => ({ ...prev, directions: e.target.value.split('\n') }))}
         required
       />
       <Button
@@ -156,16 +141,10 @@ const AdminRecipeCreator = () => {
         <Box sx={{ mt: 2, mb: 2 }}>
           <CircularProgress />
         </Box>
-      ) : (
-        imagePreview && (
-          <Box sx={{ mt: 2, mb: 2 }}>
-            <img
-              src={imagePreview}
-              alt="Recipe preview"
-              style={{ maxWidth: "100%", maxHeight: "200px" }}
-            />
-          </Box>
-        )
+      ) : imagePreview && (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <img src={imagePreview} alt="Recipe preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+        </Box>
       )}
       <Button
         type="submit"
