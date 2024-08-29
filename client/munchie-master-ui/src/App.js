@@ -4,7 +4,6 @@ import {
   Route,
   Routes,
   Navigate,
-  Link as RouterLink,
 } from "react-router-dom";
 import NavMenu from "./components/NavMenu";
 import Login from "./components/Login";

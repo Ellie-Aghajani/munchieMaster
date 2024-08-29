@@ -4,6 +4,7 @@ import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Avatar,
 import { useError } from '../contexts/ErrorContext';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EditIcon from '@mui/icons-material/Edit';
+import config from '../config';
 
 function UserProfile() {
   const [user, setUser] = useState(null);
@@ -80,7 +81,7 @@ function UserProfile() {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={`http://localhost:3001${recipe.image}`}
+                  image={`${config.serverUrl}${recipe.image}`}
                   alt={recipe.name}
                 />
                 <CardContent sx={{ flexGrow: 1 }}>
@@ -124,7 +125,7 @@ function UserProfile() {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={`http://localhost:3001${recipe.image}`}
+                  image={`${config.serverUrl}${recipe.image}`}
                   alt={recipe.name}
                 />
                 <CardContent sx={{ flexGrow: 1 }}>

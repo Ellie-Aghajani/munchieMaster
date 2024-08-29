@@ -1,8 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
-axios.defaults.baseURL = "http://localhost:3001";
+import config from "../config";
+axios.defaults.baseURL = config.serverUrl;
 
 const defaultMunchieMaster = {
   currentUser: {},
@@ -73,7 +73,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       axios.defaults.headers.common["x-auth-token"] = token;
-      setCurrentUser(user);
+      await checkAuthStatus();
       return true;
     } catch (error) {
       console.error("Registration error:", error);
