@@ -3,7 +3,11 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-var whitelist = ["http://localhost:3000", "http://24.199.125.19"];
+var whitelist = [
+  "http://localhost:3000",
+  "http://24.199.125.19",
+  "http://munchiemaster.online",
+];
 
 const corsOptions = {
   origin: whitelist,
