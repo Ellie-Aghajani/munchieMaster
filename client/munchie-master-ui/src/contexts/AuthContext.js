@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import config from "../config";
-axios.defaults.baseURL = config.serverUrl;
+axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL;
 
 const defaultMunchieMaster = {
   currentUser: {},
