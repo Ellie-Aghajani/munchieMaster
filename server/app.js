@@ -8,6 +8,7 @@ var whitelist = [
   "http://localhost:3000",
   "http://24.199.125.19",
   "http://munchiemaster.online",
+  "https://munchiemaster.online",
 ];
 
 const corsOptions = {
