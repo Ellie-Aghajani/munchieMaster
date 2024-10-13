@@ -3,6 +3,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import config from "../config";
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL;
+console.log("Base URL:", process.env.REACT_APP_SERVER_URL);
 
 const defaultMunchieMaster = {
   currentUser: {},
