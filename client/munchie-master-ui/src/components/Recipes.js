@@ -199,7 +199,10 @@ function Recipes() {
               <CardMedia
                 component="img"
                 height="200"
-                image={`${config.serverUrl}${recipe.image}`}
+                image={`${config.serverUrl}/uploads/${recipe.image.replace(
+                  /^\/?uploads\/?/,
+                  ""
+                )}`}
                 alt={recipe.name}
               />
               <CardContent sx={{ flexGrow: 1 }}>
