@@ -198,8 +198,8 @@ function Recipes() {
                 component="img"
                 height="200"
                 image={`${config.serverUrl}${
-                  recipe.image.startsWith("/uploads/") ? "" : "/uploads/"
-                }${recipe.image}`}
+                  recipe.image.startsWith("/") ? "" : "/"
+                }${recipe.image.replace(/^\/?uploads\/?/, "uploads")}`}
                 alt={recipe.name}
               />
               <CardContent sx={{ flexGrow: 1 }}>
