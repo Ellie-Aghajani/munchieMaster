@@ -197,7 +197,9 @@ function Recipes() {
               <CardMedia
                 component="img"
                 height="200"
-                image={`${config.serverUrl}/uploads/${recipe.image}`}
+                image={`${config.serverUrl}${
+                  recipe.image.startsWith("/uploads/") ? "" : "/uploads/"
+                }${recipe.image}`}
                 alt={recipe.name}
               />
               <CardContent sx={{ flexGrow: 1 }}>
