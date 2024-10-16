@@ -14,19 +14,19 @@ import {
   Grid,
 } from "@mui/material";
 import axios from "axios";
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import { useError } from '../contexts/ErrorContext';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import { useError } from "../contexts/ErrorContext";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import config from '../config';
+import config from "../config";
 
 axios.defaults.baseURL = config.serverUrl;
 
-console.log(config.serverUrl)
+console.log(config.serverUrl);
 
 function Recipes() {
   const [recipes, setRecipes] = useState([]);
@@ -40,25 +40,26 @@ function Recipes() {
 
   const fetchRecipes = useCallback(async () => {
     try {
-      const [recipesResponse, savedRecipesResponse, likedRecipesResponse] = await Promise.all([
-        axios.get("/api/recipes", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }),
-        axios.get("/api/users/saved-recipes", {
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("token"),
-          },
-        }),
-        axios.get("/api/users/liked-recipes", {
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("token"),
-          },
-        })
-      ]);
+      const [recipesResponse, savedRecipesResponse, likedRecipesResponse] =
+        await Promise.all([
+          axios.get("/api/recipes", {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }),
+          axios.get("/api/users/saved-recipes", {
+            headers: {
+              "Content-Type": "application/json",
+              "x-auth-token": localStorage.getItem("token"),
+            },
+          }),
+          axios.get("/api/users/liked-recipes", {
+            headers: {
+              "Content-Type": "application/json",
+              "x-auth-token": localStorage.getItem("token"),
+            },
+          }),
+        ]);
       setRecipes(recipesResponse.data);
       setUserSavedRecipes(
         savedRecipesResponse.data.savedRecipes?.map((recipe) => recipe._id)
@@ -87,13 +88,17 @@ function Recipes() {
 
   const handleLikeRecipe = async (recipeId) => {
     try {
-      const response = await axios.post(`/api/recipes/${recipeId}/like`, {}, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-auth-token": localStorage.getItem("token"),
-        },
-        baseURL: config.serverUrl,
-      });
+      const response = await axios.post(
+        `/api/recipes/${recipeId}/like`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("token"),
+          },
+          baseURL: config.serverUrl,
+        }
+      );
       if (response.data.success) {
         setUserLikedRecipes((prevLiked) =>
           prevLiked.includes(recipeId)
@@ -192,7 +197,7 @@ function Recipes() {
               <CardMedia
                 component="img"
                 height="200"
-                image={`${config.serverUrl}/${recipe.image}`}
+                image={`${config.serverUrl}uploads/${recipe.image}`}
                 alt={recipe.name}
               />
               <CardContent sx={{ flexGrow: 1 }}>
