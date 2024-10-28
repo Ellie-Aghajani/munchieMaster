@@ -36,7 +36,7 @@ const LandingPage = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          backgroundImage: "url(/path-to-your-background-image.jpg)",
+          backgroundImage: "url(/images/IMG_4404.JPEG)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           minHeight: "70vh",
@@ -49,7 +49,7 @@ const LandingPage = () => {
         }}
       >
         <Typography variant="h2" gutterBottom>
-          MunchieMaster
+          Munchie Master
         </Typography>
         <Button
           variant="contained"
@@ -67,7 +67,7 @@ const LandingPage = () => {
           About Us
         </Typography>
         <Typography>
-          MunchieMaster is a community for parents and caregivers looking for
+          Munchie Master is a community for parents and caregivers looking for
           healthy, fun recipes for toddlers.
         </Typography>
       </Container>
