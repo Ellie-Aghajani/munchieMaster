@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import isEmpty from "lodash/isEmpty";
 
 const NavMenu = () => {
@@ -16,14 +16,27 @@ const NavMenu = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography
-          variant="h6"
-          component={Link}
-          to="/"
-          style={{ flexGrow: 1, textDecoration: "none", color: "inherit" }}
-        >
-          MunchieMaster
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <img
+            src={process.env.PUBLIC_URL + "/images/logo.png"}
+            alt="MunchieMaster Logo"
+            style={{ height: "40px", marginRight: "10px" }}
+          />
+          <Typography
+            variant="h6"
+            component={Link}
+            to="/"
+            style={{
+              flexGrow: 1,
+              textDecoration: "none",
+              color: "inherit",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            MUNCHIE MASTER
+          </Typography>
+        </Box>
         {!isEmpty(currentUser) ? (
           <>
             <Button color="inherit" component={Link} to="/recipes">
