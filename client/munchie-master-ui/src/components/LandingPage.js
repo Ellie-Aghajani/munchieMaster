@@ -108,7 +108,7 @@ const LandingPage = () => {
           }}
         >
           <img
-            src="/images/bg.jpeg"
+            src="/images/logo.png"
             alt="Munchie Master Logo"
             style={{
               maxWidth: "100%",
