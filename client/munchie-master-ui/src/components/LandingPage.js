@@ -172,18 +172,13 @@ const LandingPage = () => {
             How it Works
           </Typography>
           <Typography>
-            Here’s how Munchie Master works: Start by searching for recipes
-            based on the ingredients you have on hand. The app will suggest two
-            types of recipes: free recipes and featured recipes. Free recipes
-            come with an image and clear instructions for preparation. Featured
-            recipes are shared by fellow toddler parents and include detailed,
-            step-by-step images and instructions. Each featured recipe also has
-            a comment section, where you can ask questions, get advice from the
-            creator, and share your thoughts. To get you started, we’ll welcome
-            you with 10 coins in your wallet when you sign up. If you'd like to
-            earn more coins, simply share your own recipes! When others buy your
-            recipes, the coins are added to your wallet, allowing you to access
-            even more featured content.
+            Munchie Master helps you find recipes based on your available
+            ingredients, offering both free and featured recipes. Free recipes
+            include images and easy instructions, while featured ones, shared by
+            other parents, provide detailed steps and a comment section for
+            questions and advice. New users receive 10 coins at sign-up, and you
+            can earn more by sharing your recipes. When others buy them, you
+            gain coins to access more content.
           </Typography>
         </Box>
       </Box>
