@@ -38,7 +38,7 @@ const LandingPage = () => {
             variant="h2"
             gutterBottom
             sx={{
-              fontSize: { xs: "2rem", sm: "3rem", md: "4rem" },
+              fontSize: { xs: "1.5rem", sm: "2rem", md: "3rem" },
               textAlign: "center",
               fontWeight: "bold",
               color: "#FF8225",
@@ -51,7 +51,7 @@ const LandingPage = () => {
               `,
             }}
           >
-            MUNCHIE MASTER
+            Make Mealtime Magic with Munchie Master!
           </Typography>
           <Typography
             variant="h5"
@@ -67,7 +67,8 @@ const LandingPage = () => {
               //   -1px 0 0 #10375C`,
             }}
           >
-            Easy Recipes for Happy Toddlers
+            Join a vibrant community where happy tummies and happy families
+            meet.
           </Typography>
           <Box
             sx={{
