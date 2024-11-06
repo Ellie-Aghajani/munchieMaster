@@ -40,27 +40,28 @@ const LandingPage = () => {
             sx={{
               fontSize: { xs: "1.5rem", sm: "2rem", md: "3rem" },
               textAlign: "center",
-              fontWeight: "bold",
-              color: "#FF8225",
+              fontWeight: "bolder",
+              color: "#10375C",
 
-              textShadow: `
-                -1px -1px 0 #fff,
-                1px -1px 0 #10375C,
-                -1px 1px 0 #10375C,
-                1px 1px 0 #10375C
-              `,
+              //   textShadow: `
+              //     -1px -1px 0 #fff,
+              //     1px -1px 0 #10375C,
+              //     -1px 1px 0 #10375C,
+              //     1px 1px 0 #10375C
+              //   `,
             }}
           >
-            Make Mealtime Magic with Munchie Master!
+            Make Mealtime Magic with Munchie Master where happy tummies and
+            happy families meet!
           </Typography>
-          <Typography
+          {/* <Typography
             variant="h5"
             sx={{
               fontSize: { xs: "1.5rem", sm: "2rem", md: "3rem" },
               textAlign: "center",
               color: "#10375C",
-              textShadow: `
-              -1px -1px 0 #fff`,
+              //   textShadow: `
+              //   -1px -1px 0 #fff`,
               //   1px -1px 0 #10375C,
               //   -1px 1px 0 #10375C,
               //   1px 1px 0 #10375C,
@@ -69,7 +70,7 @@ const LandingPage = () => {
           >
             Join a vibrant community where happy tummies and happy families
             meet.
-          </Typography>
+          </Typography> */}
           <Box
             sx={{
               display: "flex",

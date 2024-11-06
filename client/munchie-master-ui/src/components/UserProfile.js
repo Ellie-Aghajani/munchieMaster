@@ -1,45 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Avatar, Chip, Fade, Button } from '@mui/material';
-import { useError } from '../contexts/ErrorContext';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import EditIcon from '@mui/icons-material/Edit';
-import config from '../config';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Avatar,
+  Button,
+  TextField,
+} from "@mui/material";
+import { useError } from "../contexts/ErrorContext";
+import config from "../config";
 
 function UserProfile() {
   const [user, setUser] = useState(null);
-  const [savedRecipes, setSavedRecipes] = useState([]);
-  const [userRecipes, setUserRecipes] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    country: "",
+    province: "",
+    city: "",
+    description: "",
+  });
   const { showError } = useError();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userResponse = await axios.get('/api/users/me', {
+        const userResponse = await axios.get("/api/users/me", {
           headers: {
-            'x-auth-token': localStorage.getItem('token'),
+            "x-auth-token": localStorage.getItem("token"),
           },
         });
         setUser(userResponse.data);
-
-        const savedRecipesResponse = await axios.get('/api/users/saved-recipes', {
-          headers: {
-            'x-auth-token': localStorage.getItem('token'),
-          },
+        setFormData({
+          firstName: userResponse.data.firstName || "",
+          lastName: userResponse.data.lastName || "",
+          country: userResponse.data.country || "",
+          province: userResponse.data.province || "",
+          city: userResponse.data.city || "",
+          description: userResponse.data.description || "",
         });
-        setSavedRecipes(savedRecipesResponse.data.savedRecipes);
-        setUserRecipes(userResponse.data.myRecepies ?? []);
       } catch (error) {
-        showError('Failed to fetch user data');
+        showError("Failed to fetch user data");
       }
     };
 
     fetchUserData();
   }, [showError]);
 
-  const handleEditRecipe = (recipeId) => {
-    // Implement the edit functionality here
-    console.log(`Edit recipe with id: ${recipeId}`);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      await axios.put("/api/users/me", formData, {
+        headers: {
+          "x-auth-token": localStorage.getItem("token"),
+        },
+      });
+      setEditMode(false);
+      // Re-fetch user data after update
+    } catch (error) {
+      showError("Failed to update user data");
+    }
   };
 
   if (!user) {
@@ -48,107 +81,107 @@ function UserProfile() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
-      {/* User profile section */}
-      <Fade in={true} timeout={1000}>
-        <Box sx={{ mb: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
-          <Avatar
-            sx={{ width: 100, height: 100, fontSize: '3rem' }}
-            alt={user.name}
-            src={user.avatar || ''}
-          >
-            {user.name.charAt(0)}
-          </Avatar>
-          <Box>
-            <Typography variant="h4" component="h1" gutterBottom>
-              {user.name}
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              {user.email}
-            </Typography>
-          </Box>
+      {/* Profile Info Section */}
+      <Box sx={{ display: "flex", mb: 4, alignItems: "center" }}>
+        <Avatar
+          sx={{ width: 100, height: 100, mr: 2 }}
+          src={user.avatar || ""}
+          alt={user.name}
+        >
+          {user.name.charAt(0)}
+        </Avatar>
+        <Box>
+          <Typography variant="h4">{user.name}</Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            {user.email}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {user.city}, {user.province}, {user.country}
+          </Typography>
+          <Typography variant="body2" mt={1}>
+            {user.description}
+          </Typography>
         </Box>
-      </Fade>
+      </Box>
 
-      {/* My Recipes section */}
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 4 }}>
-        My Recipes
-      </Typography>
-      <Grid container spacing={4} sx={{ mb: 6 }}>
-        {userRecipes.map((recipe) => (
-          <Grid item key={recipe._id} xs={12} sm={6} md={4}>
-            <Fade in={true} timeout={1000}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={`${config.serverUrl}${recipe.image}`}
-                  alt={recipe.name}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography gutterBottom variant="h6" component="div">
-                    {recipe.name}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <AccessTimeIcon sx={{ mr: 1, fontSize: 'small' }} />
-                    <Typography variant="body2" color="text.secondary">
-                      {recipe.preparationTime}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                    {recipe.tags && recipe.tags.map((tag, index) => (
-                      <Chip key={index} label={tag} size="small" />
-                    ))}
-                  </Box>
-                  <Button
-                    variant="outlined"
-                    startIcon={<EditIcon />}
-                    onClick={() => handleEditRecipe(recipe._id)}
-                  >
-                    Edit
-                  </Button>
-                </CardContent>
-              </Card>
-            </Fade>
+      {/* Edit Profile Section */}
+      {editMode ? (
+        <Box sx={{ p: 3, border: "1px solid #ccc", borderRadius: 2, mb: 4 }}>
+          <Typography variant="h5" mb={2}>
+            Edit Profile
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="First Name"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Last Name"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="Country"
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="Province"
+                name="province"
+                value={formData.province}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="City"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                label="Description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+              />
+            </Grid>
           </Grid>
-        ))}
-      </Grid>
-
-      {/* Saved Recipes section */}
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 4 }}>
-        Saved Recipes
-      </Typography>
-      <Grid container spacing={4}>
-        {savedRecipes.map((recipe) => (
-          <Grid item key={recipe._id} xs={12} sm={6} md={4}>
-            <Fade in={true} timeout={1000}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={`${config.serverUrl}${recipe.image}`}
-                  alt={recipe.name}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography gutterBottom variant="h6" component="div">
-                    {recipe.name}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <AccessTimeIcon sx={{ mr: 1, fontSize: 'small' }} />
-                    <Typography variant="body2" color="text.secondary">
-                      {recipe.preparationTime}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {recipe.tags && recipe.tags.map((tag, index) => (
-                      <Chip key={index} label={tag} size="small" />
-                    ))}
-                  </Box>
-                </CardContent>
-              </Card>
-            </Fade>
-          </Grid>
-        ))}
-      </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2, float: "right" }}
+            onClick={handleUpdateProfile}
+          >
+            Update Profile
+          </Button>
+        </Box>
+      ) : (
+        <Button variant="outlined" onClick={() => setEditMode(true)}>
+          Edit Profile
+        </Button>
+      )}
     </Container>
   );
 }
