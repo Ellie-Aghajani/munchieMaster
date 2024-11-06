@@ -101,12 +101,14 @@ function UserProfile() {
         <Avatar
           sx={{ width: 100, height: 100, mr: 2 }}
           src={user.avatar || ""}
-          alt={user.name}
+          alt={`${user.firstName} ${user.lastName}`}
         >
-          {user.name.charAt(0)}
+          {(user.firstName[0] || "") + (user.lastName[0] || "")}
         </Avatar>
         <Box>
-          <Typography variant="h4">{user.name}</Typography>
+          <Typography variant="h4">
+            {user.firstName} {user.lastName}
+          </Typography>
           <Typography variant="subtitle1" color="text.secondary">
             {user.email}
           </Typography>
