@@ -83,7 +83,7 @@ router.post("/save-recipe", auth, async (req, res) => {
 // Setup multer for image uploads (handles user profile picture)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Ensure this path is accessible and exists
+    cb(null, "public/uploads/"); // Ensure this path is accessible and exists
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}_${file.originalname}`);
