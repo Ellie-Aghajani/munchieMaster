@@ -5,12 +5,10 @@ import {
   Typography,
   Box,
   Grid,
-  Card,
-  CardContent,
-  CardMedia,
   Avatar,
   Button,
   TextField,
+  Input,
 } from "@mui/material";
 import { useError } from "../contexts/ErrorContext";
 import config from "../config";
@@ -25,6 +23,7 @@ function UserProfile() {
     province: "",
     city: "",
     description: "",
+    avatar: null, // For storing the selected file
   });
   const { showError } = useError();
 
@@ -61,11 +60,27 @@ function UserProfile() {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        avatar: file,
+      }));
+    }
+  };
+
   const handleUpdateProfile = async () => {
+    const data = new FormData();
+    Object.keys(formData).forEach((key) => {
+      data.append(key, formData[key]);
+    });
+
     try {
-      await axios.put("/api/users/me", formData, {
+      await axios.put("/api/users/me", data, {
         headers: {
           "x-auth-token": localStorage.getItem("token"),
+          "Content-Type": "multipart/form-data",
         },
       });
       setEditMode(false);
@@ -166,6 +181,15 @@ function UserProfile() {
                 value={formData.description}
                 onChange={handleInputChange}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Button variant="contained" component="label">
+                Upload Profile Picture
+                <input type="file" hidden onChange={handleImageChange} />
+              </Button>
+              {formData.avatar && (
+                <Typography variant="body2">{formData.avatar.name}</Typography>
+              )}
             </Grid>
           </Grid>
           <Button
