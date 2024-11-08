@@ -7,9 +7,19 @@ const { User, validate } = require("../models/user");
 const mongoose = require("mongoose");
 const express = require("express");
 const { Recipe } = require("../models/recipe");
+const upload = require("../config/multerConfig");
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
+
+// Configure Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}_${file.originalname}`);
+  },
+});
+const upload = multer({ storage });
 
 // GET current user data (without password)
 router.get("/me", auth, async (req, res) => {
@@ -79,18 +89,6 @@ router.post("/save-recipe", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-// Setup multer for image uploads (handles user profile picture)
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/uploads/"); // Ensure this path is accessible and exists
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}_${file.originalname}`);
-  },
-});
-
-const upload = multer({ storage });
 
 // PUT: Update user profile
 router.put("/me", auth, upload.single("avatar"), async (req, res) => {
