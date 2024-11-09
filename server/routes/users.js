@@ -1,10 +1,10 @@
-const auth = require("../middleware/auth"); //authorization: user has permission to access
+const auth = require("../middleware/auth"); // Authorization middleware
 const jwt = require("jsonwebtoken");
 const config = require("config");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const { User, validate } = require("../models/user");
-const mongoose = require("mongoose"); //node_8.mongo data valid_7.mp4
+const mongoose = require("mongoose");
 const express = require("express");
 const { Recipe } = require("../models/recipe");
 const router = express.Router();
@@ -36,6 +36,27 @@ router.post("/", async (req, res) => {
 
   const token = user.generateAuthToken();
   res.send({ token: token });
+});
+
+// PUT: Update user profile data (newly added route)
+router.put("/me", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).send("User not found");
+
+    // Update user fields from the request body
+    user.firstName = req.body.firstName || user.firstName;
+    user.lastName = req.body.lastName || user.lastName;
+    user.country = req.body.country || user.country;
+    user.province = req.body.province || user.province;
+    user.city = req.body.city || user.city;
+    user.description = req.body.description || user.description;
+
+    await user.save();
+    res.send({ success: true, message: "Profile updated successfully", user });
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
 });
 
 // POST: Save or unsave a recipe for the user
