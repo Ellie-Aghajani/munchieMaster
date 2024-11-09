@@ -70,6 +70,39 @@ router.post("/save-recipe", auth, async (req, res) => {
   }
 });
 
+// PUT: Upload or update avatar
+router.put("/avatar", auth, upload.single("avatar"), async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).send("User not found");
+
+    // Update avatar if a new file is uploaded
+    if (req.file) {
+      user.avatar = `/uploads/${req.file.filename}`; // Store relative path to image
+      await user.save();
+      res.send({ success: true, message: "Avatar updated successfully", user });
+    } else {
+      res.status(400).send("No file uploaded");
+    }
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+});
+
+// DELETE: Delete avatar
+router.delete("/avatar", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).send("User not found");
+
+    user.avatar = null; // Remove avatar path
+    await user.save();
+    res.send({ success: true, message: "Avatar deleted successfully" });
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+});
+
 // GET: Retrieve user's saved recipes
 router.get("/saved-recipes", auth, async (req, res) => {
   try {
