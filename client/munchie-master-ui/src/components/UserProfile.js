@@ -67,7 +67,7 @@ function UserProfile() {
       data.append("avatar", file);
       try {
         const response = await axios.put(
-          `${config.serverUrl}/api/users/update-avatar`,
+          `${config.serverUrl}/api/users/avatar`,
           data,
           {
             headers: {
@@ -86,7 +86,7 @@ function UserProfile() {
   const handleDeleteAvatar = async () => {
     try {
       const response = await axios.delete(
-        `${config.serverUrl}/api/users/delete-avatar`,
+        `${config.serverUrl}/api/users/avatar`,
         {
           headers: {
             "x-auth-token": localStorage.getItem("token"),
