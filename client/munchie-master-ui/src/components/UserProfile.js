@@ -93,7 +93,7 @@ function UserProfile() {
           },
         }
       );
-      setUser(response.data); // Update user state without the avatar
+      setUser(response.data.user); // Update user state without the avatar
     } catch (error) {
       showError("Failed to delete avatar");
     }
@@ -126,7 +126,17 @@ function UserProfile() {
     <Container maxWidth="lg" sx={{ py: 6 }}>
       {/* Live Preview Section */}
       <Box display="flex" alignItems="center" mb={4}>
-        <Avatar sx={{ width: 100, height: 100, mr: 2 }} src={user?.avatar}>
+        <Avatar
+          sx={{ width: 100, height: 100, mr: 2 }}
+          src={
+            user?.avatar
+              ? `${config.serverUrl}/uploads/${user.avatar.replace(
+                  /^\/?uploads\/?/,
+                  ""
+                )}`
+              : ""
+          }
+        >
           {(formData.firstName[0] || "") + (formData.lastName[0] || "")}
         </Avatar>
         <Box>
