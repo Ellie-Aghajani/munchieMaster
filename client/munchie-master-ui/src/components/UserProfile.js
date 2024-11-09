@@ -8,8 +8,11 @@ import {
   Avatar,
   Button,
   TextField,
+  IconButton,
 } from "@mui/material";
 import { useError } from "../contexts/ErrorContext";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import DeleteIcon from "@mui/icons-material/Delete";
 import config from "../config";
 
 function UserProfile() {
@@ -56,12 +59,74 @@ function UserProfile() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const data = new FormData();
+      data.append("avatar", file);
+      try {
+        const response = await axios.put(
+          `${config.serverUrl}/api/users/update-avatar`,
+          data,
+          {
+            headers: {
+              "x-auth-token": localStorage.getItem("token"),
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        setUser(response.data); // Update user state with the new avatar
+      } catch (error) {
+        showError("Failed to update avatar");
+      }
+    }
+  };
+
+  const handleDeleteAvatar = async () => {
+    try {
+      const response = await axios.delete(
+        `${config.serverUrl}/api/users/delete-avatar`,
+        {
+          headers: {
+            "x-auth-token": localStorage.getItem("token"),
+          },
+        }
+      );
+      setUser(response.data); // Update user state without the avatar
+    } catch (error) {
+      showError("Failed to delete avatar");
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      await axios.put(`${config.serverUrl}/api/users/me`, formData, {
+        headers: {
+          "x-auth-token": localStorage.getItem("token"),
+        },
+      });
+    } catch (error) {
+      showError("Failed to update user data");
+    }
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
       {/* Live Preview Section */}
       <Box display="flex" alignItems="center" mb={4}>
-        <Avatar sx={{ width: 100, height: 100, mr: 2 }} src={user?.avatar} />
+        <Avatar sx={{ width: 100, height: 100, mr: 2 }} src={user?.avatar}>
+          {(formData.firstName[0] || "") + (formData.lastName[0] || "")}
+        </Avatar>
         <Box>
+          <IconButton component="label">
+            <AddAPhotoIcon />
+            <input type="file" hidden onChange={handleImageChange} />
+          </IconButton>
+          <IconButton onClick={handleDeleteAvatar}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+        <Box ml={2}>
           <Typography variant="h5">
             {formData.firstName} {formData.lastName}
           </Typography>
@@ -134,6 +199,15 @@ function UserProfile() {
             value={formData.description}
             onChange={handleInputChange}
           />
+        </Grid>
+        <Grid item xs={12} textAlign="right">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleUpdateProfile}
+          >
+            Update Profile
+          </Button>
         </Grid>
       </Grid>
     </Container>
