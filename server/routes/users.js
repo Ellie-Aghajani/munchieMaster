@@ -8,12 +8,20 @@ const mongoose = require("mongoose"); //node_8.mongo data valid_7.mp4
 const express = require("express");
 const { Recipe } = require("../models/recipe");
 const router = express.Router();
+const upload = require("../config/multerConfig");
 
+// GET current user data (without password)
 router.get("/me", auth, async (req, res) => {
-  const user = await User.findById(req.user._id).select("-password");
-  res.send(user);
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) return res.status(404).send("User not found");
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
 });
 
+// POST: Register a new user
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -30,8 +38,7 @@ router.post("/", async (req, res) => {
   res.send({ token: token });
 });
 
-module.exports = router;
-
+// POST: Save or unsave a recipe for the user
 router.post("/save-recipe", auth, async (req, res) => {
   const { recipeId } = req.body;
   const userId = req.user._id;
@@ -63,11 +70,7 @@ router.post("/save-recipe", auth, async (req, res) => {
   }
 });
 
-router.get("/me", auth, async (req, res) => {
-  const user = await User.findById(req.user._id).select("-password");
-  res.send(user);
-});
-
+// GET: Retrieve user's saved recipes
 router.get("/saved-recipes", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate("savedRecipes");
@@ -77,6 +80,7 @@ router.get("/saved-recipes", auth, async (req, res) => {
   }
 });
 
+// GET: Retrieve user's liked recipes
 router.get("/liked-recipes", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate("likedRecipes");
@@ -85,3 +89,5 @@ router.get("/liked-recipes", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+module.exports = router;
