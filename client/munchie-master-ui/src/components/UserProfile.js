@@ -27,6 +27,7 @@ function UserProfile() {
   });
   const { showError } = useError();
 
+  // Fetch user data on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -98,6 +99,7 @@ function UserProfile() {
     }
   };
 
+  // Update profile data in the database and re-fetch updated user data
   const handleUpdateProfile = async () => {
     try {
       await axios.put(`${config.serverUrl}/api/users/me`, formData, {
@@ -105,6 +107,16 @@ function UserProfile() {
           "x-auth-token": localStorage.getItem("token"),
         },
       });
+      // Re-fetch updated user data
+      const updatedUserResponse = await axios.get(
+        `${config.serverUrl}/api/users/me`,
+        {
+          headers: {
+            "x-auth-token": localStorage.getItem("token"),
+          },
+        }
+      );
+      setUser(updatedUserResponse.data); // Update user state with fetched data
     } catch (error) {
       showError("Failed to update user data");
     }
@@ -128,13 +140,13 @@ function UserProfile() {
         </Box>
         <Box ml={2}>
           <Typography variant="h5">
-            {formData.firstName} {formData.lastName}
+            {user?.firstName} {user?.lastName}
           </Typography>
           <Typography variant="body1">
-            {formData.city}, {formData.province}, {formData.country}
+            {user?.city}, {user?.province}, {user?.country}
           </Typography>
           <Typography variant="body2" mt={1}>
-            {formData.description}
+            {user?.description}
           </Typography>
         </Box>
       </Box>
