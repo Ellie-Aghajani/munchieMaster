@@ -262,7 +262,16 @@ function UserProfile() {
           <Grid item xs={12} textAlign="right">
             <Button
               variant="contained"
-              color="primary"
+              sx={{
+                mt: 2, // Margin top for spacing
+                alignItems: "center",
+                backgroundColor: "#f56759",
+                color: "#fff",
+                "&:hover": {
+                  backgroundColor: "#FF8225",
+                },
+              }}
+              // color="primary"
               onClick={handleUpdateProfile}
             >
               Update Profile
