@@ -139,7 +139,7 @@ function UserProfile() {
         alignItems="center"
         mb={4}
         sx={{
-          backgroundColor: "#5CC5CB",
+          backgroundColor: "#ECA000",
           borderRadius: 2,
           padding: 4,
           color: "#10375C",
@@ -205,7 +205,7 @@ function UserProfile() {
             name="lastName"
             value={formData.lastName}
             onChange={handleInputChange}
-            InputProps={{ style: { backgroundColor: "#5CC5CB" } }}
+            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
