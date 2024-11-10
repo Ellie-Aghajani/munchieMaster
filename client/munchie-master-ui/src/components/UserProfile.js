@@ -126,21 +126,31 @@ function UserProfile() {
     <Container maxWidth="lg" sx={{ py: 6 }}>
       {/* Live Preview Section */}
       <Box display="flex" alignItems="center" mb={4}>
-        <Avatar
-          sx={{ width: 100, height: 100, mr: 2 }}
-          src={
-            user?.avatar
-              ? `${config.serverUrl}/uploads/${user.avatar.replace(
-                  /^\/?uploads\/?/,
-                  ""
-                )}`
-              : ""
-          }
-          alt={`${formData.firstName} ${formData.lastName}`}
-        >
-          {(formData.firstName[0] || "") + (formData.lastName[0] || "")}
-        </Avatar>
-
+        <Box>
+          <Avatar
+            sx={{ width: 100, height: 100, mr: 2 }}
+            src={
+              user?.avatar
+                ? `${config.serverUrl}/uploads/${user.avatar.replace(
+                    /^\/?uploads\/?/,
+                    ""
+                  )}`
+                : ""
+            }
+            alt={`${formData.firstName} ${formData.lastName}`}
+          >
+            {(formData.firstName[0] || "") + (formData.lastName[0] || "")}
+          </Avatar>
+          <Box>
+            <IconButton component="label">
+              <AddAPhotoIcon />
+              <input type="file" hidden onChange={handleImageChange} />
+            </IconButton>
+            <IconButton onClick={handleDeleteAvatar}>
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        </Box>
         <Box ml={2}>
           <Typography variant="h5">
             {user?.firstName} {user?.lastName}
@@ -214,15 +224,6 @@ function UserProfile() {
             value={formData.description}
             onChange={handleInputChange}
           />
-          <Box>
-            <IconButton component="label">
-              <AddAPhotoIcon />
-              <input type="file" hidden onChange={handleImageChange} />
-            </IconButton>
-            <IconButton onClick={handleDeleteAvatar}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
         </Grid>
         <Grid item xs={12} textAlign="right">
           <Button
