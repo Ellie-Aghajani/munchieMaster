@@ -123,13 +123,27 @@ function UserProfile() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
+    <Container
+      maxWidth="lg"
+      sx={{
+        py: 6,
+        backgroundColor: "#EBBA45",
+        borderRadius: 2,
+        padding: 4,
+        color: "#10375C",
+      }}
+    >
       {/* Live Preview Section */}
       <Box
         display="flex"
         alignItems="center"
         mb={4}
-        sx={{ backgroundColor: "#EBBA45" }}
+        sx={{
+          backgroundColor: "#F1672B",
+          borderRadius: 2,
+          padding: 4,
+          color: "#10375C",
+        }}
       >
         <Box>
           <Avatar
@@ -181,6 +195,7 @@ function UserProfile() {
             name="firstName"
             value={formData.firstName}
             onChange={handleInputChange}
+            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -190,6 +205,7 @@ function UserProfile() {
             name="lastName"
             value={formData.lastName}
             onChange={handleInputChange}
+            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -199,6 +215,7 @@ function UserProfile() {
             name="country"
             value={formData.country}
             onChange={handleInputChange}
+            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -208,6 +225,7 @@ function UserProfile() {
             name="province"
             value={formData.province}
             onChange={handleInputChange}
+            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -217,6 +235,7 @@ function UserProfile() {
             name="city"
             value={formData.city}
             onChange={handleInputChange}
+            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -228,6 +247,7 @@ function UserProfile() {
             name="description"
             value={formData.description}
             onChange={handleInputChange}
+            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
           />
         </Grid>
         <Grid item xs={12} textAlign="right">
