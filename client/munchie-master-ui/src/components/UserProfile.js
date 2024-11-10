@@ -184,82 +184,94 @@ function UserProfile() {
       </Box>
 
       {/* Edit Profile Section */}
-      <Typography variant="h5" mb={2}>
-        Edit Profile
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="First Name"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
-          />
+      <Box
+        id="about-us"
+        sx={{
+          flex: 1,
+          backgroundColor: "#8FD0D9",
+          padding: "2rem",
+          borderRadius: "15px",
+          boxShadow:
+            "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+        }}
+      >
+        <Typography variant="h5" mb={2}>
+          Edit Profile
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="First Name"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Last Name"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="Country"
+              name="country"
+              value={formData.country}
+              onChange={handleInputChange}
+              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="Province"
+              name="province"
+              value={formData.province}
+              onChange={handleInputChange}
+              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="City"
+              name="city"
+              value={formData.city}
+              onChange={handleInputChange}
+              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+            />
+          </Grid>
+          <Grid item xs={12} textAlign="right">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpdateProfile}
+            >
+              Update Profile
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Last Name"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField
-            fullWidth
-            label="Country"
-            name="country"
-            value={formData.country}
-            onChange={handleInputChange}
-            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField
-            fullWidth
-            label="Province"
-            name="province"
-            value={formData.province}
-            onChange={handleInputChange}
-            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField
-            fullWidth
-            label="City"
-            name="city"
-            value={formData.city}
-            onChange={handleInputChange}
-            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
-          />
-        </Grid>
-        <Grid item xs={12} textAlign="right">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleUpdateProfile}
-          >
-            Update Profile
-          </Button>
-        </Grid>
-      </Grid>
+      </Box>
     </Container>
   );
 }
