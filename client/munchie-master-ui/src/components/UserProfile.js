@@ -191,7 +191,7 @@ function UserProfile() {
       {/* Edit Profile Section */}
       <Box
         sx={{
-          flex: 1,
+          // flex: 1,
           width: "60%",
           backgroundColor: "#8FD0D9",
           padding: "2rem",
