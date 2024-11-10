@@ -192,6 +192,7 @@ function UserProfile() {
       <Box
         sx={{
           flex: 1,
+          width: "60%",
           backgroundColor: "#8FD0D9",
           padding: "2rem",
           borderRadius: "15px",
