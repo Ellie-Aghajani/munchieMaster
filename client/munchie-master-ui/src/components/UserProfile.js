@@ -124,7 +124,7 @@ function UserProfile() {
 
   return (
     <Container
-      maxWidth="lg"
+      maxWidth={false}
       sx={{
         py: 6,
         backgroundColor: "#EBBA45",
