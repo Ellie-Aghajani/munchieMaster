@@ -128,11 +128,10 @@ function UserProfile() {
       sx={{
         py: 6,
         backgroundColor: "#EBBA45",
-
         minHeight: "100vh",
-        // display: "flex",
-        // justifyContent: "center",
-        // alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
 
         color: "#10375C",
       }}
