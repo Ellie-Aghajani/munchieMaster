@@ -139,7 +139,6 @@ function UserProfile() {
         alignItems="center"
         mb={4}
         sx={{
-          backgroundColor: "#ECA000",
           borderRadius: 2,
           padding: 4,
           color: "#10375C",
@@ -185,7 +184,6 @@ function UserProfile() {
 
       {/* Edit Profile Section */}
       <Box
-        id="about-us"
         sx={{
           flex: 1,
           backgroundColor: "#8FD0D9",
