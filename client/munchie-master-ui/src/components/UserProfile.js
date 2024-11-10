@@ -130,9 +130,9 @@ function UserProfile() {
         backgroundColor: "#EBBA45",
 
         minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        // display: "flex",
+        // justifyContent: "center",
+        // alignItems: "center",
 
         color: "#10375C",
       }}
