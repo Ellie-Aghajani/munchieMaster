@@ -143,8 +143,8 @@ function UserProfile() {
         alignItems="center"
         mb={4}
         sx={{
-          width: "100%",
-          maxWidth: "800px",
+          // width: "100%",
+          // maxWidth: "800px",
           backgroundColor: "#EBBA45",
           borderRadius: 2,
           padding: 4,
