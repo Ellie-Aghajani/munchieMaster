@@ -125,7 +125,12 @@ function UserProfile() {
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
       {/* Live Preview Section */}
-      <Box display="flex" alignItems="center" mb={4}>
+      <Box
+        display="flex"
+        alignItems="center"
+        mb={4}
+        sx={{ backgroundColor: "#EBBA45" }}
+      >
         <Box>
           <Avatar
             sx={{ width: 100, height: 100, mr: 2 }}
