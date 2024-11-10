@@ -128,8 +128,12 @@ function UserProfile() {
       sx={{
         py: 6,
         backgroundColor: "#EBBA45",
-        borderRadius: 2,
-        padding: 4,
+
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+
         color: "#10375C",
       }}
     >
@@ -139,6 +143,9 @@ function UserProfile() {
         alignItems="center"
         mb={4}
         sx={{
+          width: "100%",
+          maxWidth: "800px",
+          backgroundColor: "#EBBA45",
           borderRadius: 2,
           padding: 4,
           color: "#10375C",
