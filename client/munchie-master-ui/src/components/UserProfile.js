@@ -76,7 +76,7 @@ function UserProfile() {
             },
           }
         );
-        setUser(response.data); // Update user state with the new avatar
+        setUser(response.data.user); // Update user state with the new avatar
       } catch (error) {
         showError("Failed to update avatar");
       }
@@ -136,18 +136,11 @@ function UserProfile() {
                 )}`
               : ""
           }
+          alt={`${formData.firstName} ${formData.lastName}`}
         >
           {(formData.firstName[0] || "") + (formData.lastName[0] || "")}
         </Avatar>
-        <Box>
-          <IconButton component="label">
-            <AddAPhotoIcon />
-            <input type="file" hidden onChange={handleImageChange} />
-          </IconButton>
-          <IconButton onClick={handleDeleteAvatar}>
-            <DeleteIcon />
-          </IconButton>
-        </Box>
+
         <Box ml={2}>
           <Typography variant="h5">
             {user?.firstName} {user?.lastName}
@@ -221,6 +214,15 @@ function UserProfile() {
             value={formData.description}
             onChange={handleInputChange}
           />
+          <Box>
+            <IconButton component="label">
+              <AddAPhotoIcon />
+              <input type="file" hidden onChange={handleImageChange} />
+            </IconButton>
+            <IconButton onClick={handleDeleteAvatar}>
+              <DeleteIcon />
+            </IconButton>
+          </Box>
         </Grid>
         <Grid item xs={12} textAlign="right">
           <Button
