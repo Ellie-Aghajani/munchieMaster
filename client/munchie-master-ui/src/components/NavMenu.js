@@ -38,6 +38,9 @@ const NavMenu = () => {
       </Typography>
       <Divider />
       <List>
+        <ListItem button component={Link} to="/dashboard">
+          <ListItemText primary="Dashboard" />
+        </ListItem>
         <ListItem button component={Link} to="/recipes">
           <ListItemText primary="Recipes" />
         </ListItem>
