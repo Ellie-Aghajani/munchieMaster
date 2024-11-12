@@ -1,55 +1,35 @@
-const mongoose = require('mongoose'); //node_8.mongo data validation_7.mp4
-const Joi = require('joi');
-const {mealSchema} = require('./meal');
-
-
+const mongoose = require("mongoose");
+const Joi = require("joi");
 
 const recipeSchema = new mongoose.Schema({
-    name:{
-        type: String,
-        required: true,
-        minLength:5,
-        maxLength:50,
-    },
-    image: {
-        type: String,
-        required: false
-    },
-    preparationTime: {
-        type: String, 
-        required: false
-    },
-    ingredients: {
-        type: [String], 
-        required: true
-    },
-    directions: {
-        type: [String],
-        required: true
-    },
-    // meal: {
-    //     type:mealSchema,
-    //     required: true
-    // },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    likeCount: { type: Number, default: 0 },
-    savedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  name: { type: String, required: true, minLength: 5, maxLength: 50 },
+  image: { type: String },
+  preparationTime: { type: String },
+  ingredients: { type: [String], required: true },
+  directions: { type: [String], required: true },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  likeCount: { type: Number, default: 0 },
+  savedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  price: { type: Number, default: 0 }, // price in coins for featured recipes
+  isFeatured: { type: Boolean, default: false },
 });
-const Recipe = mongoose.model('Recipe', recipeSchema);
 
+const Recipe = mongoose.model("Recipe", recipeSchema);
 
 function validateRecipe(recipe) {
-    const schema = Joi.object({
-      name: Joi.string().min(3).max(50).required(),
-      ingredients: Joi.array().items(Joi.string()).min(1).required(),
-      directions: Joi.array().items(Joi.string()).min(1).required(),
-      preparationTime: Joi.string().required(),
-      image: Joi.string().uri(),
-      likeCount: Joi.number().min(0),
-      savedBy: Joi.array().items(Joi.objectId())
-    });
+  const schema = Joi.object({
+    name: Joi.string().min(3).max(50).required(),
+    ingredients: Joi.array().items(Joi.string()).min(1).required(),
+    directions: Joi.array().items(Joi.string()).min(1).required(),
+    preparationTime: Joi.string().required(),
+    image: Joi.string().uri(),
+    likeCount: Joi.number().min(0),
+    savedBy: Joi.array().items(Joi.objectId()),
+    price: Joi.number().integer().min(0), // Validate price as non-negative integer
+    isFeatured: Joi.boolean(), // Validate that isFeatured is a boolean
+  });
 
-    return schema.validate(recipe);
+  return schema.validate(recipe);
 }
 
 module.exports.Recipe = Recipe;
