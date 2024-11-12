@@ -7,7 +7,7 @@ const purchases = require("../routes/purchases");
 const users = require("../routes/users");
 const auth = require("../routes/auth");
 const home = require("../routes/home");
-const dashboard = require("./routes/dashboard");
+const dashboard = require("../routes/dashboard");
 
 module.exports = function (app) {
   app.use(express.json());
