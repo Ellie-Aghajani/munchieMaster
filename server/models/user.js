@@ -37,7 +37,9 @@ const userSchema = new mongoose.Schema({
   savedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
   myRecepies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
   likedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
-  avatar: { type: String }, // URL or path to the profile image
+  boughtRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
+  avatar: { type: String },
+  coins: { type: Number, default: 10 },
   firstName: { type: String, maxLength: 50 },
   lastName: { type: String, maxLength: 50 },
   country: { type: String, maxLength: 50 },
@@ -71,6 +73,8 @@ function validateUser(user) {
     likedRecipes: Joi.array().items(Joi.objectId()),
     myRecepies: Joi.array().items(Joi.objectId()),
     savedRecipes: Joi.array().items(Joi.objectId()),
+    boughtRecipes: Joi.array().items(Joi.objectId()),
+    coins: Joi.number().integer().min(0),
   });
 
   return schema.validate(user);
