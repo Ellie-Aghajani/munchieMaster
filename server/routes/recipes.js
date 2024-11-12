@@ -1,12 +1,10 @@
 const validateObjectId = require("../middleware/validateObjectId");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
-const mongoose = require("mongoose"); //node_8.mongo data validation_7.mp4
+const mongoose = require("mongoose");
 const express = require("express");
-const multer = require("multer");
 const router = express.Router();
 const { Recipe, validate } = require("../models/recipe");
-const { Meal } = require("../models/meal");
 const { User } = require("../models/user");
 const upload = require("../config/multerConfig");
 
@@ -14,8 +12,24 @@ const upload = require("../config/multerConfig");
 router.get("/", async (req, res) => {
   try {
     const recipes = (await Recipe.find().sort("name")).map((recipe) => {
-      const { _id, name, ingredients, directions, image, likeCount } = recipe;
-      return { _id, name, ingredients, directions, image, likeCount };
+      const {
+        _id,
+        name,
+        ingredients,
+        directions,
+        image,
+        likeCount,
+        cookingStepImages,
+      } = recipe;
+      return {
+        _id,
+        name,
+        ingredients,
+        directions,
+        image,
+        likeCount,
+        cookingStepImages,
+      };
     });
     res.send(recipes);
   } catch (ex) {
@@ -23,25 +37,66 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST: Create a new recipe with image upload
-router.post("/", [auth, upload.single("image")], async (req, res) => {
-  const { error } = validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+// POST: Create a new recipe with main image and up to three cooking step images
+router.post(
+  "/",
+  [
+    auth,
+    upload.fields([
+      { name: "image", maxCount: 1 },
+      { name: "cookingStepImages", maxCount: 3 },
+    ]),
+  ],
+  async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-  const recipe = new Recipe({
-    name: req.body.name,
-    image: req.file ? `/uploads/${req.file.filename}` : "",
-    preparationTime: req.body.preparationTime,
-    ingredients: req.body.ingredients,
-    directions: req.body.directions,
-  });
-  try {
-    await recipe.save();
-    res.send(recipe);
-  } catch (ex) {
-    res.status(500).send("Could not save recipe.");
+    // Store paths of uploaded cooking step images in an array
+    const cookingStepImages = req.files.cookingStepImages
+      ? req.files.cookingStepImages.map((file) => `/uploads/${file.filename}`)
+      : [];
+
+    const recipe = new Recipe({
+      name: req.body.name,
+      image: req.files.image ? `/uploads/${req.files.image[0].filename}` : "",
+      preparationTime: req.body.preparationTime,
+      ingredients: req.body.ingredients,
+      directions: req.body.directions,
+      cookingStepImages: cookingStepImages,
+      isFeatured: req.body.isFeatured,
+      price: req.body.price || 0,
+    });
+
+    try {
+      await recipe.save();
+      res.send(recipe);
+    } catch (ex) {
+      res.status(500).send("Could not save recipe.");
+    }
   }
-});
+);
+
+// PUT: Update cooking step images for a recipe
+router.put(
+  "/:id/cookingStepImages",
+  [auth, upload.array("cookingStepImages", 3)],
+  async (req, res) => {
+    const recipe = await Recipe.findById(req.params.id);
+    if (!recipe) return res.status(404).send("Recipe not found");
+
+    // Replace cookingStepImages with new uploaded images
+    recipe.cookingStepImages = req.files.map(
+      (file) => `/uploads/${file.filename}`
+    );
+
+    try {
+      await recipe.save();
+      res.send(recipe);
+    } catch (ex) {
+      res.status(500).send("Could not update cooking step images.");
+    }
+  }
+);
 
 // PUT: Update a recipe by ID
 router.put("/:id", async (req, res) => {
@@ -56,6 +111,7 @@ router.put("/:id", async (req, res) => {
       preparationTime: req.body.preparationTime,
       ingredients: req.body.ingredients,
       directions: req.body.directions,
+      cookingStepImages: req.body.cookingStepImages,
     },
     { new: true }
   );

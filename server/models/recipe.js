@@ -12,6 +12,7 @@ const recipeSchema = new mongoose.Schema({
   savedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   price: { type: Number, default: 0 }, // price in coins for featured recipes
   isFeatured: { type: Boolean, default: false },
+  cookingStepImages: [{ type: String, maxLength: 3 }],
 });
 
 const Recipe = mongoose.model("Recipe", recipeSchema);
@@ -27,6 +28,7 @@ function validateRecipe(recipe) {
     savedBy: Joi.array().items(Joi.objectId()),
     price: Joi.number().integer().min(0), // Validate price as non-negative integer
     isFeatured: Joi.boolean(), // Validate that isFeatured is a boolean
+    cookingStepImages: Joi.array().items(Joi.string().uri()).max(3),
   });
 
   return schema.validate(recipe);
