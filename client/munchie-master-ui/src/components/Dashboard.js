@@ -16,6 +16,15 @@ import config from "../config";
 
 const { Title, Text } = Typography;
 
+// Function to convert image file to base64
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [fileList, setFileList] = useState([]);

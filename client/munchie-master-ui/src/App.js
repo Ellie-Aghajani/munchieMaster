@@ -18,6 +18,7 @@ import UserProfile from "./components/UserProfile";
 import LandingPage from "./components/LandingPage";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
+import Dashboard from "./components/Dashboard";
 
 function AppContent() {
   const location = useLocation();
@@ -36,6 +37,7 @@ function AppContent() {
         />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="*" element={<Navigate replace to="/login" />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </>
   );
