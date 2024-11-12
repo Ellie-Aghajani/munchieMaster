@@ -84,6 +84,10 @@ const NavMenu = () => {
         <Box sx={{ display: { xs: "none", md: "flex" } }}>
           {!isEmpty(currentUser) && (
             <>
+              <Button color="inherit" component={Link} to="/dashboard">
+                Dashboard
+              </Button>
+
               <Button color="inherit" component={Link} to="/recipes">
                 Recipes
               </Button>
