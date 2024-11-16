@@ -10,74 +10,48 @@ import {
   Image,
   message,
   Divider,
-  Carousel,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import { Link as ScrollLink } from "react-scroll";
 import axios from "axios";
 import config from "../config";
 
 const { Title, Text } = Typography;
 
+// Function to convert image file to base64
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
-  const [savedRecipes, setSavedRecipes] = useState([]);
-  const [likedRecipes, setLikedRecipes] = useState([]);
-  const [boughtRecipes, setBoughtRecipes] = useState([]);
-  const [myRecipes, setMyRecipes] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
-  // Function to convert image file to base64
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-
   useEffect(() => {
-    const fetchData = async () => {
+    // Fetch user dashboard data
+    const fetchUserData = async () => {
       try {
-        const summaryResponse = await axios.get(
+        const response = await axios.get(
           `${config.serverUrl}/api/dashboard/summary`,
-          { headers: { "x-auth-token": localStorage.getItem("token") } }
+          {
+            headers: { "x-auth-token": localStorage.getItem("token") },
+          }
         );
-
-        const savedRecipesResponse = await axios.get(
-          `${config.serverUrl}/api/dashboard/saved-recipes`,
-          { headers: { "x-auth-token": localStorage.getItem("token") } }
-        );
-
-        const likedRecipesResponse = await axios.get(
-          `${config.serverUrl}/api/dashboard/liked-recipes`,
-          { headers: { "x-auth-token": localStorage.getItem("token") } }
-        );
-
-        const boughtRecipesResponse = await axios.get(
-          `${config.serverUrl}/api/dashboard/bought-recipes`,
-          { headers: { "x-auth-token": localStorage.getItem("token") } }
-        );
-
-        const myRecipesResponse = await axios.get(
-          `${config.serverUrl}/api/dashboard/my-recipes`,
-          { headers: { "x-auth-token": localStorage.getItem("token") } }
-        );
-
-        setUserData(summaryResponse.data);
-        setSavedRecipes(savedRecipesResponse.data);
-        setLikedRecipes(likedRecipesResponse.data);
-        setBoughtRecipes(boughtRecipesResponse.data);
-        setMyRecipes(myRecipesResponse.data);
+        setUserData(response.data);
       } catch (error) {
         message.error("Failed to fetch dashboard data.");
       }
     };
-
-    fetchData();
+    fetchUserData();
   }, []);
 
+  // Image preview handler
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -86,8 +60,9 @@ const Dashboard = () => {
     setPreviewOpen(true);
   };
 
+  // Handle file list updates
   const handleChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList.slice(0, 3));
+    setFileList(newFileList.slice(0, 3)); // Limit to 3 images
   };
 
   const uploadButton = (
@@ -96,27 +71,6 @@ const Dashboard = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
-
-  const renderRecipeCards = (recipes) => {
-    return recipes.map((recipe) => (
-      <div key={recipe._id}>
-        <Card
-          hoverable
-          cover={
-            <img
-              alt={recipe.name}
-              src={`${config.serverUrl}/uploads/${recipe.image}`}
-            />
-          }
-        >
-          <Card.Meta
-            title={recipe.name}
-            description={`Preparation Time: ${recipe.preparationTime}`}
-          />
-        </Card>
-      </div>
-    ));
-  };
 
   return (
     <div
@@ -138,48 +92,56 @@ const Dashboard = () => {
         </Row>
         <Divider />
         <Row gutter={[16, 16]} justify="center">
+          {/* Counts with links */}
           <Col>
-            <Text style={{ cursor: "pointer" }}>
-              Saved Recipes: {savedRecipes.length || 0}
-            </Text>
+            <ScrollLink to="savedRecipesSection" smooth duration={500}>
+              <Text style={{ cursor: "pointer" }}>
+                Saved Recipes: {userData?.savedRecipesCount || 0}
+              </Text>
+            </ScrollLink>
           </Col>
           <Col>
-            <Text style={{ cursor: "pointer" }}>
-              Liked Recipes: {likedRecipes.length || 0}
-            </Text>
+            <ScrollLink to="likedRecipesSection" smooth duration={500}>
+              <Text style={{ cursor: "pointer" }}>
+                Liked Recipes: {userData?.likedRecipesCount || 0}
+              </Text>
+            </ScrollLink>
           </Col>
           <Col>
-            <Text style={{ cursor: "pointer" }}>
-              Bought Recipes: {boughtRecipes.length || 0}
-            </Text>
+            <ScrollLink to="boughtRecipesSection" smooth duration={500}>
+              <Text style={{ cursor: "pointer" }}>
+                Bought Recipes: {userData?.boughtRecipesCount || 0}
+              </Text>
+            </ScrollLink>
           </Col>
           <Col>
-            <Text style={{ cursor: "pointer" }}>
-              My Recipes: {myRecipes.length || 0}
-            </Text>
+            <ScrollLink to="myRecipesSection" smooth duration={500}>
+              <Text style={{ cursor: "pointer" }}>
+                My Recipes: {userData?.myRecipesCount || 0}
+              </Text>
+            </ScrollLink>
           </Col>
         </Row>
       </Card>
 
+      {/* Recipe Sections */}
       <div id="savedRecipesSection">
-        <Card title="Saved Recipes" bordered={false}>
-          <Carousel arrows infinite={false}>
-            {renderRecipeCards(savedRecipes)}
-          </Carousel>
+        <Card
+          title="Saved Recipes"
+          bordered={false}
+          style={{ marginTop: "20px" }}
+        >
+          <Text>Details about saved recipes go here...</Text>
         </Card>
       </div>
       <div id="likedRecipesSection" style={{ marginTop: "20px" }}>
         <Card title="Liked Recipes" bordered={false}>
-          <Carousel arrows infinite={false}>
-            {renderRecipeCards(likedRecipes)}
-          </Carousel>
+          <Text>Details about liked recipes go here...</Text>
         </Card>
       </div>
       <div id="boughtRecipesSection" style={{ marginTop: "20px" }}>
         <Card title="Bought Recipes" bordered={false}>
-          <Carousel arrows infinite={false}>
-            {renderRecipeCards(boughtRecipes)}
-          </Carousel>
+          <Text>Details about bought recipes go here...</Text>
         </Card>
       </div>
       <div id="myRecipesSection" style={{ marginTop: "20px" }}>
@@ -204,12 +166,10 @@ const Dashboard = () => {
           >
             {fileList.length >= 3 ? null : uploadButton}
           </Upload>
-          <Carousel arrows infinite={false}>
-            {renderRecipeCards(myRecipes)}
-          </Carousel>
         </Card>
       </div>
 
+      {/* Preview Image */}
       {previewImage && (
         <Image
           wrapperStyle={{ display: "none" }}
