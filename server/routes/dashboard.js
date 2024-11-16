@@ -8,15 +8,25 @@ const router = express.Router();
 // GET: Fetch Dashboard Summary
 router.get("/summary", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select(
-      "coins avatar firstName name"
-    );
+    const user = await User.findById(req.user._id)
+      .select(
+        "coins avatar firstName name savedRecipes likedRecipes boughtRecipes myRecipes"
+      )
+      .populate("savedRecipes", "_id") // Only fetch the `_id` for counting
+      .populate("likedRecipes", "_id")
+      .populate("boughtRecipes", "_id")
+      .populate("myRecipes", "_id");
+
     if (!user) return res.status(404).send("User not found");
 
     const summary = {
       coins: user.coins,
       avatar: user.avatar,
       name: user.firstName || user.name,
+      savedRecipesCount: user.savedRecipes.length,
+      likedRecipesCount: user.likedRecipes.length,
+      boughtRecipesCount: user.boughtRecipes.length,
+      myRecipesCount: user.myRecipes.length,
     };
 
     res.send(summary);
