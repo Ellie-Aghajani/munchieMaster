@@ -30,6 +30,7 @@ const getBase64 = (file) =>
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [fileList, setFileList] = useState([]);
+  const [savedRecipes, setSavedRecipes] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
@@ -43,7 +44,13 @@ const Dashboard = () => {
             headers: { "x-auth-token": localStorage.getItem("token") },
           }
         );
+        const savedRecipesResponse = await axios.get(
+          `${config.serverUrl}/api/dashboard/saved-recipes`,
+          { headers: { "x-auth-token": localStorage.getItem("token") } }
+        );
+
         setUserData(response.data);
+        setSavedRecipes(savedRecipesResponse.data);
       } catch (error) {
         message.error("Failed to fetch dashboard data.");
       }
@@ -71,6 +78,25 @@ const Dashboard = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+  const renderRecipeCards = (recipes) =>
+    recipes.map((recipe) => (
+      <Card
+        key={recipe._id}
+        hoverable
+        cover={
+          <img
+            alt={recipe.name}
+            src={`${config.serverUrl}/uploads/${recipe.image}`}
+          />
+        }
+        style={{ marginBottom: "20px" }}
+      >
+        <Card.Meta
+          title={recipe.name}
+          description={`Preparation Time: ${recipe.preparationTime}`}
+        />
+      </Card>
+    ));
 
   return (
     <div
@@ -131,7 +157,11 @@ const Dashboard = () => {
           bordered={false}
           style={{ marginTop: "20px" }}
         >
-          <Text>Details about saved recipes go here...</Text>
+          {savedRecipes.length > 0 ? (
+            renderRecipeCards(savedRecipes)
+          ) : (
+            <Text>No saved recipes found.</Text>
+          )}
         </Card>
       </div>
       <div id="likedRecipesSection" style={{ marginTop: "20px" }}>
