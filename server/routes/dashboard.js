@@ -8,7 +8,9 @@ const router = express.Router();
 // GET: Fetch Dashboard Summary
 router.get("/summary", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("coins avatar name");
+    const user = await User.findById(req.user._id).select(
+      "coins avatar firstName name"
+    );
     if (!user) return res.status(404).send("User not found");
 
     const summary = {
