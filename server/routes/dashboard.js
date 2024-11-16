@@ -8,29 +8,18 @@ const router = express.Router();
 // GET: Fetch Dashboard Summary
 router.get("/summary", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id)
-      .select(
-        "coins savedRecipes likedRecipes boughtRecipes myRecipes avatar name"
-      )
-      .populate("savedRecipes", "name cookingStepImages")
-      .populate("likedRecipes", "name cookingStepImages")
-      .populate("boughtRecipes", "name cookingStepImages")
-      .populate("myRecipes", "name isFeatured price cookingStepImages");
-
+    const user = await User.findById(req.user._id).select("coins avatar name");
     if (!user) return res.status(404).send("User not found");
 
     const summary = {
       coins: user.coins,
-      savedRecipesCount: user.savedRecipes.length,
-      likedRecipesCount: user.likedRecipes.length,
-      boughtRecipesCount: user.boughtRecipes.length,
-      myRecipesCount: user.myRecipes.length,
       avatar: user.avatar,
       name: user.name,
     };
 
     res.send(summary);
   } catch (error) {
+    console.error(error); // Log the full error
     res.status(500).send("Server error");
   }
 });
