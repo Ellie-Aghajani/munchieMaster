@@ -14,7 +14,7 @@ router.get("/summary", auth, async (req, res) => {
     const summary = {
       coins: user.coins,
       avatar: user.avatar,
-      name: user.name,
+      name: user.firstName,
     };
 
     res.send(summary);
