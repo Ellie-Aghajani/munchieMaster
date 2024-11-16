@@ -85,85 +85,87 @@ const Dashboard = () => {
           </Col>
           <Col>
             <Title level={4}>Welcome, {userData?.name}</Title>
-            <Text>Coins: {userData?.coins}</Text>
-          </Col>
-          <Col>
-            <Button
-              type="primary"
-              onClick={() => message.info("Feature Coming Soon!")}
-            >
-              Add Coins
-            </Button>
+            <Text>My Coins: {userData?.coins}</Text>
           </Col>
         </Row>
-        <Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
+        <Divider />
+        <Row gutter={[16, 16]} justify="center">
+          {/* Counts with links */}
           <Col>
-            <Text>Saved Recipes: {userData?.savedRecipesCount}</Text>
+            <ScrollLink to="savedRecipesSection" smooth duration={500}>
+              <Text style={{ cursor: "pointer" }}>
+                Saved Recipes: {userData?.savedRecipesCount || 0}
+              </Text>
+            </ScrollLink>
           </Col>
           <Col>
-            <Text>Liked Recipes: {userData?.likedRecipesCount}</Text>
+            <ScrollLink to="likedRecipesSection" smooth duration={500}>
+              <Text style={{ cursor: "pointer" }}>
+                Liked Recipes: {userData?.likedRecipesCount || 0}
+              </Text>
+            </ScrollLink>
           </Col>
           <Col>
-            <Text>Bought Recipes: {userData?.boughtRecipesCount}</Text>
+            <ScrollLink to="boughtRecipesSection" smooth duration={500}>
+              <Text style={{ cursor: "pointer" }}>
+                Bought Recipes: {userData?.boughtRecipesCount || 0}
+              </Text>
+            </ScrollLink>
           </Col>
           <Col>
-            <Text>My Recipes: {userData?.myRecipesCount}</Text>
+            <ScrollLink to="myRecipesSection" smooth duration={500}>
+              <Text style={{ cursor: "pointer" }}>
+                My Recipes: {userData?.myRecipesCount || 0}
+              </Text>
+            </ScrollLink>
           </Col>
         </Row>
       </Card>
 
       {/* Recipe Sections */}
-      <Row gutter={[16, 16]}>
-        {/* Saved Recipes */}
-        <Col span={24}>
-          <Card title="Saved Recipes" bordered={false}>
-            <Text>{userData?.savedRecipesCount}</Text>
-            {/* Saved recipes can be listed here */}
-          </Card>
-        </Col>
-
-        {/* Liked Recipes */}
-        <Col span={24}>
-          <Card title="Liked Recipes" bordered={false}>
-            <Text>{userData?.likedRecipesCount}</Text>
-            {/* Liked recipes can be listed here */}
-          </Card>
-        </Col>
-
-        {/* Bought Recipes */}
-        <Col span={24}>
-          <Card title="Bought Recipes" bordered={false}>
-            <Text>{userData?.boughtRecipesCount}</Text>
-            {/* Bought recipes can be listed here */}
-          </Card>
-        </Col>
-
-        {/* My Recipes with Image Upload */}
-        <Col span={24}>
-          <Card title="My Recipes" bordered={false}>
-            <Button type="primary" style={{ marginBottom: "10px" }}>
-              Add Recipe
-            </Button>
-            <Upload
-              action={`${config.serverUrl}/api/recipes/upload`}
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={handlePreview}
-              onChange={handleChange}
-              maxCount={3}
-              beforeUpload={(file) => {
-                const isImage = file.type.startsWith("image/");
-                if (!isImage) {
-                  message.error("You can only upload image files!");
-                }
-                return isImage || Upload.LIST_IGNORE;
-              }}
-            >
-              {fileList.length >= 3 ? null : uploadButton}
-            </Upload>
-          </Card>
-        </Col>
-      </Row>
+      <div id="savedRecipesSection">
+        <Card
+          title="Saved Recipes"
+          bordered={false}
+          style={{ marginTop: "20px" }}
+        >
+          <Text>Details about saved recipes go here...</Text>
+        </Card>
+      </div>
+      <div id="likedRecipesSection" style={{ marginTop: "20px" }}>
+        <Card title="Liked Recipes" bordered={false}>
+          <Text>Details about liked recipes go here...</Text>
+        </Card>
+      </div>
+      <div id="boughtRecipesSection" style={{ marginTop: "20px" }}>
+        <Card title="Bought Recipes" bordered={false}>
+          <Text>Details about bought recipes go here...</Text>
+        </Card>
+      </div>
+      <div id="myRecipesSection" style={{ marginTop: "20px" }}>
+        <Card title="My Recipes" bordered={false}>
+          <Button type="primary" style={{ marginBottom: "10px" }}>
+            Add Recipe
+          </Button>
+          <Upload
+            action={`${config.serverUrl}/api/recipes/upload`}
+            listType="picture-card"
+            fileList={fileList}
+            onPreview={handlePreview}
+            onChange={handleChange}
+            maxCount={3}
+            beforeUpload={(file) => {
+              const isImage = file.type.startsWith("image/");
+              if (!isImage) {
+                message.error("You can only upload image files!");
+              }
+              return isImage || Upload.LIST_IGNORE;
+            }}
+          >
+            {fileList.length >= 3 ? null : uploadButton}
+          </Upload>
+        </Card>
+      </div>
 
       {/* Preview Image */}
       {previewImage && (
