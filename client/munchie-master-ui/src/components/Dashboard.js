@@ -9,6 +9,7 @@ import {
   Upload,
   Image,
   message,
+  Divider,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link as ScrollLink } from "react-scroll";
