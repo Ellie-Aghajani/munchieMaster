@@ -11,8 +11,27 @@ import {
   message,
   Divider,
 } from "antd";
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+  Box,
+  CircularProgress,
+  Paper,
+  IconButton,
+  Snackbar,
+  Alert,
+  Grid,
+} from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link as ScrollLink } from "react-scroll";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import axios from "axios";
 import config from "../config";
 
