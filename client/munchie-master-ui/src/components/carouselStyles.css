@@ -8,7 +8,7 @@
   width: 40px;
 }
 
-.ant-carousel .slick-prev::before,
+/* .ant-carousel .slick-prev::before,
 .ant-carousel .slick-next::before {
   content: "←";
   color: #000;
@@ -16,7 +16,7 @@
 
 .ant-carousel .slick-next::before {
   content: "→";
-}
+} */
 
 .ant-carousel .slick-prev {
   left: -50px;
