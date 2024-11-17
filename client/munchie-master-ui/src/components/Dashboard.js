@@ -80,22 +80,26 @@ const Dashboard = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
-  console.log("Saved Recipes:", savedRecipes);
-
   const renderCarousel = (recipes) => (
     <Carousel arrows infinite={false}>
-      {recipes.map((recipe) => (
-        <div key={recipe._id}>
-          <RecipeCard
-            recipe={{
-              ...recipe,
-              image: recipe.image || "",
-              ingredients: recipe.ingredients || [],
-              directions: recipe.directions || [],
-            }}
-          />
-        </div>
-      ))}
+      {recipes.map((recipe, index) =>
+        recipe ? (
+          <div key={recipe._id || index}>
+            <RecipeCard
+              recipe={{
+                ...recipe,
+                image: recipe.image || "",
+                ingredients: recipe.ingredients || [],
+                directions: recipe.directions || [],
+              }}
+            />
+          </div>
+        ) : (
+          <div key={index}>
+            <Typography>Invalid Recipe</Typography>
+          </div>
+        )
+      )}
     </Carousel>
   );
 
