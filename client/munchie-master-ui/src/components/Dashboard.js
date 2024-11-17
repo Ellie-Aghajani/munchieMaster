@@ -95,6 +95,73 @@ const Dashboard = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+
+  // recipe card
+  const handleLikeRecipe = async (recipeId) => {
+    try {
+      const response = await axios.post(
+        `/api/recipes/${recipeId}/like`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("token"),
+          },
+          baseURL: config.serverUrl,
+        }
+      );
+      if (response.data.success) {
+        setUserLikedRecipes((prevLiked) =>
+          prevLiked.includes(recipeId)
+            ? prevLiked.filter((id) => id !== recipeId)
+            : [...prevLiked, recipeId]
+        );
+        setRecipes((prevRecipes) =>
+          prevRecipes.map((recipe) =>
+            recipe._id === recipeId
+              ? { ...recipe, likeCount: response.data.likeCount }
+              : recipe
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error liking recipe:", error);
+      showError("An error occurred while liking the recipe");
+    }
+  };
+
+  const handleSaveRecipe = async (recipeId) => {
+    try {
+      const response = await axios.post(
+        "/api/users/save-recipe",
+        { recipeId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("token"),
+          },
+        }
+      );
+      if (response.data.success) {
+        setUserSavedRecipes((prevSaved) =>
+          prevSaved.includes(recipeId)
+            ? prevSaved.filter((id) => id !== recipeId)
+            : [...prevSaved, recipeId]
+        );
+        setRecipes((prevRecipes) =>
+          prevRecipes.map((recipe) =>
+            recipe._id === recipeId
+              ? { ...recipe, savedBy: response.data.savedByCount }
+              : recipe
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error saving recipe:", error);
+      showError("An error occurred while saving the recipe");
+    }
+  };
+
   const renderRecipeCards = (recipes) =>
     recipes.map((recipe) => (
       <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
