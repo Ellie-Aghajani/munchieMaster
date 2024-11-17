@@ -62,7 +62,8 @@ router.get("/my-recipes", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: "myRecipes",
-      select: "name image cookingStepImages price isFeatured",
+      select:
+        "name image ingredients directions preparationTime cookingStepImages price isFeatured",
     });
     res.send(user.myRecipes);
   } catch (error) {
@@ -75,7 +76,8 @@ router.get("/saved-recipes", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: "savedRecipes",
-      select: "name image cookingStepImages",
+      select:
+        "name image ingredients directions preparationTime cookingStepImages",
     });
     res.send(user.savedRecipes);
   } catch (error) {
@@ -88,7 +90,8 @@ router.get("/liked-recipes", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: "likedRecipes",
-      select: "name image cookingStepImages",
+      select:
+        "name image ingredients directions preparationTime cookingStepImages",
     });
     res.send(user.likedRecipes);
   } catch (error) {
@@ -101,7 +104,8 @@ router.get("/bought-recipes", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: "boughtRecipes",
-      select: "name image cookingStepImages",
+      select:
+        "name image ingredients directions preparationTime cookingStepImages",
     });
     res.send(user.boughtRecipes);
   } catch (error) {
