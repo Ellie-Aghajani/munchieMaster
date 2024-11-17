@@ -45,6 +45,8 @@ const getBase64 = (file) =>
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [fileList, setFileList] = useState([]);
+  const [userLikedRecipes, setUserLikedRecipes] = useState([]);
+  const [userSavedRecipes, setUserSavedRecipes] = useState([]);
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
