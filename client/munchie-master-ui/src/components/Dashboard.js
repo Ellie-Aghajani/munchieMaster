@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import RecipeCard from "./RecipeCard";
 import {
   Avatar,
   Card,
@@ -13,6 +14,7 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link as ScrollLink } from "react-scroll";
+import { Carousel } from "antd";
 import axios from "axios";
 import config from "../config";
 
@@ -78,27 +80,15 @@ const Dashboard = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
-  const renderRecipeCards = (recipes) =>
-    recipes.map((recipe) => (
-      <Card
-        key={recipe._id}
-        hoverable
-        cover={
-          <img
-            alt={recipe.name}
-            src={`${config.serverUrl}uploads/${recipe.image}`}
-          />
-        }
-        style={{ marginBottom: "20px" }}
-      >
-        <Card.Meta
-          title={recipe.name}
-          description={`Preparation Time: ${
-            recipe.preparationTime || "Not specified"
-          }`}
-        />
-      </Card>
-    ));
+  const renderCarousel = (recipes) => (
+    <Carousel arrows infinite={false}>
+      {recipes.map((recipe) => (
+        <div key={recipe._id}>
+          <RecipeCard recipe={recipe} />
+        </div>
+      ))}
+    </Carousel>
+  );
 
   return (
     <div
@@ -160,7 +150,7 @@ const Dashboard = () => {
           style={{ marginTop: "20px" }}
         >
           {savedRecipes.length > 0 ? (
-            renderRecipeCards(savedRecipes)
+            renderCarousel(savedRecipes)
           ) : (
             <Text>No saved recipes found.</Text>
           )}
