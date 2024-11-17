@@ -51,8 +51,12 @@ const RecipeCard = ({
           </Typography>
         </Box>
         <Typography variant="body2" color="text.secondary" paragraph>
-          Ingredients: {(recipe.ingredients || []).slice(0, 3).join(", ")}
-          {recipe.ingredients && recipe.ingredients.length > 3 && "..."}
+          Ingredients:
+          <ul>
+            {(recipe.ingredients || []).map((ingredient, index) => (
+              <li key={index}>{ingredient}</li>
+            ))}
+          </ul>
         </Typography>
 
         <Paper
