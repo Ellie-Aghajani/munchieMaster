@@ -1,15 +1,21 @@
 import React from "react";
 import { Carousel } from "antd";
 import RecipeCard from "./RecipeCard";
-import "./carouselStyles.css"; // Create this file to style arrows and carousel
+import "./carouselStyles.css"; // Ensure styles for arrows, dots, and spacing are here
 
-const ResponsiveCarousel = ({ recipes }) => {
+const ResponsiveCarousel = ({
+  recipes,
+  userLikedRecipes,
+  userSavedRecipes,
+  onLike,
+  onSave,
+}) => {
   const settings = {
     dots: true,
     arrows: true,
     infinite: false,
     speed: 500,
-    slidesToShow: 4, // Default number of slides
+    slidesToShow: 4,
     slidesToScroll: 1,
     responsive: [
       {
@@ -28,13 +34,27 @@ const ResponsiveCarousel = ({ recipes }) => {
   };
 
   return (
-    <Carousel {...settings}>
-      {recipes.map((recipe) => (
-        <div key={recipe._id}>
-          <RecipeCard recipe={recipe} />
-        </div>
-      ))}
-    </Carousel>
+    <div style={{ padding: "20px", position: "relative" }}>
+      <Carousel {...settings} className="custom-carousel">
+        {recipes.map((recipe) => (
+          <div
+            key={recipe._id}
+            style={{
+              padding: "10px", // Space between cards
+              boxSizing: "border-box",
+            }}
+          >
+            <RecipeCard
+              recipe={recipe}
+              userLikedRecipes={userLikedRecipes}
+              userSavedRecipes={userSavedRecipes}
+              onLike={onLike}
+              onSave={onSave}
+            />
+          </div>
+        ))}
+      </Carousel>
+    </div>
   );
 };
 
