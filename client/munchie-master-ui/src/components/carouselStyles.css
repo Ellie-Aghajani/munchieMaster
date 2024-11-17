@@ -1,0 +1,27 @@
+.ant-carousel .slick-prev,
+.ant-carousel .slick-next {
+  font-size: 24px;
+  z-index: 1000;
+  background: #ccc; /* Customize your arrow background */
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+}
+
+.ant-carousel .slick-prev::before,
+.ant-carousel .slick-next::before {
+  content: "←";
+  color: #000;
+}
+
+.ant-carousel .slick-next::before {
+  content: "→";
+}
+
+.ant-carousel .slick-prev {
+  left: -50px;
+}
+
+.ant-carousel .slick-next {
+  right: -50px;
+}
