@@ -165,7 +165,13 @@ const Dashboard = () => {
           style={{ marginTop: "20px" }}
         >
           {savedRecipes.length > 0 ? (
-            <ResponsiveCarousel recipes={savedRecipes} />
+            <ResponsiveCarousel
+              recipes={savedRecipes}
+              userLikedRecipes={userData?.likedRecipes || []}
+              userSavedRecipes={userData?.savedRecipes || []}
+              onLike={(id) => console.log("Like clicked for recipe", id)} // Replace with real handler
+              onSave={(id) => console.log("Save clicked for recipe", id)} // Replace with real handler
+            />
           ) : (
             <Text>No saved recipes found.</Text>
           )}
