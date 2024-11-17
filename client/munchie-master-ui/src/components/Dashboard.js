@@ -12,8 +12,6 @@ import {
   Divider,
 } from "antd";
 import {
-  Container,
-  Card,
   CardContent,
   CardMedia,
   Box,
@@ -22,7 +20,6 @@ import {
   IconButton,
   Snackbar,
   Alert,
-  Grid,
 } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link as ScrollLink } from "react-scroll";
