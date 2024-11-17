@@ -1,27 +1,29 @@
+/* Style the carousel arrows */
 .ant-carousel .slick-prev,
 .ant-carousel .slick-next {
-  font-size: 24px;
-  z-index: 1000;
-  background: #ccc; /* Customize your arrow background */
+  z-index: 1; /* Ensure arrows are above the content */
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  color: white;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  height: 40px;
-  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* .ant-carousel .slick-prev::before,
-.ant-carousel .slick-next::before {
-  content: "←";
-  color: #000;
+/* Style the dots */
+.ant-carousel .slick-dots {
+  bottom: -20px; /* Adjust position */
 }
 
-.ant-carousel .slick-next::before {
-  content: "→";
-} */
-
-.ant-carousel .slick-prev {
-  left: -50px;
+.ant-carousel .slick-dots li button {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #d9d9d9;
 }
 
-.ant-carousel .slick-next {
-  right: -50px;
+.ant-carousel .slick-dots li.slick-active button {
+  background-color: #1890ff;
 }
