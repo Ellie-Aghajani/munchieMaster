@@ -13,7 +13,6 @@ import {
 } from "antd";
 import {
   Container,
-  Typography,
   Card,
   CardContent,
   CardMedia,
