@@ -26,13 +26,11 @@ const RecipeCard = ({
     <Card
       sx={{
         height: "100%",
-        width: "100%",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
-        border: "1px solid #ddd",
+        justifyContent: "space-between", // Distributes content evenly
         borderRadius: "10px",
-        overflow: "hidden",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
       }}
       key={recipe._id}
     >
