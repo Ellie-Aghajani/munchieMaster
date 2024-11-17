@@ -30,11 +30,15 @@ const RecipeCard = ({
       <CardMedia
         component="img"
         height="200"
-        image={`${config.serverUrl}/uploads/${recipe.image.replace(
-          /^\/?uploads\/?/,
-          ""
-        )}`}
-        alt={recipe.name}
+        image={
+          recipe.image
+            ? `${config.serverUrl}/uploads/${recipe.image.replace(
+                /^\/?uploads\/?/,
+                ""
+              )}`
+            : "https://via.placeholder.com/200" // Fallback image
+        }
+        alt={recipe.name || "Recipe Image"}
       />
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant="h5" component="div">
@@ -47,8 +51,8 @@ const RecipeCard = ({
           </Typography>
         </Box>
         <Typography variant="body2" color="text.secondary" paragraph>
-          Ingredients: {recipe.ingredients.slice(0, 3).join(", ")}
-          {recipe.ingredients.length > 3 && "..."}
+          Ingredients: {(recipe.ingredients || []).slice(0, 3).join(", ")}
+          {recipe.ingredients && recipe.ingredients.length > 3 && "..."}
         </Typography>
 
         <Paper

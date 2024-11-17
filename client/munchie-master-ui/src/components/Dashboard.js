@@ -84,7 +84,14 @@ const Dashboard = () => {
     <Carousel arrows infinite={false}>
       {recipes.map((recipe) => (
         <div key={recipe._id}>
-          <RecipeCard recipe={recipe} />
+          <RecipeCard
+            recipe={{
+              ...recipe,
+              image: recipe.image || "",
+              ingredients: recipe.ingredients || [],
+              directions: recipe.directions || [],
+            }}
+          />
         </div>
       ))}
     </Carousel>
