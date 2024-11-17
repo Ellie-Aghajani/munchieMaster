@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import RecipeCard from "./RecipeCard";
+import ResponsiveCarousel from "./ResponsiveCarousel";
+
 import {
   Avatar,
   Card,
@@ -163,7 +165,7 @@ const Dashboard = () => {
           style={{ marginTop: "20px" }}
         >
           {savedRecipes.length > 0 ? (
-            renderCarousel(savedRecipes)
+            <ResponsiveCarousel recipes={savedRecipes} />
           ) : (
             <Text>No saved recipes found.</Text>
           )}
