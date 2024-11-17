@@ -24,7 +24,16 @@ const RecipeCard = ({
 }) => {
   return (
     <Card
-      sx={{ height: "100%", display: "flex", flexDirection: "column" }}
+      sx={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        border: "1px solid #ddd",
+        borderRadius: "10px",
+        overflow: "hidden",
+      }}
       key={recipe._id}
     >
       <CardMedia
@@ -40,7 +49,7 @@ const RecipeCard = ({
         }
         alt={recipe.name || "Recipe Image"}
       />
-      <CardContent sx={{ flexGrow: 1 }}>
+      <CardContent sx={{ flexGrow: 1, padding: "16px" }}>
         <Typography gutterBottom variant="h5" component="div">
           {recipe.name}
         </Typography>
@@ -52,7 +61,7 @@ const RecipeCard = ({
         </Box>
         <Typography variant="body2" color="text.secondary" paragraph>
           Ingredients:
-          <ul>
+          <ul style={{ paddingLeft: "20px" }}>
             {(recipe.ingredients || []).map((ingredient, index) => (
               <li key={index}>{ingredient}</li>
             ))}
