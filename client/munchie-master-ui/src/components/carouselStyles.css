@@ -1,29 +1,52 @@
-/* Style the carousel arrows */
-.ant-carousel .slick-prev,
-.ant-carousel .slick-next {
-  z-index: 1; /* Ensure arrows are above the content */
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  color: white;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Style the dots */
-.ant-carousel .slick-dots {
-  bottom: -20px; /* Adjust position */
-}
-
-.ant-carousel .slick-dots li button {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #d9d9d9;
-}
-
-.ant-carousel .slick-dots li.slick-active button {
-  background-color: #1890ff;
-}
+/* Ensure cards have the same height */
+.custom-carousel .slick-slide {
+    display: flex; /* Aligns cards properly */
+    justify-content: center;
+    align-items: center;
+    height: auto; /* Ensures dynamic height if content is longer */
+  }
+  
+  .custom-carousel .slick-slide div {
+    height: 100%; /* Matches height of the tallest card */
+  }
+  
+  /* Space for arrows */
+  .custom-carousel .slick-prev,
+  .custom-carousel .slick-next {
+    z-index: 10; /* Ensure arrows are above content */
+    width: 40px; /* Larger arrows for visibility */
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(-50%);
+  }
+  
+  .custom-carousel .slick-prev {
+    left: -50px; /* Push left arrow outside the content */
+  }
+  
+  .custom-carousel .slick-next {
+    right: -50px; /* Push right arrow outside the content */
+  }
+  
+  /* Style dots */
+  .custom-carousel .slick-dots {
+    bottom: -30px; /* Move dots below the cards */
+  }
+  
+  .custom-carousel .slick-dots li button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+    border: none;
+  }
+  
+  .custom-carousel .slick-dots li.slick-active button {
+    background-color: #EAA001; /* Active dot color */
+  }
+  
