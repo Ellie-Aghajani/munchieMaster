@@ -34,13 +34,13 @@ const ResponsiveCarousel = ({
   };
 
   return (
-    <div style={{ padding: "20px", position: "relative" }}>
+    <div style={{ padding: "50px", position: "relative" }}>
       <Carousel {...settings} className="custom-carousel">
         {recipes.map((recipe) => (
           <div
             key={recipe._id}
             style={{
-              padding: "10px", // Space between cards
+              padding: "30px", // Space between cards
               boxSizing: "border-box",
             }}
           >
