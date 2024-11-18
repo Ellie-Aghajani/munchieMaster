@@ -30,7 +30,7 @@
   }
   
   .custom-carousel .slick-next {
-    right: -50px; /* Push right arrow outside the content */
+    right: -100px; /* Push right arrow outside the content */
   }
   
   /* Style dots */
