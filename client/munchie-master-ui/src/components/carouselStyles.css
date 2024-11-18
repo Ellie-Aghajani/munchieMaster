@@ -14,9 +14,9 @@
   .custom-carousel .slick-prev,
   .custom-carousel .slick-next {
     z-index: 10; /* Ensure arrows are above content */
-    width: 40px; /* Larger arrows for visibility */
-    height: 40px;
-    border-radius: 50%;
+    width: 60px; /* Larger arrows for visibility */
+    height: 60px;
+    /* border-radius: 50%; */
     /* background-color: rgba(0, 0, 0, 0.5); */
     color: rgb(193, 28, 70);
     display: flex;
