@@ -87,14 +87,15 @@ const Dashboard = () => {
         backgroundColor: "#EBB946", // Dashboard background
         padding: "20px",
         minHeight: "100vh",
+        fontFamily: "'Roboto', sans-serif", // Applied font globally
       }}
     >
       {/* Summary Box */}
       <Card
         style={{
           marginBottom: "20px",
-          backgroundColor: "#8FD0D9", // Summary box background color
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Profile box shadow style
+          backgroundColor: "#F3FF90", // Summary box background color
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Box shadow
           borderRadius: "10px",
         }}
       >
@@ -147,8 +148,9 @@ const Dashboard = () => {
           bordered={false}
           style={{
             marginTop: "20px",
-            backgroundColor: "#fff", // Ensure content contrast
+            backgroundColor: "#9BEC00", // Saved Recipes box color
             padding: "10px",
+            borderRadius: "10px",
           }}
         >
           {savedRecipes.length > 0 ? (
@@ -170,8 +172,9 @@ const Dashboard = () => {
           title="Liked Recipes"
           bordered={false}
           style={{
-            backgroundColor: "#fff",
+            backgroundColor: "#FFB5DA", // Liked Recipes box color
             padding: "10px",
+            borderRadius: "10px",
           }}
         >
           <Text>Details about liked recipes go here...</Text>
@@ -182,8 +185,9 @@ const Dashboard = () => {
           title="Bought Recipes"
           bordered={false}
           style={{
-            backgroundColor: "#fff",
+            backgroundColor: "#45FFCA", // Bought Recipes box color
             padding: "10px",
+            borderRadius: "10px",
           }}
         >
           <Text>Details about bought recipes go here...</Text>
@@ -194,8 +198,9 @@ const Dashboard = () => {
           title="My Recipes"
           bordered={false}
           style={{
-            backgroundColor: "#fff",
+            backgroundColor: "#2CD3E1", // My Recipes box color
             padding: "10px",
+            borderRadius: "10px",
           }}
         >
           <Button
