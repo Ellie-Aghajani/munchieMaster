@@ -97,6 +97,7 @@ const Dashboard = () => {
       {/* Summary Box */}
       <Card
         style={{
+          fontFamily: "'Roboto', sans-serif",
           marginBottom: "20px",
           backgroundColor: "#F3FF90", // Summary box background color
           padding: "2rem",
@@ -153,6 +154,7 @@ const Dashboard = () => {
           title="Saved Recipes"
           bordered={false}
           style={{
+            fontFamily: "'Roboto', sans-serif",
             marginTop: "20px",
             backgroundColor: "#9BEC00", // Saved Recipes box color
             padding: "2rem",
@@ -180,6 +182,7 @@ const Dashboard = () => {
           title="Liked Recipes"
           bordered={false}
           style={{
+            fontFamily: "'Roboto', sans-serif",
             backgroundColor: "#FFB5DA", // Liked Recipes box color
             padding: "2rem",
             borderRadius: "15px",
@@ -195,6 +198,7 @@ const Dashboard = () => {
           title="Bought Recipes"
           bordered={false}
           style={{
+            fontFamily: "'Roboto', sans-serif",
             backgroundColor: "#45FFCA", // Bought Recipes box color
             padding: "2rem",
             borderRadius: "15px",
@@ -210,6 +214,7 @@ const Dashboard = () => {
           title="My Recipes"
           bordered={false}
           style={{
+            fontFamily: "'Roboto', sans-serif",
             backgroundColor: "#2CD3E1", // My Recipes box color
             padding: "2rem",
             borderRadius: "15px",
