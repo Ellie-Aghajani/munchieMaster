@@ -16,7 +16,6 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link as ScrollLink } from "react-scroll";
-import { Carousel } from "antd";
 import axios from "axios";
 import config from "../config";
 
@@ -82,38 +81,24 @@ const Dashboard = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
-  const renderCarousel = (recipes) => (
-    <Carousel arrows infinite={false}>
-      {recipes.map((recipe, index) =>
-        recipe ? (
-          <div key={recipe._id || index}>
-            <RecipeCard
-              recipe={{
-                ...recipe,
-                image: recipe.image || "",
-                ingredients: recipe.ingredients || [],
-                directions: recipe.directions || [],
-              }}
-            />
-          </div>
-        ) : (
-          <div key={index}>
-            <Typography>Invalid Recipe</Typography>
-          </div>
-        )
-      )}
-    </Carousel>
-  );
 
   return (
     <div
       style={{
+        backgroundColor: "#EBB946", // Primary background color
         padding: "20px",
-        backgroundColor: "#f0f2f5",
         minHeight: "100vh",
       }}
     >
-      <Card style={{ marginBottom: "20px" }}>
+      {/* Summary Box */}
+      <Card
+        style={{
+          marginBottom: "20px",
+          backgroundColor: "#8FD0D9", // Summary box background color
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Same box shadow as profile
+          borderRadius: "10px", // Optional rounded corners
+        }}
+      >
         <Row gutter={[16, 16]} align="middle">
           <Col>
             <Avatar size={64} src={`${config.serverUrl}${userData?.avatar}`} />
@@ -162,7 +147,10 @@ const Dashboard = () => {
         <Card
           title="Saved Recipes"
           bordered={false}
-          style={{ marginTop: "20px" }}
+          style={{
+            marginTop: "20px",
+            backgroundColor: "#fff", // Ensure contrast for text
+          }}
         >
           {savedRecipes.length > 0 ? (
             <ResponsiveCarousel
@@ -189,7 +177,14 @@ const Dashboard = () => {
       </div>
       <div id="myRecipesSection" style={{ marginTop: "20px" }}>
         <Card title="My Recipes" bordered={false}>
-          <Button type="primary" style={{ marginBottom: "10px" }}>
+          <Button
+            type="primary"
+            style={{
+              marginBottom: "10px",
+              backgroundColor: "#F56759", // Button color
+              borderColor: "#F56759", // Ensures consistency
+            }}
+          >
             Add Recipe
           </Button>
           <Upload
