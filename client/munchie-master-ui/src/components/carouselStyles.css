@@ -18,7 +18,7 @@
     height: 60px;
     /* border-radius: 50%; */
     /* background-color: rgba(0, 0, 0, 0.5); */
-    color: rgb(193, 28, 70);
+    color: rgb(244, 98, 0);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,6 +47,6 @@
   }
   
   .custom-carousel .slick-dots li.slick-active button {
-    background-color: #EAA001; /* Active dot color */
+    background-color: rgb(244, 98, 0); /* Active dot color */
   }
   
