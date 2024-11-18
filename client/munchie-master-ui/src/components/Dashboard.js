@@ -156,7 +156,7 @@ const Dashboard = () => {
           style={{
             fontFamily: "'Roboto', sans-serif",
             marginTop: "20px",
-            backgroundColor: "#9BEC00", // Saved Recipes box color
+            backgroundColor: "#BDF454", // Saved Recipes box color
             padding: "2rem",
             borderRadius: "15px",
             boxShadow:
