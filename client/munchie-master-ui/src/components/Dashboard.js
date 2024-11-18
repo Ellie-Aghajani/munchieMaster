@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RecipeCard from "./RecipeCard";
 import ResponsiveCarousel from "./ResponsiveCarousel";
-
 import {
   Avatar,
   Card,
@@ -16,7 +15,6 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link as ScrollLink } from "react-scroll";
-import { Carousel } from "antd";
 import axios from "axios";
 import config from "../config";
 
@@ -82,38 +80,24 @@ const Dashboard = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
-  const renderCarousel = (recipes) => (
-    <Carousel arrows infinite={false}>
-      {recipes.map((recipe, index) =>
-        recipe ? (
-          <div key={recipe._id || index}>
-            <RecipeCard
-              recipe={{
-                ...recipe,
-                image: recipe.image || "",
-                ingredients: recipe.ingredients || [],
-                directions: recipe.directions || [],
-              }}
-            />
-          </div>
-        ) : (
-          <div key={index}>
-            <Typography>Invalid Recipe</Typography>
-          </div>
-        )
-      )}
-    </Carousel>
-  );
 
   return (
     <div
       style={{
+        backgroundColor: "#EBB946", // Dashboard background
         padding: "20px",
-        backgroundColor: "#f0f2f5",
         minHeight: "100vh",
       }}
     >
-      <Card style={{ marginBottom: "20px" }}>
+      {/* Summary Box */}
+      <Card
+        style={{
+          marginBottom: "20px",
+          backgroundColor: "#8FD0D9", // Summary box background color
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Profile box shadow style
+          borderRadius: "10px",
+        }}
+      >
         <Row gutter={[16, 16]} align="middle">
           <Col>
             <Avatar size={64} src={`${config.serverUrl}${userData?.avatar}`} />
@@ -125,7 +109,6 @@ const Dashboard = () => {
         </Row>
         <Divider />
         <Row gutter={[16, 16]} justify="center">
-          {/* Counts with links */}
           <Col>
             <ScrollLink to="savedRecipesSection" smooth duration={500}>
               <Text style={{ cursor: "pointer" }}>
@@ -162,7 +145,11 @@ const Dashboard = () => {
         <Card
           title="Saved Recipes"
           bordered={false}
-          style={{ marginTop: "20px" }}
+          style={{
+            marginTop: "20px",
+            backgroundColor: "#fff", // Ensure content contrast
+            padding: "10px",
+          }}
         >
           {savedRecipes.length > 0 ? (
             <ResponsiveCarousel
@@ -177,19 +164,48 @@ const Dashboard = () => {
           )}
         </Card>
       </div>
+
       <div id="likedRecipesSection" style={{ marginTop: "20px" }}>
-        <Card title="Liked Recipes" bordered={false}>
+        <Card
+          title="Liked Recipes"
+          bordered={false}
+          style={{
+            backgroundColor: "#fff",
+            padding: "10px",
+          }}
+        >
           <Text>Details about liked recipes go here...</Text>
         </Card>
       </div>
       <div id="boughtRecipesSection" style={{ marginTop: "20px" }}>
-        <Card title="Bought Recipes" bordered={false}>
+        <Card
+          title="Bought Recipes"
+          bordered={false}
+          style={{
+            backgroundColor: "#fff",
+            padding: "10px",
+          }}
+        >
           <Text>Details about bought recipes go here...</Text>
         </Card>
       </div>
       <div id="myRecipesSection" style={{ marginTop: "20px" }}>
-        <Card title="My Recipes" bordered={false}>
-          <Button type="primary" style={{ marginBottom: "10px" }}>
+        <Card
+          title="My Recipes"
+          bordered={false}
+          style={{
+            backgroundColor: "#fff",
+            padding: "10px",
+          }}
+        >
+          <Button
+            type="primary"
+            style={{
+              marginBottom: "10px",
+              backgroundColor: "#F56759", // Button color
+              borderColor: "#F56759",
+            }}
+          >
             Add Recipe
           </Button>
           <Upload
