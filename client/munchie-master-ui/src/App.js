@@ -19,6 +19,8 @@ import LandingPage from "./components/LandingPage";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import Dashboard from "./components/Dashboard";
+import "@fontsource/roboto";
+import "./global.css";
 
 function AppContent() {
   const location = useLocation();
