@@ -85,9 +85,13 @@ const Dashboard = () => {
     <div
       style={{
         backgroundColor: "#EBB946", // Dashboard background
-        padding: "20px",
+        padding: "2rem",
+        borderRadius: "15px",
+        boxShadow:
+          "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+
         minHeight: "100vh",
-        fontFamily: "'Roboto', sans-serif", // Applied font globally
+        fontFamily: "'Roboto', sans-serif",
       }}
     >
       {/* Summary Box */}
@@ -95,8 +99,10 @@ const Dashboard = () => {
         style={{
           marginBottom: "20px",
           backgroundColor: "#F3FF90", // Summary box background color
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Box shadow
-          borderRadius: "10px",
+          padding: "2rem",
+          borderRadius: "15px",
+          boxShadow:
+            "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
         }}
       >
         <Row gutter={[16, 16]} align="middle">
@@ -149,8 +155,10 @@ const Dashboard = () => {
           style={{
             marginTop: "20px",
             backgroundColor: "#9BEC00", // Saved Recipes box color
-            padding: "10px",
-            borderRadius: "10px",
+            padding: "2rem",
+            borderRadius: "15px",
+            boxShadow:
+              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
           }}
         >
           {savedRecipes.length > 0 ? (
@@ -173,8 +181,10 @@ const Dashboard = () => {
           bordered={false}
           style={{
             backgroundColor: "#FFB5DA", // Liked Recipes box color
-            padding: "10px",
-            borderRadius: "10px",
+            padding: "2rem",
+            borderRadius: "15px",
+            boxShadow:
+              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
           }}
         >
           <Text>Details about liked recipes go here...</Text>
@@ -186,8 +196,10 @@ const Dashboard = () => {
           bordered={false}
           style={{
             backgroundColor: "#45FFCA", // Bought Recipes box color
-            padding: "10px",
-            borderRadius: "10px",
+            padding: "2rem",
+            borderRadius: "15px",
+            boxShadow:
+              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
           }}
         >
           <Text>Details about bought recipes go here...</Text>
@@ -199,8 +211,10 @@ const Dashboard = () => {
           bordered={false}
           style={{
             backgroundColor: "#2CD3E1", // My Recipes box color
-            padding: "10px",
-            borderRadius: "10px",
+            padding: "2rem",
+            borderRadius: "15px",
+            boxShadow:
+              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
           }}
         >
           <Button
