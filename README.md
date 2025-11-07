@@ -15,7 +15,7 @@
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB with Mongoose
 - **File Upload:** Multer
-- **Deployment:** Render
+- **Deployment:** Digital Ocean Server
 
 ## Getting Started
 
