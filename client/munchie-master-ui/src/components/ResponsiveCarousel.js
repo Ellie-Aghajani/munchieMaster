@@ -1,5 +1,6 @@
 import React from "react";
 import { Carousel } from "antd";
+import { Box } from "@mui/material";
 import RecipeCard from "./RecipeCard";
 import "./carouselStyles.css"; // Ensure styles for arrows, dots, and spacing are here
 
@@ -34,7 +35,21 @@ const ResponsiveCarousel = ({
   };
 
   return (
-    <div style={{ padding: "20px", position: "relative" }}>
+    <Box
+      sx={{
+        padding: "20px",
+        position: "relative",
+        "& .custom-carousel .slick-prev, & .custom-carousel .slick-next": {
+          color: "carousel.active",
+        },
+        "& .custom-carousel .slick-dots li button": {
+          backgroundColor: "carousel.dot",
+        },
+        "& .custom-carousel .slick-dots li.slick-active button": {
+          backgroundColor: "carousel.active",
+        },
+      }}
+    >
       <Carousel {...settings} className="custom-carousel">
         {recipes.map((recipe) => (
           <div
@@ -54,7 +69,7 @@ const ResponsiveCarousel = ({
           </div>
         ))}
       </Carousel>
-    </div>
+    </Box>
   );
 };
 

@@ -2,17 +2,23 @@ import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
+  Container,
   Typography,
   Button,
   Box,
   IconButton,
   Drawer,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
+
+const navLinks = [
+  { label: "About Me", href: "#about-us" },
+  { label: "How it Works", href: "#how-it-works" },
+];
 
 const LandingNavbar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -21,120 +27,107 @@ const LandingNavbar = () => {
     setIsDrawerOpen(open);
   };
   return (
-    <AppBar position="static" color="primary">
-      <Toolbar>
-        <Box>
-          <img
-            src={process.env.PUBLIC_URL + "/images/logo.png"}
-            alt="MunchieMaster Logo"
-            style={{ height: "40px", marginRight: "10px" }}
-          />
-          {/* <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", md: "block" } }}
+    <AppBar position="static" color="primary" elevation={0}>
+      <Container maxWidth="lg">
+        <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 76 } }}>
+          <Box
+            component={Link}
+            to="/"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              color: "inherit",
+              textDecoration: "none",
+              flexGrow: 1,
+            }}
           >
-            Munchie Master
-          </Typography> */}
-        </Box>
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ display: { xs: "block", md: "none" } }}
-          onClick={toggleDrawer(true)}
-        >
-          <MenuIcon />
-        </IconButton>
-
-        {/* Drawer for menu items */}
-        <Drawer
-          anchor="right"
-          open={isDrawerOpen}
-          onClose={toggleDrawer(false)}
-        >
-          <List>
-            <ListItem
-              button
-              component="a"
-              href="#about-us"
-              onClick={toggleDrawer(false)}
+            <Box
+              component="img"
+              src={process.env.PUBLIC_URL + "/images/logo.png"}
+              alt="MunchieMaster Logo"
+              sx={{ height: { xs: 40, md: 48 } }}
+            />
+            <Typography
+              component="span"
+              sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}
             >
-              <ListItemText primary="About Me" />
-            </ListItem>
-            <ListItem
-              button
-              component="a"
-              href="#how-it-works"
-              onClick={toggleDrawer(false)}
-            >
-              <ListItemText primary="How it Works" />
-            </ListItem>
-            {/* <ListItem
-              button
-              component={Link}
-              to="/contact"
-              onClick={toggleDrawer(false)}
-            >
-              <ListItemText primary="Contact Us" />
-            </ListItem> */}
-            <ListItem
-              button
-              component={Link}
-              to="/signup"
-              onClick={toggleDrawer(false)}
-            >
-              <ListItemText primary="Join Munchie Family" />
-            </ListItem>
-          </List>
-        </Drawer>
-
-        {/* Regular buttons for large screens */}
-        <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-          <Box sx={{ display: "flex", flexGrow: 1 }}>
-            <Button
-              color="inherit"
-              component="a"
-              href="#about-us"
-              sx={{ display: { xs: "none", md: "inline-flex" } }}
-            >
-              About Me
-            </Button>
-            <Button
-              color="inherit"
-              component="a"
-              href="#how-it-works"
-              sx={{ display: { xs: "none", md: "inline-flex" } }}
-            >
-              How it Works
-            </Button>
+              Munchie Master
+            </Typography>
           </Box>
-          {/* <Button
-          color="inherit"
-          component={Link}
-          to="/contact"
-          sx={{ display: { xs: "none", md: "inline-flex" } }}
-        >
-          Contact Us
-        </Button> */}
-          <Box>
+
+          {/* Regular buttons for large screens */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            {navLinks.map((link) => (
+              <Button
+                key={link.href}
+                color="inherit"
+                href={link.href}
+                sx={{ fontSize: "1rem", textTransform: "none", px: 2 }}
+              >
+                {link.label}
+              </Button>
+            ))}
             <Button
-              color="inherit"
               component={Link}
               to="/signup"
               sx={{
-                backgroundColor: "#f56759",
+                ml: 2,
+                px: 3,
+                borderRadius: 999,
+                fontSize: "1rem",
+                textTransform: "none",
+                color: "accent.contrastText",
+                backgroundColor: "accent.main",
                 "&:hover": {
-                  backgroundColor: "#FF8225", // Slightly darker shade for hover effect
+                  backgroundColor: "accent.dark",
                 },
-                display: { xs: "none", md: "inline-flex" },
               }}
             >
               Join Munchie Family
             </Button>
           </Box>
-        </Box>
-      </Toolbar>
+
+          <IconButton
+            edge="end"
+            color="inherit"
+            aria-label="menu"
+            sx={{ display: { xs: "inline-flex", md: "none" } }}
+            onClick={toggleDrawer(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </Container>
+
+      {/* Drawer for menu items */}
+      <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer(false)}>
+        <List sx={{ width: 240 }}>
+          {navLinks.map((link) => (
+            <ListItemButton
+              key={link.href}
+              component="a"
+              href={link.href}
+              onClick={toggleDrawer(false)}
+            >
+              <ListItemText primary={link.label} />
+            </ListItemButton>
+          ))}
+          <ListItemButton
+            component={Link}
+            to="/signup"
+            onClick={toggleDrawer(false)}
+          >
+            <ListItemText primary="Join Munchie Family" />
+          </ListItemButton>
+        </List>
+      </Drawer>
     </AppBar>
   );
 };

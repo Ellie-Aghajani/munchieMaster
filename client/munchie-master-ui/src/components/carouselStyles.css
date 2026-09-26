@@ -17,8 +17,7 @@
     width: 60px; /* Larger arrows for visibility */
     height: 60px;
     /* border-radius: 50%; */
-    /* background-color: rgba(0, 0, 0, 0.5); */
-    color: rgb(244, 98, 0);
+    /* color comes from theme.palette.carousel (ResponsiveCarousel.js) */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,11 +41,5 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background-color: #697455;
     border: none;
   }
-  
-  .custom-carousel .slick-dots li.slick-active button {
-    background-color: rgb(244, 98, 0); /* Active dot color */
-  }
-  

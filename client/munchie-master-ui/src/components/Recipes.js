@@ -168,11 +168,11 @@ function Recipes() {
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Box
         sx={{
-          backgroundColor: "#f0f8ff",
+          backgroundColor: "background.panel",
           borderRadius: 4,
           padding: 3,
           marginBottom: 6,
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          boxShadow: (theme) => theme.customShadows.soft,
         }}
       >
         <Typography
@@ -181,10 +181,10 @@ function Recipes() {
           align="center"
           sx={{
             fontWeight: "bold",
-            color: "#2c3e50",
+            color: "text.heading",
             textTransform: "uppercase",
             letterSpacing: 2,
-            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
+            textShadow: (theme) => theme.customShadows.text,
           }}
         >
           Recipes
@@ -226,20 +226,20 @@ function Recipes() {
                     maxHeight: 200,
                     overflowY: "auto",
                     padding: 2,
-                    backgroundColor: "#f8f8f8",
+                    backgroundColor: "background.subtle",
                     borderRadius: 2,
                     "&::-webkit-scrollbar": {
                       width: "6px",
                     },
                     "&::-webkit-scrollbar-track": {
-                      backgroundColor: "#f1f1f1",
+                      backgroundColor: "scrollbar.track",
                     },
                     "&::-webkit-scrollbar-thumb": {
-                      backgroundColor: "#888",
+                      backgroundColor: "scrollbar.thumb",
                       borderRadius: "3px",
                     },
                     "&::-webkit-scrollbar-thumb:hover": {
-                      backgroundColor: "#555",
+                      backgroundColor: "scrollbar.thumbHover",
                     },
                   }}
                 >

@@ -17,6 +17,7 @@ import { ErrorProvider } from "./contexts/ErrorContext";
 import UserProfile from "./components/UserProfile";
 import LandingPage from "./components/LandingPage";
 import { ThemeProvider } from "@mui/material/styles";
+import GlobalStyles from "@mui/material/GlobalStyles";
 import theme from "./theme";
 import Dashboard from "./components/Dashboard";
 import "@fontsource/roboto";
@@ -48,6 +49,11 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider theme={theme}>
+      <GlobalStyles
+        styles={(theme) => ({
+          body: { backgroundColor: theme.palette.background.default },
+        })}
+      />
       <ErrorProvider>
         <AuthProvider>
           <Router>

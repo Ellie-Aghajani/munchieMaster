@@ -17,6 +17,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Link as ScrollLink } from "react-scroll";
 import axios from "axios";
 import config from "../config";
+import { useTheme } from "@mui/material/styles";
 
 const { Title, Text } = Typography;
 
@@ -30,6 +31,7 @@ const getBase64 = (file) =>
   });
 
 const Dashboard = () => {
+  const theme = useTheme();
   const [userData, setUserData] = useState(null);
   const [fileList, setFileList] = useState([]);
   const [savedRecipes, setSavedRecipes] = useState([]);
@@ -84,11 +86,10 @@ const Dashboard = () => {
   return (
     <div
       style={{
-        backgroundColor: "#EBB946", // Dashboard background
+        backgroundColor: theme.palette.background.default,
         padding: "2rem",
         borderRadius: "15px",
-        boxShadow:
-          "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+        boxShadow: theme.customShadows.raised,
 
         minHeight: "100vh",
       }}
@@ -97,11 +98,10 @@ const Dashboard = () => {
       <Card
         style={{
           marginBottom: "20px",
-          backgroundColor: "#F3FF90", // Summary box background color
+          backgroundColor: theme.palette.tiles.yellow,
           padding: "2rem",
           borderRadius: "15px",
-          boxShadow:
-            "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+          boxShadow: theme.customShadows.raised,
         }}
       >
         <Row gutter={[16, 16]} align="middle">
@@ -153,11 +153,10 @@ const Dashboard = () => {
           bordered={false}
           style={{
             marginTop: "20px",
-            backgroundColor: "#BDF454", // Saved Recipes box color
+            backgroundColor: theme.palette.tiles.lime,
             padding: "2rem",
             borderRadius: "15px",
-            boxShadow:
-              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+            boxShadow: theme.customShadows.raised,
           }}
         >
           {savedRecipes.length > 0 ? (
@@ -179,11 +178,10 @@ const Dashboard = () => {
           title="Liked Recipes"
           bordered={false}
           style={{
-            backgroundColor: "#FFB5DA", // Liked Recipes box color
+            backgroundColor: theme.palette.tiles.pink,
             padding: "2rem",
             borderRadius: "15px",
-            boxShadow:
-              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+            boxShadow: theme.customShadows.raised,
           }}
         >
           <Text>Details about liked recipes go here...</Text>
@@ -194,11 +192,10 @@ const Dashboard = () => {
           title="Bought Recipes"
           bordered={false}
           style={{
-            backgroundColor: "#45FFCA", // Bought Recipes box color
+            backgroundColor: theme.palette.tiles.mint,
             padding: "2rem",
             borderRadius: "15px",
-            boxShadow:
-              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+            boxShadow: theme.customShadows.raised,
           }}
         >
           <Text>Details about bought recipes go here...</Text>
@@ -209,19 +206,18 @@ const Dashboard = () => {
           title="My Recipes"
           bordered={false}
           style={{
-            backgroundColor: "#2CD3E1", // My Recipes box color
+            backgroundColor: theme.palette.tiles.cyan,
             padding: "2rem",
             borderRadius: "15px",
-            boxShadow:
-              "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+            boxShadow: theme.customShadows.raised,
           }}
         >
           <Button
             type="primary"
             style={{
               marginBottom: "10px",
-              backgroundColor: "#F56759", // Button color
-              borderColor: "#F56759",
+              backgroundColor: theme.palette.accent.main,
+              borderColor: theme.palette.accent.main,
             }}
           >
             Add Recipe

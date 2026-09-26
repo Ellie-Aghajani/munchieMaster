@@ -127,13 +127,13 @@ function UserProfile() {
       maxWidth={false}
       sx={{
         py: 6,
-        backgroundColor: "#EBBA45",
+        backgroundColor: "background.default",
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
 
-        color: "#10375C",
+        color: "primary.main",
       }}
     >
       {/* Live Preview Section */}
@@ -144,10 +144,10 @@ function UserProfile() {
         sx={{
           // width: "100%",
           // maxWidth: "800px",
-          backgroundColor: "#EBBA45",
+          backgroundColor: "background.default",
           borderRadius: 2,
           padding: 4,
-          color: "#10375C",
+          color: "primary.main",
         }}
       >
         <Box>
@@ -156,8 +156,7 @@ function UserProfile() {
               width: 100,
               height: 100,
               mr: 2,
-              boxShadow:
-                "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+              boxShadow: (theme) => theme.customShadows.raised,
             }}
             src={
               user?.avatar
@@ -199,11 +198,10 @@ function UserProfile() {
         sx={{
           // flex: 1,
           width: "60%",
-          backgroundColor: "#8FD0D9",
+          backgroundColor: "tiles.aqua",
           padding: "2rem",
           borderRadius: "15px",
-          boxShadow:
-            "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+          boxShadow: (theme) => theme.customShadows.raised,
         }}
       >
         <Typography variant="h5" mb={2}>
@@ -217,7 +215,7 @@ function UserProfile() {
               name="firstName"
               value={formData.firstName}
               onChange={handleInputChange}
-              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+              InputProps={{ sx: { backgroundColor: "common.white" } }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -227,7 +225,7 @@ function UserProfile() {
               name="lastName"
               value={formData.lastName}
               onChange={handleInputChange}
-              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+              InputProps={{ sx: { backgroundColor: "common.white" } }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -237,7 +235,7 @@ function UserProfile() {
               name="country"
               value={formData.country}
               onChange={handleInputChange}
-              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+              InputProps={{ sx: { backgroundColor: "common.white" } }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -247,7 +245,7 @@ function UserProfile() {
               name="province"
               value={formData.province}
               onChange={handleInputChange}
-              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+              InputProps={{ sx: { backgroundColor: "common.white" } }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -257,7 +255,7 @@ function UserProfile() {
               name="city"
               value={formData.city}
               onChange={handleInputChange}
-              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+              InputProps={{ sx: { backgroundColor: "common.white" } }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -269,7 +267,7 @@ function UserProfile() {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              InputProps={{ style: { backgroundColor: "#FFFFFF" } }}
+              InputProps={{ sx: { backgroundColor: "common.white" } }}
             />
           </Grid>
           <Grid item xs={12} textAlign="right">
@@ -278,10 +276,10 @@ function UserProfile() {
               sx={{
                 mt: 2, // Margin top for spacing
                 alignItems: "center",
-                backgroundColor: "#f56759",
-                color: "#fff",
+                backgroundColor: "accent.main",
+                color: "accent.contrastText",
                 "&:hover": {
-                  backgroundColor: "#FF8225",
+                  backgroundColor: "accent.dark",
                 },
               }}
               // color="primary"
