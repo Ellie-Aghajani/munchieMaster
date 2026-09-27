@@ -29,6 +29,8 @@ const NavMenu = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isLoggedIn = !isEmpty(currentUser);
+  const homePath = isLoggedIn ? "/dashboard" : "/";
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const onLoginClick = () => {
@@ -77,7 +79,7 @@ const NavMenu = () => {
     >
       <Box
         component={Link}
-        to="/"
+        to={homePath}
         sx={{
           display: "flex",
           alignItems: "center",
@@ -138,15 +140,13 @@ const NavMenu = () => {
     </Box>
   );
 
-  const isLoggedIn = !isEmpty(currentUser);
-
   return (
     <AppBar position="static" color="primary" elevation={0}>
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 76 } }}>
           <Box
             component={Link}
-            to="/"
+            to={homePath}
             sx={{
               display: "flex",
               alignItems: "center",

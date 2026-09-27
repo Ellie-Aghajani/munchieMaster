@@ -198,7 +198,7 @@ function UserProfile() {
         sx={{
           // flex: 1,
           width: "60%",
-          backgroundColor: "tiles.aqua",
+          backgroundColor: "tiles.cream",
           padding: "2rem",
           borderRadius: "15px",
           boxShadow: (theme) => theme.customShadows.raised,

@@ -11,7 +11,8 @@ import NavMenu from "./components/NavMenu";
 import Login from "./components/Login";
 import Recipes from "./components/Recipes";
 import AdminRecipeCreator from "./components/AdminRecipeCreator";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import isEmpty from "lodash/isEmpty";
 import AdminRoute from "./components/AdminRoute";
 import { ErrorProvider } from "./contexts/ErrorContext";
 import UserProfile from "./components/UserProfile";
@@ -26,12 +27,19 @@ import "./global.css";
 function AppContent() {
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
+  const { currentUser } = useAuth();
+  const isLoggedIn = !isEmpty(currentUser);
 
   return (
     <>
       {!isLandingPage && <NavMenu />}
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/"
+          element={
+            isLoggedIn ? <Navigate replace to="/dashboard" /> : <LandingPage />
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/recipes" element={<Recipes />} />
         <Route

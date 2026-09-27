@@ -15,20 +15,19 @@ const theme = createTheme({
     },
     background: {
       default: "#EBBA45", // Page background for every page
-      panel: "#F0F8FF", // Recipes page header
       subtle: "#F8F8F8", // Recipe directions box
     },
     text: {
       heading: "#2C3E50",
     },
     tiles: {
-      aqua: "#8FD0D9", // About us, edit profile
+      aqua: "#8FD0D9", // About us
       sky: "#61ADEA", // How it works
-      yellow: "#fcfcfa", // Dashboard summary
-      lime: "#719332", // Saved recipes
-      pink: "#a5386f", // Liked recipes
-      mint: "#1e9170", // Bought recipes
-      cyan: "#15717a", // My recipes
+      cream: "#FFF8E7", // Dashboard summary, recipes header, edit profile
+      green: "#D5F0DC", // Saved recipes
+      rose: "#FFD9D2", // Liked recipes
+      blue: "#D6E9FA", // Bought recipes
+      lavender: "#E6DFF7", // My recipes
     },
     scrollbar: {
       track: "#F1F1F1",

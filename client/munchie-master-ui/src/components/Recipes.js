@@ -168,7 +168,7 @@ function Recipes() {
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Box
         sx={{
-          backgroundColor: "background.panel",
+          backgroundColor: "tiles.cream",
           borderRadius: 4,
           padding: 3,
           marginBottom: 6,

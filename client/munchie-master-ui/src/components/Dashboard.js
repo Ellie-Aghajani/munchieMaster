@@ -1,259 +1,344 @@
-import React, { useState, useEffect } from "react";
-import ResponsiveCarousel from "./ResponsiveCarousel";
+import React, { useState, useEffect, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Avatar,
-  Card,
-  Col,
-  Row,
-  Typography,
+  Box,
   Button,
-  Upload,
-  Image,
-  message,
-  Divider,
-} from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import { Link as ScrollLink } from "react-scroll";
+  ButtonBase,
+  Chip,
+  CircularProgress,
+  Container,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import axios from "axios";
+import ResponsiveCarousel from "./ResponsiveCarousel";
+import { useAuth } from "../contexts/AuthContext";
+import { useError } from "../contexts/ErrorContext";
 import config from "../config";
-import { useTheme } from "@mui/material/styles";
 
-const { Title, Text } = Typography;
+const authHeaders = () => ({ "x-auth-token": localStorage.getItem("token") });
 
-// Function to convert image file to base64
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
+const sections = [
+  {
+    key: "saved",
+    id: "savedRecipesSection",
+    title: "Saved Recipes",
+    color: "tiles.green",
+    endpoint: "/api/dashboard/saved-recipes",
+    empty: "You haven't saved any recipes yet.",
+  },
+  {
+    key: "liked",
+    id: "likedRecipesSection",
+    title: "Liked Recipes",
+    color: "tiles.rose",
+    endpoint: "/api/dashboard/liked-recipes",
+    empty: "You haven't liked any recipes yet.",
+  },
+  {
+    key: "bought",
+    id: "boughtRecipesSection",
+    title: "Bought Recipes",
+    color: "tiles.blue",
+    endpoint: "/api/dashboard/bought-recipes",
+    empty: "You haven't bought any recipes yet.",
+  },
+  {
+    key: "mine",
+    id: "myRecipesSection",
+    title: "My Recipes",
+    color: "tiles.lavender",
+    endpoint: "/api/dashboard/my-recipes",
+    empty: "You haven't shared any recipes yet.",
+  },
+];
+
+const cardSx = {
+  p: { xs: 3, md: 4 },
+  borderRadius: 4,
+  color: "primary.main",
+  boxShadow: (theme) => theme.customShadows.raised,
+};
+
+const pillButtonSx = {
+  borderRadius: 999,
+  px: 3,
+  textTransform: "none",
+  fontSize: "1rem",
+};
+
+const accentButtonSx = {
+  ...pillButtonSx,
+  backgroundColor: "accent.main",
+  color: "accent.contrastText",
+  "&:hover": { backgroundColor: "accent.dark" },
+};
 
 const Dashboard = () => {
-  const theme = useTheme();
-  const [userData, setUserData] = useState(null);
-  const [fileList, setFileList] = useState([]);
-  const [savedRecipes, setSavedRecipes] = useState([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
+  const { currentUser, logout } = useAuth();
+  const { showError } = useError();
+  const navigate = useNavigate();
+  const [summary, setSummary] = useState(null);
+  const [lists, setLists] = useState({
+    saved: [],
+    liked: [],
+    bought: [],
+    mine: [],
+  });
+  const [loading, setLoading] = useState(true);
+
+  const fetchDashboard = useCallback(async () => {
+    try {
+      const [summaryResponse, ...listResponses] = await Promise.all([
+        axios.get("/api/dashboard/summary", { headers: authHeaders() }),
+        ...sections.map((section) =>
+          axios.get(section.endpoint, { headers: authHeaders() })
+        ),
+      ]);
+      setSummary(summaryResponse.data);
+      setLists(
+        Object.fromEntries(
+          sections.map((section, i) => [section.key, listResponses[i].data])
+        )
+      );
+    } catch (error) {
+      if (error.response?.status === 401) {
+        logout();
+        navigate("/login");
+        return;
+      }
+      showError(error.response?.data, "Failed to load your dashboard.");
+    } finally {
+      setLoading(false);
+    }
+  }, [logout, navigate, showError]);
 
   useEffect(() => {
-    // Fetch user dashboard data
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(
-          `${config.serverUrl}/api/dashboard/summary`,
-          {
-            headers: { "x-auth-token": localStorage.getItem("token") },
-          }
-        );
-        const savedRecipesResponse = await axios.get(
-          `${config.serverUrl}/api/dashboard/saved-recipes`,
-          { headers: { "x-auth-token": localStorage.getItem("token") } }
-        );
+    fetchDashboard();
+  }, [fetchDashboard]);
 
-        setUserData(response.data);
-        setSavedRecipes(savedRecipesResponse.data);
-      } catch (error) {
-        message.error("Failed to fetch dashboard data.");
-      }
-    };
-    fetchUserData();
-  }, []);
+  const likedIds = lists.liked.map((recipe) => recipe._id);
+  const savedIds = lists.saved.map((recipe) => recipe._id);
 
-  // Image preview handler
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+  const findRecipe = (recipeId) =>
+    Object.values(lists)
+      .flat()
+      .find((recipe) => recipe._id === recipeId);
+
+  // Add the recipe to a list, or remove it if it is already there
+  const toggleInList = (list, recipe) =>
+    list.some((r) => r._id === recipe._id)
+      ? list.filter((r) => r._id !== recipe._id)
+      : [...list, recipe];
+
+  const handleLike = async (recipeId) => {
+    try {
+      const { data } = await axios.post(
+        `/api/recipes/${recipeId}/like`,
+        {},
+        { headers: authHeaders() }
+      );
+      if (!data.success) return;
+      setLists((prev) => {
+        const withCount = (list) =>
+          list.map((r) =>
+            r._id === recipeId ? { ...r, likeCount: data.likeCount } : r
+          );
+        const updated = Object.fromEntries(
+          Object.entries(prev).map(([key, list]) => [key, withCount(list)])
+        );
+        const recipe = findRecipe(recipeId);
+        if (!recipe) return updated;
+        return {
+          ...updated,
+          liked: toggleInList(updated.liked, {
+            ...recipe,
+            likeCount: data.likeCount,
+          }),
+        };
+      });
+    } catch (error) {
+      showError(error.response?.data, "Could not update the like.");
     }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
   };
 
-  // Handle file list updates
-  const handleChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList.slice(0, 3)); // Limit to 3 images
+  const handleSave = async (recipeId) => {
+    try {
+      const { data } = await axios.post(
+        "/api/users/save-recipe",
+        { recipeId },
+        { headers: authHeaders() }
+      );
+      if (!data.success) return;
+      const recipe = findRecipe(recipeId);
+      if (!recipe) return;
+      setLists((prev) => ({ ...prev, saved: toggleInList(prev.saved, recipe) }));
+    } catch (error) {
+      showError(error.response?.data, "Could not update saved recipes.");
+    }
   };
 
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
+  const scrollToSection = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" py={12}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  const avatarUrl = summary?.avatar
+    ? `${config.serverUrl}/uploads/${summary.avatar.replace(
+        /^\/?uploads\/?/,
+        ""
+      )}`
+    : undefined;
 
   return (
-    <div
-      style={{
-        backgroundColor: theme.palette.background.default,
-        padding: "2rem",
-        borderRadius: "15px",
-        boxShadow: theme.customShadows.raised,
-
-        minHeight: "100vh",
-      }}
-    >
-      {/* Summary Box */}
-      <Card
-        style={{
-          marginBottom: "20px",
-          backgroundColor: theme.palette.tiles.yellow,
-          padding: "2rem",
-          borderRadius: "15px",
-          boxShadow: theme.customShadows.raised,
-        }}
-      >
-        <Row gutter={[16, 16]} align="middle">
-          <Col>
-            <Avatar size={64} src={`${config.serverUrl}${userData?.avatar}`} />
-          </Col>
-          <Col>
-            <Title level={4}>Welcome, {userData?.name}</Title>
-            <Text>My Coins: {userData?.coins}</Text>
-          </Col>
-        </Row>
-        <Divider />
-        <Row gutter={[16, 16]} justify="center">
-          <Col>
-            <ScrollLink to="savedRecipesSection" smooth duration={500}>
-              <Text style={{ cursor: "pointer" }}>
-                Saved Recipes: {userData?.savedRecipesCount || 0}
-              </Text>
-            </ScrollLink>
-          </Col>
-          <Col>
-            <ScrollLink to="likedRecipesSection" smooth duration={500}>
-              <Text style={{ cursor: "pointer" }}>
-                Liked Recipes: {userData?.likedRecipesCount || 0}
-              </Text>
-            </ScrollLink>
-          </Col>
-          <Col>
-            <ScrollLink to="boughtRecipesSection" smooth duration={500}>
-              <Text style={{ cursor: "pointer" }}>
-                Bought Recipes: {userData?.boughtRecipesCount || 0}
-              </Text>
-            </ScrollLink>
-          </Col>
-          <Col>
-            <ScrollLink to="myRecipesSection" smooth duration={500}>
-              <Text style={{ cursor: "pointer" }}>
-                My Recipes: {userData?.myRecipesCount || 0}
-              </Text>
-            </ScrollLink>
-          </Col>
-        </Row>
-      </Card>
-
-      {/* Recipe Sections */}
-      <div id="savedRecipesSection">
-        <Card
-          title="Saved Recipes"
-          bordered={false}
-          style={{
-            marginTop: "20px",
-            backgroundColor: theme.palette.tiles.lime,
-            padding: "2rem",
-            borderRadius: "15px",
-            boxShadow: theme.customShadows.raised,
-          }}
+    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+      {/* Summary */}
+      <Box sx={{ ...cardSx, backgroundColor: "tiles.cream", mb: 4 }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={3}
+          alignItems={{ xs: "center", sm: "center" }}
+          textAlign={{ xs: "center", sm: "left" }}
         >
-          {savedRecipes.length > 0 ? (
-            <ResponsiveCarousel
-              recipes={savedRecipes}
-              userLikedRecipes={userData?.likedRecipes || []}
-              userSavedRecipes={userData?.savedRecipes || []}
-              onLike={(id) => console.log("Like clicked for recipe", id)} // Replace with real handler
-              onSave={(id) => console.log("Save clicked for recipe", id)} // Replace with real handler
+          <Avatar src={avatarUrl} sx={{ width: 72, height: 72 }}>
+            {summary?.name?.[0]}
+          </Avatar>
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography
+              variant="h1"
+              sx={{ fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 1 }}
+            >
+              Welcome, {summary?.name}
+            </Typography>
+            <Chip
+              icon={<MonetizationOnIcon />}
+              label={`${summary?.coins ?? 0} coins`}
+              sx={{ fontSize: "1rem" }}
             />
-          ) : (
-            <Text>No saved recipes found.</Text>
-          )}
-        </Card>
-      </div>
+          </Box>
+          <Stack direction="row" spacing={1.5}>
+            <Button component={Link} to="/recipes" sx={accentButtonSx}>
+              Browse Recipes
+            </Button>
+            <Button
+              component={Link}
+              to="/profile"
+              variant="outlined"
+              sx={pillButtonSx}
+            >
+              Edit Profile
+            </Button>
+          </Stack>
+        </Stack>
 
-      <div id="likedRecipesSection" style={{ marginTop: "20px" }}>
-        <Card
-          title="Liked Recipes"
-          bordered={false}
-          style={{
-            backgroundColor: theme.palette.tiles.pink,
-            padding: "2rem",
-            borderRadius: "15px",
-            boxShadow: theme.customShadows.raised,
-          }}
-        >
-          <Text>Details about liked recipes go here...</Text>
-        </Card>
-      </div>
-      <div id="boughtRecipesSection" style={{ marginTop: "20px" }}>
-        <Card
-          title="Bought Recipes"
-          bordered={false}
-          style={{
-            backgroundColor: theme.palette.tiles.mint,
-            padding: "2rem",
-            borderRadius: "15px",
-            boxShadow: theme.customShadows.raised,
-          }}
-        >
-          <Text>Details about bought recipes go here...</Text>
-        </Card>
-      </div>
-      <div id="myRecipesSection" style={{ marginTop: "20px" }}>
-        <Card
-          title="My Recipes"
-          bordered={false}
-          style={{
-            backgroundColor: theme.palette.tiles.cyan,
-            padding: "2rem",
-            borderRadius: "15px",
-            boxShadow: theme.customShadows.raised,
-          }}
-        >
-          <Button
-            type="primary"
-            style={{
-              marginBottom: "10px",
-              backgroundColor: theme.palette.accent.main,
-              borderColor: theme.palette.accent.main,
+        <Grid container spacing={2} sx={{ mt: 3 }}>
+          {sections.map((section) => (
+            <Grid item xs={6} md={3} key={section.key}>
+              <ButtonBase
+                onClick={() => scrollToSection(section.id)}
+                sx={{
+                  width: "100%",
+                  flexDirection: "column",
+                  py: 2,
+                  borderRadius: 3,
+                  backgroundColor: section.color,
+                  color: "primary.main",
+                  transition: "transform 0.15s",
+                  "&:hover": { transform: "translateY(-2px)" },
+                }}
+              >
+                <Typography sx={{ fontSize: "2rem", lineHeight: 1.2 }}>
+                  {lists[section.key].length}
+                </Typography>
+                <Typography sx={{ fontSize: "1rem" }}>
+                  {section.title}
+                </Typography>
+              </ButtonBase>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* Recipe sections */}
+      <Stack spacing={4}>
+        {sections.map((section) => (
+          <Box
+            key={section.key}
+            id={section.id}
+            sx={{
+              ...cardSx,
+              backgroundColor: section.color,
+              scrollMarginTop: 16,
             }}
           >
-            Add Recipe
-          </Button>
-          <Upload
-            action={`${config.serverUrl}/api/recipes/upload`}
-            listType="picture-card"
-            fileList={fileList}
-            onPreview={handlePreview}
-            onChange={handleChange}
-            maxCount={3}
-            beforeUpload={(file) => {
-              const isImage = file.type.startsWith("image/");
-              if (!isImage) {
-                message.error("You can only upload image files!");
-              }
-              return isImage || Upload.LIST_IGNORE;
-            }}
-          >
-            {fileList.length >= 3 ? null : uploadButton}
-          </Upload>
-        </Card>
-      </div>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              flexWrap="wrap"
+              gap={2}
+              mb={2}
+            >
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: "1.5rem", md: "1.875rem" } }}
+              >
+                {section.title}
+              </Typography>
+              {section.key === "mine" && currentUser?.isAdmin && (
+                <Button
+                  component={Link}
+                  to="/admin/create-recipe"
+                  sx={accentButtonSx}
+                >
+                  Add Recipe
+                </Button>
+              )}
+            </Stack>
 
-      {/* Preview Image */}
-      {previewImage && (
-        <Image
-          wrapperStyle={{ display: "none" }}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(""),
-          }}
-          src={previewImage}
-        />
-      )}
-    </div>
+            {lists[section.key].length > 0 ? (
+              <ResponsiveCarousel
+                recipes={lists[section.key]}
+                userLikedRecipes={likedIds}
+                userSavedRecipes={savedIds}
+                onLike={handleLike}
+                onSave={handleSave}
+              />
+            ) : (
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={2}
+                alignItems={{ xs: "flex-start", sm: "center" }}
+              >
+                <Typography sx={{ fontSize: "1.05rem" }}>
+                  {section.empty}
+                </Typography>
+                {section.key !== "mine" && (
+                  <Button
+                    component={Link}
+                    to="/recipes"
+                    variant="outlined"
+                    sx={pillButtonSx}
+                  >
+                    Browse Recipes
+                  </Button>
+                )}
+              </Stack>
+            )}
+          </Box>
+        ))}
+      </Stack>
+    </Container>
   );
 };
 
