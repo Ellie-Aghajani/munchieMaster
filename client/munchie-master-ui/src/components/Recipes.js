@@ -10,6 +10,12 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import RecipeCard from "./RecipeCard";
+import {
+  errorText,
+  likeRecipe,
+  rewardMessage,
+  toggleSaveRecipe,
+} from "../api/recipeActions";
 import { useError } from "../contexts/ErrorContext";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +30,7 @@ function Recipes() {
   const [userLikedRecipes, setUserLikedRecipes] = useState([]);
   const [userSavedRecipes, setUserSavedRecipes] = useState([]);
   const [error, setError] = useState(null);
-  const { showError } = useError();
+  const { showError, showSuccess } = useError();
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -78,66 +84,40 @@ function Recipes() {
 
   const handleLikeRecipe = async (recipeId) => {
     try {
-      const response = await axios.post(
-        `/api/recipes/${recipeId}/like`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("token"),
-          },
-          baseURL: config.serverUrl,
-        }
+      const data = await likeRecipe(recipeId);
+      if (!data.success) return;
+      setUserLikedRecipes((prevLiked) =>
+        prevLiked.includes(recipeId)
+          ? prevLiked.filter((id) => id !== recipeId)
+          : [...prevLiked, recipeId]
       );
-      if (response.data.success) {
-        setUserLikedRecipes((prevLiked) =>
-          prevLiked.includes(recipeId)
-            ? prevLiked.filter((id) => id !== recipeId)
-            : [...prevLiked, recipeId]
-        );
-        setRecipes((prevRecipes) =>
-          prevRecipes.map((recipe) =>
-            recipe._id === recipeId
-              ? { ...recipe, likeCount: response.data.likeCount }
-              : recipe
-          )
-        );
-      }
+      setRecipes((prevRecipes) =>
+        prevRecipes.map((recipe) =>
+          recipe._id === recipeId
+            ? { ...recipe, likeCount: data.likeCount }
+            : recipe
+        )
+      );
+      const message = rewardMessage(data, "like");
+      if (message) showSuccess(message);
     } catch (error) {
-      console.error("Error liking recipe:", error);
-      showError("An error occurred while liking the recipe");
+      showError(null, errorText(error, "Could not update the like."));
     }
   };
 
   const handleSaveRecipe = async (recipeId) => {
     try {
-      const response = await axios.post(
-        "/api/users/save-recipe",
-        { recipeId },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("token"),
-          },
-        }
+      const data = await toggleSaveRecipe(recipeId);
+      if (!data.success) return;
+      setUserSavedRecipes((prevSaved) =>
+        prevSaved.includes(recipeId)
+          ? prevSaved.filter((id) => id !== recipeId)
+          : [...prevSaved, recipeId]
       );
-      if (response.data.success) {
-        setUserSavedRecipes((prevSaved) =>
-          prevSaved.includes(recipeId)
-            ? prevSaved.filter((id) => id !== recipeId)
-            : [...prevSaved, recipeId]
-        );
-        setRecipes((prevRecipes) =>
-          prevRecipes.map((recipe) =>
-            recipe._id === recipeId
-              ? { ...recipe, savedBy: response.data.savedByCount }
-              : recipe
-          )
-        );
-      }
+      const message = rewardMessage(data, "save");
+      if (message) showSuccess(message);
     } catch (error) {
-      console.error("Error saving recipe:", error);
-      showError("An error occurred while saving the recipe");
+      showError(null, errorText(error, "Could not update saved recipes."));
     }
   };
   if (loading) {

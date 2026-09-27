@@ -11,10 +11,10 @@ import NavMenu from "./components/NavMenu";
 import Login from "./components/Login";
 import Recipes from "./components/Recipes";
 import RecipeDetail from "./components/RecipeDetail";
-import AdminRecipeCreator from "./components/AdminRecipeCreator";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import isEmpty from "lodash/isEmpty";
-import AdminRoute from "./components/AdminRoute";
+import RecipeCreator from "./components/RecipeCreator";
+import CoinNotifier from "./components/CoinNotifier";
 import { ErrorProvider } from "./contexts/ErrorContext";
 import UserProfile from "./components/UserProfile";
 import LandingPage from "./components/LandingPage";
@@ -33,6 +33,7 @@ function AppContent() {
 
   return (
     <>
+      <CoinNotifier />
       {!isLandingPage && <NavMenu />}
       <Routes>
         <Route
@@ -44,9 +45,11 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/recipes" element={<Recipes />} />
         <Route path="/recipes/:id" element={<RecipeDetail />} />
+        <Route path="/recipes/new" element={<RecipeCreator />} />
+        <Route path="/recipes/:id/edit" element={<RecipeCreator />} />
         <Route
           path="/admin/create-recipe"
-          element={<AdminRoute component={AdminRecipeCreator} />}
+          element={<Navigate replace to="/recipes/new" />}
         />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="*" element={<Navigate replace to="/login" />} />

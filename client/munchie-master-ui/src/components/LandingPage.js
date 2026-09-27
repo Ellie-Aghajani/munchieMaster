@@ -137,14 +137,18 @@ const LandingPage = () => {
                 About Me
               </Typography>
               <Typography sx={sectionBodySx}>
-                Hi, I’m Ellie—a web developer and mom to a toddler. As a
-                first-time mom, I found it challenging to find reliable
-                resources for toddler recipes and a supportive platform to ask
-                questions. This inspired me to create Munchie Master, a space
-                where moms can connect, share their favorite recipes, discuss
-                their experiences, and offer each other valuable tips. Join our
-                community and make mealtime easier and more enjoyable for you
-                and your little ones!
+                Trying to eat healthy, stay fit, and keep up with work and
+                everyday life? <br /> I know the struggle! I’m Ellie, a web
+                developer, and I’ve found that one of the biggest challenges is
+                simply figuring out what to eat when life gets busy. <br />{" "}
+                Without a little meal prep, it’s so easy to reach for something
+                quick and forget about those healthy goals. That’s why I created
+                Munchie Master, a place to collect easy-to-prepare, nutritious,
+                and healthy recipes. <br />
+                Now, I’d love for you to be part of it! Share your favorite easy
+                recipes, discover new meal ideas, and help us build a collection
+                of simple, delicious, and nutritious meals that actually fit
+                into our busy lives.
               </Typography>
             </Box>
           </Grid>
@@ -161,10 +165,10 @@ const LandingPage = () => {
                 Munchie Master helps you find recipes based on your available
                 ingredients, offering both free and featured recipes. Free
                 recipes include images and easy instructions, while featured
-                ones, shared by other parents, provide detailed steps and a
-                comment section for questions and advice. New users receive 10
-                coins at sign-up, and you can earn more by sharing your recipes.
-                When others buy them, you gain coins to access more content.
+                ones, shared by others, provide detailed steps and a comment
+                section for questions and advice. New users receive 10 coins at
+                sign-up, and you can earn more by sharing your recipes. When
+                others buy them, you gain coins to access more content.
               </Typography>
             </Box>
           </Grid>

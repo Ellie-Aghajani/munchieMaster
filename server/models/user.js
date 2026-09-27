@@ -3,6 +3,7 @@ const config = require("config");
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const passwordComplexity = require("joi-password-complexity");
+const COINS = require("../utils/coinRules");
 
 const complexityOptions = {
   min: 8,
@@ -39,7 +40,15 @@ const userSchema = new mongoose.Schema({
   likedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
   boughtRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
   avatar: { type: String },
-  coins: { type: Number, default: 10 },
+  coins: { type: Number, default: COINS.WELCOME },
+  // Coins earned from other users' actions, shown once on the next visit
+  unseenEarnings: {
+    coins: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
+    saves: { type: Number, default: 0 },
+    sales: { type: Number, default: 0 },
+    refunds: { type: Number, default: 0 },
+  },
   firstName: { type: String, maxLength: 50 },
   lastName: { type: String, maxLength: 50 },
   country: { type: String, maxLength: 50 },

@@ -1,10 +1,10 @@
 # Munchie Master
 
-**Munchie Master** is a web application that provides healthy and delicious recipes for toddler food. This project is designed to help parents and caregivers find easy-to-make, nutritious meals that their toddlers will love.
+**Munchie Master** is a web application that provides healthy and delicious recipes. This project is designed to help you find easy-to-make, nutritious meals that you will love.
 
 ## Features
 
-- Browse a variety of toddler recipes.
+- Browse a variety of recipes.
 - View detailed instructions and ingredients for each recipe.
 - Upload your own recipes with images.
 - User-friendly interface for easy navigation.

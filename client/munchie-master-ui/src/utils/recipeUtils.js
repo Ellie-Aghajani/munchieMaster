@@ -12,3 +12,20 @@ export const toLines = (items = []) =>
     .flatMap((item) => item.split(/\r?\n/))
     .map((line) => line.replace(/^\s*(?:[-•*]|\d+[.)])\s*/, "").trim())
     .filter(Boolean);
+
+export const authorIdOf = (recipe) => recipe.author?._id ?? recipe.author;
+
+// Default recipes have no author and are shown as MunchieMaster's
+export const authorNameOf = (recipe) =>
+  recipe.author
+    ? recipe.author.firstName || recipe.author.name || "A member"
+    : "MunchieMaster";
+
+export const isOwnRecipe = (recipe, user) =>
+  !!user?._id && authorIdOf(recipe) === user._id;
+
+// Paid recipes stay locked until the user buys them (authors always have access)
+export const isRecipeLocked = (recipe, user) =>
+  !!recipe.price &&
+  !isOwnRecipe(recipe, user) &&
+  !(user?.boughtRecipes || []).includes(recipe._id);

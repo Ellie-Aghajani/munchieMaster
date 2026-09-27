@@ -27,6 +27,7 @@ const ResponsiveCarousel = ({
   userSavedRecipes,
   onLike,
   onSave,
+  onDelete,
 }) => {
   const trackRef = useRef(null);
   const [canScroll, setCanScroll] = useState(false);
@@ -83,6 +84,7 @@ const ResponsiveCarousel = ({
               userSavedRecipes={userSavedRecipes}
               onLike={onLike}
               onSave={onSave}
+              onDelete={onDelete}
             />
           </Box>
         ))}

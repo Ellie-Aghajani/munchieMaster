@@ -15,6 +15,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Chip,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -23,6 +24,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import PersonIcon from "@mui/icons-material/Person";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import LogoutIcon from "@mui/icons-material/Logout";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import isEmpty from "lodash/isEmpty";
 
 const NavMenu = () => {
@@ -46,16 +48,27 @@ const NavMenu = () => {
     { label: "Dashboard", to: "/dashboard", icon: <DashboardIcon /> },
     { label: "Recipes", to: "/recipes", icon: <MenuBookIcon /> },
     { label: "Profile", to: "/profile", icon: <PersonIcon /> },
-    ...(currentUser?.isAdmin
-      ? [
-          {
-            label: "Create Recipe",
-            to: "/admin/create-recipe",
-            icon: <AddCircleOutlineIcon />,
-          },
-        ]
-      : []),
+    { label: "Share Recipe", to: "/recipes/new", icon: <AddCircleOutlineIcon /> },
   ];
+
+  const coinChip = (
+    <Chip
+      component={Link}
+      to="/dashboard"
+      clickable
+      icon={<MonetizationOnIcon />}
+      label={`${currentUser?.coins ?? 0} coins`}
+      sx={{
+        fontSize: "0.95rem",
+        color: "common.white",
+        backgroundColor: (theme) => alpha(theme.palette.common.white, 0.12),
+        "& .MuiChip-icon": { color: "inherit" },
+        "&:hover": {
+          backgroundColor: (theme) => alpha(theme.palette.common.white, 0.2),
+        },
+      }}
+    />
+  );
 
   const sidebarItemSx = {
     mx: 1.5,
@@ -98,6 +111,7 @@ const NavMenu = () => {
         />
         <Typography sx={{ fontSize: "1.25rem" }}>Munchie Master</Typography>
       </Box>
+      {isLoggedIn && <Box sx={{ px: 3, pb: 2 }}>{coinChip}</Box>}
       <Divider
         sx={{ borderColor: (theme) => alpha(theme.palette.common.white, 0.15) }}
       />
@@ -180,6 +194,7 @@ const NavMenu = () => {
                   gap: 1,
                 }}
               >
+                <Box sx={{ mr: 1 }}>{coinChip}</Box>
                 {sidebarLinks.map((link) => (
                   <Button
                     key={link.to}

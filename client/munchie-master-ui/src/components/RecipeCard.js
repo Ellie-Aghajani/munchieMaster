@@ -6,17 +6,33 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardMedia,
+  Chip,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { uploadUrl } from "../utils/recipeUtils";
+import LockIcon from "@mui/icons-material/Lock";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  authorNameOf,
+  isOwnRecipe,
+  isRecipeLocked,
+} from "../utils/recipeUtils";
+import RecipeImage from "./RecipeImage";
+
+const manageButtonSx = {
+  backgroundColor: "common.white",
+  boxShadow: (theme) => theme.customShadows.soft,
+};
 
 const RecipeCard = ({
   recipe,
@@ -24,10 +40,15 @@ const RecipeCard = ({
   userSavedRecipes = [],
   onLike,
   onSave,
+  onDelete, // Optional; shows edit and delete buttons on the user's own recipes
 }) => {
+  const { currentUser } = useAuth();
   const detailPath = `/recipes/${recipe._id}`;
   const isLiked = userLikedRecipes.includes(recipe._id);
   const isSaved = userSavedRecipes.includes(recipe._id);
+  const isLocked = isRecipeLocked(recipe, currentUser);
+  const isOwn = isOwnRecipe(recipe, currentUser);
+  const canManage = !!onDelete && (isOwn || currentUser?.isAdmin);
 
   return (
     <Card
@@ -41,14 +62,73 @@ const RecipeCard = ({
         "&:hover": { transform: "translateY(-4px)" },
       }}
     >
-      <Link to={detailPath}>
-        <CardMedia
-          component="img"
-          image={uploadUrl(recipe.image) || "https://via.placeholder.com/400x300"}
-          alt={recipe.name}
-          sx={{ height: 200, objectFit: "cover" }}
-        />
-      </Link>
+      <Box sx={{ position: "relative" }}>
+        <Box component={Link} to={detailPath} sx={{ display: "block" }}>
+          <RecipeImage
+            image={recipe.image}
+            alt={recipe.name}
+            sx={{ height: 200 }}
+          />
+        </Box>
+        {(isLocked || isOwn) && (
+          <Chip
+            size="small"
+            icon={isLocked ? <LockIcon /> : undefined}
+            label={isLocked ? `${recipe.price} coins` : "Your recipe"}
+            sx={{
+              position: "absolute",
+              top: 12,
+              left: 12,
+              backgroundColor: isLocked ? "accent.main" : "common.white",
+              color: isLocked ? "accent.contrastText" : "primary.main",
+              "& .MuiChip-icon": { color: "inherit" },
+            }}
+          />
+        )}
+        {canManage && (
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ position: "absolute", top: 8, right: 8 }}
+          >
+            <Tooltip title="Edit recipe">
+              <IconButton
+                component={Link}
+                to={`/recipes/${recipe._id}/edit`}
+                aria-label="Edit recipe"
+                size="small"
+                sx={{
+                  ...manageButtonSx,
+                  color: "primary.main",
+                  "&:hover": {
+                    backgroundColor: "primary.main",
+                    color: "common.white",
+                  },
+                }}
+              >
+                <EditOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete recipe">
+              <IconButton
+                onClick={() => onDelete(recipe)}
+                aria-label="Delete recipe"
+                size="small"
+                sx={{
+                  ...manageButtonSx,
+                  color: "error.main",
+                  "&:hover": {
+                    backgroundColor: "error.main",
+                    color: "common.white",
+                  },
+                }}
+              >
+                <DeleteOutlineIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        )}
+      </Box>
 
       <CardContent sx={{ flexGrow: 1, pb: 1 }}>
         <Typography
@@ -69,24 +149,35 @@ const RecipeCard = ({
         >
           {recipe.name?.trim()}
         </Typography>
-        {recipe.preparationTime && (
+        <Stack spacing={0.5}>
           <Stack direction="row" alignItems="center" spacing={0.75}>
             <AccessTimeIcon fontSize="small" color="action" />
             <Typography variant="body2" color="text.secondary">
-              {recipe.preparationTime}
+              {recipe.preparationTime || "—"}
             </Typography>
           </Stack>
-        )}
+          <Stack direction="row" alignItems="center" spacing={0.75}>
+            <PersonOutlineIcon fontSize="small" color="action" />
+            <Typography variant="body2" color="text.secondary" noWrap>
+              by {authorNameOf(recipe)}
+            </Typography>
+          </Stack>
+        </Stack>
       </CardContent>
 
       <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
-        <IconButton
-          onClick={() => onLike(recipe._id)}
-          aria-label={isLiked ? "Unlike" : "Like"}
-          size="small"
-        >
-          {isLiked ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-        </IconButton>
+        <Tooltip title={isLocked ? "Unlock this recipe to like it" : ""}>
+          <span>
+            <IconButton
+              onClick={() => onLike(recipe._id)}
+              aria-label={isLiked ? "Unlike" : "Like"}
+              size="small"
+              disabled={isLocked}
+            >
+              {isLiked ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+            </IconButton>
+          </span>
+        </Tooltip>
         <Typography variant="body2" color="text.secondary">
           {recipe.likeCount || 0}
         </Typography>
@@ -103,6 +194,7 @@ const RecipeCard = ({
           component={Link}
           to={detailPath}
           size="small"
+          startIcon={isLocked ? <LockIcon /> : undefined}
           sx={{
             flexShrink: 0,
             whiteSpace: "nowrap",
@@ -115,7 +207,7 @@ const RecipeCard = ({
             "&:hover": { backgroundColor: "accent.dark" },
           }}
         >
-          View Recipe
+          {isLocked ? "Unlock" : "View Recipe"}
         </Button>
       </CardActions>
     </Card>

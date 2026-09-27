@@ -2,6 +2,13 @@ const express = require("express");
 const auth = require("../middleware/auth");
 const { User } = require("../models/user");
 const { Recipe } = require("../models/recipe");
+const { RECIPE_SUMMARY_FIELDS } = require("../utils/coins");
+
+const summaryPopulate = (path) => ({
+  path,
+  select: RECIPE_SUMMARY_FIELDS,
+  populate: { path: "author", select: "name firstName" },
+});
 
 const router = express.Router();
 
@@ -60,11 +67,7 @@ router.put("/add-coins", auth, async (req, res) => {
 // GET: Fetch User's Own Recipes
 router.get("/my-recipes", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate({
-      path: "myRecipes",
-      select:
-        "name image ingredients directions preparationTime cookingStepImages likeCount price isFeatured",
-    });
+    const user = await User.findById(req.user._id).populate(summaryPopulate("myRecipes"));
     res.send(user.myRecipes);
   } catch (error) {
     res.status(500).send("Server error");
@@ -74,11 +77,7 @@ router.get("/my-recipes", auth, async (req, res) => {
 // GET: Fetch Saved Recipes
 router.get("/saved-recipes", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate({
-      path: "savedRecipes",
-      select:
-        "name image ingredients directions preparationTime cookingStepImages likeCount",
-    });
+    const user = await User.findById(req.user._id).populate(summaryPopulate("savedRecipes"));
     res.send(user.savedRecipes);
   } catch (error) {
     res.status(500).send("Server error");
@@ -88,11 +87,7 @@ router.get("/saved-recipes", auth, async (req, res) => {
 // GET: Fetch Liked Recipes
 router.get("/liked-recipes", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate({
-      path: "likedRecipes",
-      select:
-        "name image ingredients directions preparationTime cookingStepImages likeCount",
-    });
+    const user = await User.findById(req.user._id).populate(summaryPopulate("likedRecipes"));
     res.send(user.likedRecipes);
   } catch (error) {
     res.status(500).send("Server error");
@@ -102,11 +97,7 @@ router.get("/liked-recipes", auth, async (req, res) => {
 // GET: Fetch Bought Recipes
 router.get("/bought-recipes", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate({
-      path: "boughtRecipes",
-      select:
-        "name image ingredients directions preparationTime cookingStepImages likeCount",
-    });
+    const user = await User.findById(req.user._id).populate(summaryPopulate("boughtRecipes"));
     res.send(user.boughtRecipes);
   } catch (error) {
     res.status(500).send("Server error");

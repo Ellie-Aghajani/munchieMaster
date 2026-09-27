@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 
 const recipeSchema = new mongoose.Schema({
-  name: { type: String, required: true, minLength: 5, maxLength: 50 },
+  name: { type: String, required: true, minLength: 3, maxLength: 50 },
   image: { type: String },
   preparationTime: { type: String },
   ingredients: { type: [String], required: true },
@@ -13,6 +13,11 @@ const recipeSchema = new mongoose.Schema({
   price: { type: Number, default: 0 }, // price in coins for featured recipes
   isFeatured: { type: Boolean, default: false },
   cookingStepImages: [{ type: String, maxLength: 3 }],
+  // Posting user; empty for the default recipes, which are free
+  author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  // Users whose like or save already paid the author, so undo/redo pays nothing
+  likeRewardedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  saveRewardedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 const Recipe = mongoose.model("Recipe", recipeSchema);

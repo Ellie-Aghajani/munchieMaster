@@ -15,9 +15,16 @@ import {
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import axios from "axios";
 import ResponsiveCarousel from "./ResponsiveCarousel";
+import DeleteRecipeDialog from "./DeleteRecipeDialog";
 import { useAuth } from "../contexts/AuthContext";
 import { useError } from "../contexts/ErrorContext";
 import config from "../config";
+import {
+  errorText,
+  likeRecipe,
+  rewardMessage,
+  toggleSaveRecipe,
+} from "../api/recipeActions";
 
 const authHeaders = () => ({ "x-auth-token": localStorage.getItem("token") });
 
@@ -44,7 +51,8 @@ const sections = [
     title: "Bought Recipes",
     color: "tiles.blue",
     endpoint: "/api/dashboard/bought-recipes",
-    empty: "You haven't bought any recipes yet.",
+    empty:
+      "Recipes shared by others cost 5 coins to unlock. The ones you unlock show up here.",
   },
   {
     key: "mine",
@@ -52,7 +60,7 @@ const sections = [
     title: "My Recipes",
     color: "tiles.lavender",
     endpoint: "/api/dashboard/my-recipes",
-    empty: "You haven't shared any recipes yet.",
+    empty: "Share your first recipe and earn 5 coins.",
   },
 ];
 
@@ -78,8 +86,8 @@ const accentButtonSx = {
 };
 
 const Dashboard = () => {
-  const { currentUser, logout } = useAuth();
-  const { showError } = useError();
+  const { logout } = useAuth();
+  const { showError, showSuccess } = useError();
   const navigate = useNavigate();
   const [summary, setSummary] = useState(null);
   const [lists, setLists] = useState({
@@ -136,12 +144,10 @@ const Dashboard = () => {
 
   const handleLike = async (recipeId) => {
     try {
-      const { data } = await axios.post(
-        `/api/recipes/${recipeId}/like`,
-        {},
-        { headers: authHeaders() }
-      );
+      const data = await likeRecipe(recipeId);
       if (!data.success) return;
+      const message = rewardMessage(data, "like");
+      if (message) showSuccess(message);
       setLists((prev) => {
         const withCount = (list) =>
           list.map((r) =>
@@ -161,24 +167,31 @@ const Dashboard = () => {
         };
       });
     } catch (error) {
-      showError(error.response?.data, "Could not update the like.");
+      showError(null, errorText(error, "Could not update the like."));
     }
   };
 
   const handleSave = async (recipeId) => {
     try {
-      const { data } = await axios.post(
-        "/api/users/save-recipe",
-        { recipeId },
-        { headers: authHeaders() }
-      );
+      const data = await toggleSaveRecipe(recipeId);
       if (!data.success) return;
+      const message = rewardMessage(data, "save");
+      if (message) showSuccess(message);
       const recipe = findRecipe(recipeId);
       if (!recipe) return;
       setLists((prev) => ({ ...prev, saved: toggleInList(prev.saved, recipe) }));
     } catch (error) {
-      showError(error.response?.data, "Could not update saved recipes.");
+      showError(null, errorText(error, "Could not update saved recipes."));
     }
+  };
+
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const closeDeleteDialog = useCallback(() => setDeleteTarget(null), []);
+
+  // Refresh everything: the recipe leaves every list and the coin balance changes
+  const handleDeleted = () => {
+    setDeleteTarget(null);
+    fetchDashboard();
   };
 
   const scrollToSection = (id) => {
@@ -225,6 +238,10 @@ const Dashboard = () => {
               label={`${summary?.coins ?? 0} coins`}
               sx={{ fontSize: "1rem" }}
             />
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Earn coins: +5 per recipe you share, +1 per like and +2 per
+              save it gets, +5 each time someone unlocks it.
+            </Typography>
           </Box>
           <Stack direction="row" spacing={1.5}>
             <Button component={Link} to="/recipes" sx={accentButtonSx}>
@@ -295,13 +312,13 @@ const Dashboard = () => {
               >
                 {section.title}
               </Typography>
-              {section.key === "mine" && currentUser?.isAdmin && (
+              {section.key === "mine" && (
                 <Button
                   component={Link}
-                  to="/admin/create-recipe"
+                  to="/recipes/new"
                   sx={accentButtonSx}
                 >
-                  Add Recipe
+                  Share a Recipe
                 </Button>
               )}
             </Stack>
@@ -313,6 +330,7 @@ const Dashboard = () => {
                 userSavedRecipes={savedIds}
                 onLike={handleLike}
                 onSave={handleSave}
+                onDelete={section.key === "mine" ? setDeleteTarget : undefined}
               />
             ) : (
               <Stack
@@ -338,6 +356,13 @@ const Dashboard = () => {
           </Box>
         ))}
       </Stack>
+
+      <DeleteRecipeDialog
+        recipeId={deleteTarget?._id}
+        open={!!deleteTarget}
+        onClose={closeDeleteDialog}
+        onDeleted={handleDeleted}
+      />
     </Container>
   );
 };

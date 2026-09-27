@@ -9,6 +9,12 @@ const express = require("express");
 const { Recipe } = require("../models/recipe");
 const router = express.Router();
 const upload = require("../config/multerConfig");
+const {
+  COINS,
+  RECIPE_SUMMARY_FIELDS,
+  authorNameOf,
+  rewardAuthor,
+} = require("../utils/coins");
 
 // GET current user data (without password)
 router.get("/me", auth, async (req, res) => {
@@ -16,6 +22,34 @@ router.get("/me", auth, async (req, res) => {
     const user = await User.findById(req.user._id).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.send(user);
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+});
+
+// GET coins earned from other users since the last visit, then reset them
+router.get("/coin-notice", auth, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $set: {
+          unseenEarnings: { coins: 0, likes: 0, saves: 0, sales: 0, refunds: 0 },
+        },
+      },
+      { new: false }
+    ).select("unseenEarnings coins");
+    if (!user) return res.status(404).send("User not found");
+    res.send({
+      ...(user.unseenEarnings?.toObject?.() || {
+        coins: 0,
+        likes: 0,
+        saves: 0,
+        sales: 0,
+        refunds: 0,
+      }),
+      balance: user.coins,
+    });
   } catch (error) {
     res.status(500).send("Server error");
   }
@@ -29,7 +63,8 @@ router.post("/", async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(400).send("User already registered.");
 
-  user = new User(_.pick(req.body, ["name", "email", "password", "isAdmin"]));
+  // isAdmin is never taken from the request; admins are set in the database
+  user = new User(_.pick(req.body, ["name", "email", "password"]));
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
   await user.save();
@@ -66,8 +101,13 @@ router.post("/save-recipe", auth, async (req, res) => {
 
   try {
     const user = await User.findById(userId);
-    const recipe = await Recipe.findById(recipeId);
+    const recipe = await Recipe.findById(recipeId).populate(
+      "author",
+      "name firstName"
+    );
+    if (!recipe) return res.status(404).json({ message: "Recipe not found" });
     const index = user.savedRecipes.indexOf(recipeId);
+    let coinsAwarded = 0;
 
     if (index > -1) {
       user.savedRecipes.splice(index, 1);
@@ -77,6 +117,11 @@ router.post("/save-recipe", auth, async (req, res) => {
     } else {
       user.savedRecipes.push(recipeId);
       recipe.savedBy.push(userId);
+      coinsAwarded = await rewardAuthor(recipe, userId, {
+        rewardedField: "saveRewardedBy",
+        amount: COINS.SAVE_REWARD,
+        counter: "saves",
+      });
     }
 
     await user.save();
@@ -85,6 +130,8 @@ router.post("/save-recipe", auth, async (req, res) => {
       success: true,
       savedRecipes: user.savedRecipes,
       savedByCount: recipe.savedBy.length,
+      coinsAwarded,
+      authorName: authorNameOf(recipe),
     });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -127,7 +174,10 @@ router.delete("/avatar", auth, async (req, res) => {
 // GET: Retrieve user's saved recipes
 router.get("/saved-recipes", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("savedRecipes");
+    const user = await User.findById(req.user._id).populate({
+      path: "savedRecipes",
+      select: RECIPE_SUMMARY_FIELDS,
+    });
     res.json({ savedRecipes: user.savedRecipes });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -137,7 +187,10 @@ router.get("/saved-recipes", auth, async (req, res) => {
 // GET: Retrieve user's liked recipes
 router.get("/liked-recipes", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("likedRecipes");
+    const user = await User.findById(req.user._id).populate({
+      path: "likedRecipes",
+      select: RECIPE_SUMMARY_FIELDS,
+    });
     res.json({ likedRecipes: user.likedRecipes });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
