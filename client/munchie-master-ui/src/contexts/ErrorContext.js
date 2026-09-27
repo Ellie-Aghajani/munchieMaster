@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useCallback } from 'react';
 import { Snackbar, Alert, Typography } from '@mui/material';
 
 const ErrorContext = createContext();
@@ -6,9 +6,9 @@ const ErrorContext = createContext();
 export function ErrorProvider({ children }) {
   const [error, setError] = useState(null);
 
-  const showError = (data, message) => {
+  const showError = useCallback((data, message) => {
     setError({ data, message });
-  };
+  }, []);
 
   return (
     <ErrorContext.Provider value={{ showError }}>

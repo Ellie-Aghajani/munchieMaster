@@ -80,7 +80,7 @@ function Recipes() {
       );
       setLoading(false);
     }
-  }, []);
+  }, [logout, navigate, showError]);
 
   useEffect(() => {
     fetchRecipes();

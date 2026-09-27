@@ -11,7 +11,9 @@ import {
   List,
   ListItemButton,
   ListItemText,
+  Divider,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 
@@ -107,26 +109,79 @@ const LandingNavbar = () => {
       </Container>
 
       {/* Drawer for menu items */}
-      <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer(false)}>
-        <List sx={{ width: 240 }}>
+      <Drawer
+        anchor="right"
+        open={isDrawerOpen}
+        onClose={toggleDrawer(false)}
+        PaperProps={{
+          sx: {
+            width: 280,
+            backgroundColor: "primary.main",
+            color: "common.white",
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 3 }}>
+          <Box
+            component="img"
+            src={process.env.PUBLIC_URL + "/images/logo.png"}
+            alt="MunchieMaster Logo"
+            sx={{ height: 40 }}
+          />
+          <Typography sx={{ fontSize: "1.25rem" }}>Munchie Master</Typography>
+        </Box>
+        <Divider
+          sx={{
+            borderColor: (theme) => alpha(theme.palette.common.white, 0.15),
+          }}
+        />
+        <List sx={{ pt: 2 }}>
           {navLinks.map((link) => (
             <ListItemButton
               key={link.href}
               component="a"
               href={link.href}
               onClick={toggleDrawer(false)}
+              sx={{
+                mx: 1.5,
+                mb: 0.5,
+                px: 2,
+                py: 1.25,
+                borderRadius: 2,
+                "&:hover": {
+                  backgroundColor: (theme) =>
+                    alpha(theme.palette.common.white, 0.08),
+                },
+              }}
             >
-              <ListItemText primary={link.label} />
+              <ListItemText
+                primary={link.label}
+                primaryTypographyProps={{ fontSize: "1.05rem" }}
+              />
             </ListItemButton>
           ))}
-          <ListItemButton
+        </List>
+        <Box sx={{ px: 3, pt: 2 }}>
+          <Button
+            fullWidth
             component={Link}
             to="/signup"
             onClick={toggleDrawer(false)}
+            sx={{
+              py: 1.25,
+              borderRadius: 999,
+              fontSize: "1rem",
+              textTransform: "none",
+              color: "accent.contrastText",
+              backgroundColor: "accent.main",
+              "&:hover": {
+                backgroundColor: "accent.dark",
+              },
+            }}
           >
-            <ListItemText primary="Join Munchie Family" />
-          </ListItemButton>
-        </List>
+            Join Munchie Family
+          </Button>
+        </Box>
       </Drawer>
     </AppBar>
   );

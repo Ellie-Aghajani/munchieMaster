@@ -1,7 +1,12 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import config from "../config";
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL;
 console.log("Base URL:", process.env.REACT_APP_SERVER_URL);
 
@@ -82,12 +87,12 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     delete axios.defaults.headers.common["x-auth-token"];
     setCurrentUser({});
-  };
+  }, []);
 
   const value = {
     currentUser,
