@@ -10,6 +10,7 @@ import NavMenu from "./components/NavMenu";
 // import LandingNavbar from "./components/LandingNavbar";
 import Login from "./components/Login";
 import Recipes from "./components/Recipes";
+import RecipeDetail from "./components/RecipeDetail";
 import AdminRecipeCreator from "./components/AdminRecipeCreator";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import isEmpty from "lodash/isEmpty";
@@ -42,6 +43,7 @@ function AppContent() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/recipes" element={<Recipes />} />
+        <Route path="/recipes/:id" element={<RecipeDetail />} />
         <Route
           path="/admin/create-recipe"
           element={<AdminRoute component={AdminRecipeCreator} />}

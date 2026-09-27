@@ -15,7 +15,6 @@ const theme = createTheme({
     },
     background: {
       default: "#EBBA45", // Page background for every page
-      subtle: "#F8F8F8", // Recipe directions box
     },
     text: {
       heading: "#2C3E50",
@@ -28,15 +27,6 @@ const theme = createTheme({
       rose: "#FFD9D2", // Liked recipes
       blue: "#D6E9FA", // Bought recipes
       lavender: "#E6DFF7", // My recipes
-    },
-    scrollbar: {
-      track: "#F1F1F1",
-      thumb: "#888888",
-      thumbHover: "#555555",
-    },
-    carousel: {
-      active: "#F46200", // Arrows and active dot
-      dot: "#697455",
     },
   },
   customShadows: {

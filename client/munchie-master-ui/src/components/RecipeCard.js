@@ -1,19 +1,22 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
+  Box,
+  Button,
   Card,
+  CardActions,
   CardContent,
   CardMedia,
-  Typography,
-  Box,
   IconButton,
-  Paper,
+  Stack,
+  Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import config from "../config";
+import { uploadUrl } from "../utils/recipeUtils";
 
 const RecipeCard = ({
   recipe,
@@ -22,114 +25,99 @@ const RecipeCard = ({
   onLike,
   onSave,
 }) => {
+  const detailPath = `/recipes/${recipe._id}`;
+  const isLiked = userLikedRecipes.includes(recipe._id);
+  const isSaved = userSavedRecipes.includes(recipe._id);
+
   return (
     <Card
       sx={{
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between", // Distributes content evenly
-        borderRadius: "10px",
+        borderRadius: 3,
         boxShadow: (theme) => theme.customShadows.soft,
+        transition: "transform 0.2s",
+        "&:hover": { transform: "translateY(-4px)" },
       }}
-      key={recipe._id}
     >
-      <CardMedia
-        component="img"
-        height="200"
-        image={
-          recipe.image
-            ? `${config.serverUrl}/uploads/${recipe.image.replace(
-                /^\/?uploads\/?/,
-                ""
-              )}`
-            : "https://via.placeholder.com/200" // Fallback image
-        }
-        alt={recipe.name || "Recipe Image"}
-      />
-      <CardContent sx={{ flexGrow: 1, padding: "16px" }}>
-        <Typography gutterBottom variant="h5" component="div">
-          {recipe.name}
-        </Typography>
-        <Box display="flex" alignItems="center" mb={2}>
-          <AccessTimeIcon sx={{ mr: 1 }} />
-          <Typography variant="body2" color="text.secondary">
-            {recipe.preparationTime || "N/A"}
-          </Typography>
-        </Box>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          Ingredients:
-          <ul style={{ paddingLeft: "20px" }}>
-            {(recipe.ingredients || []).map((ingredient, index) => (
-              <li key={index}>{ingredient}</li>
-            ))}
-          </ul>
-        </Typography>
+      <Link to={detailPath}>
+        <CardMedia
+          component="img"
+          image={uploadUrl(recipe.image) || "https://via.placeholder.com/400x300"}
+          alt={recipe.name}
+          sx={{ height: 200, objectFit: "cover" }}
+        />
+      </Link>
 
-        <Paper
-          elevation={3}
+      <CardContent sx={{ flexGrow: 1, pb: 1 }}>
+        <Typography
+          component={Link}
+          to={detailPath}
           sx={{
-            maxHeight: 200,
-            overflowY: "auto",
-            padding: 2,
-            backgroundColor: "background.subtle",
-            borderRadius: 2,
-            "&::-webkit-scrollbar": {
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-track": {
-              backgroundColor: "scrollbar.track",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "scrollbar.thumb",
-              borderRadius: "3px",
-            },
-            "&::-webkit-scrollbar-thumb:hover": {
-              backgroundColor: "scrollbar.thumbHover",
-            },
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            fontSize: "1.25rem",
+            lineHeight: 1.3,
+            minHeight: "2.6em", // Always reserve two lines so cards line up
+            color: "primary.main",
+            textDecoration: "none",
+            mb: 1,
           }}
         >
-          {recipe.directions.map((step, index) => (
-            <Box
-              key={index}
-              sx={{ mb: 2, display: "flex", alignItems: "flex-start" }}
-            >
-              <Typography variant="body2">{step}</Typography>
-            </Box>
-          ))}
-        </Paper>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mt={2}
-        >
-          <Box>
-            <IconButton onClick={() => onLike(recipe._id)}>
-              {userLikedRecipes.includes(recipe._id) ? (
-                <FavoriteIcon color="error" />
-              ) : (
-                <FavoriteBorderIcon />
-              )}
-            </IconButton>
-            <Typography variant="body2" component="span">
-              {recipe.likeCount || 0} likes
+          {recipe.name?.trim()}
+        </Typography>
+        {recipe.preparationTime && (
+          <Stack direction="row" alignItems="center" spacing={0.75}>
+            <AccessTimeIcon fontSize="small" color="action" />
+            <Typography variant="body2" color="text.secondary">
+              {recipe.preparationTime}
             </Typography>
-          </Box>
-          <Box>
-            <IconButton onClick={() => onSave(recipe._id)}>
-              {userSavedRecipes.includes(recipe._id) ? (
-                <BookmarkIcon color="primary" />
-              ) : (
-                <BookmarkBorderIcon />
-              )}
-            </IconButton>
-            <Typography variant="body2" component="span">
-              {userSavedRecipes.includes(recipe._id) ? "Saved" : "Save"}
-            </Typography>
-          </Box>
-        </Box>
+          </Stack>
+        )}
       </CardContent>
+
+      <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
+        <IconButton
+          onClick={() => onLike(recipe._id)}
+          aria-label={isLiked ? "Unlike" : "Like"}
+          size="small"
+        >
+          {isLiked ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+        </IconButton>
+        <Typography variant="body2" color="text.secondary">
+          {recipe.likeCount || 0}
+        </Typography>
+        <IconButton
+          onClick={() => onSave(recipe._id)}
+          aria-label={isSaved ? "Remove from saved" : "Save"}
+          size="small"
+          sx={{ ml: 1 }}
+        >
+          {isSaved ? <BookmarkIcon color="primary" /> : <BookmarkBorderIcon />}
+        </IconButton>
+        <Box sx={{ flexGrow: 1 }} />
+        <Button
+          component={Link}
+          to={detailPath}
+          size="small"
+          sx={{
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+            borderRadius: 999,
+            px: 2,
+            textTransform: "none",
+            fontSize: "0.95rem",
+            color: "accent.contrastText",
+            backgroundColor: "accent.main",
+            "&:hover": { backgroundColor: "accent.dark" },
+          }}
+        >
+          View Recipe
+        </Button>
+      </CardActions>
     </Card>
   );
 };

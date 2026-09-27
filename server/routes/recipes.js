@@ -15,6 +15,7 @@ router.get("/", async (req, res) => {
       const {
         _id,
         name,
+        preparationTime,
         ingredients,
         directions,
         image,
@@ -24,6 +25,7 @@ router.get("/", async (req, res) => {
       return {
         _id,
         name,
+        preparationTime,
         ingredients,
         directions,
         image,

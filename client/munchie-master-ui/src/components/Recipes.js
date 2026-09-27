@@ -2,23 +2,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   Container,
   Typography,
-  Card,
-  CardContent,
-  CardMedia,
   Box,
   CircularProgress,
-  Paper,
-  IconButton,
   Snackbar,
   Alert,
   Grid,
 } from "@mui/material";
 import axios from "axios";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import RecipeCard from "./RecipeCard";
 import { useError } from "../contexts/ErrorContext";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +17,6 @@ import config from "../config";
 
 axios.defaults.baseURL = config.serverUrl;
 
-console.log(config.serverUrl);
 
 function Recipes() {
   const [recipes, setRecipes] = useState([]);
@@ -85,8 +75,6 @@ function Recipes() {
   useEffect(() => {
     fetchRecipes();
   }, [fetchRecipes]);
-  console.log("recipe", recipes);
-  console.log("Recipes", Recipes);
 
   const handleLikeRecipe = async (recipeId) => {
     try {
@@ -193,98 +181,13 @@ function Recipes() {
       <Grid container spacing={4}>
         {recipes.map((recipe) => (
           <Grid item key={recipe._id} xs={12} sm={6} md={4}>
-            <Card
-              sx={{ height: "100%", display: "flex", flexDirection: "column" }}
-            >
-              <CardMedia
-                component="img"
-                height="200"
-                image={`${config.serverUrl}/uploads/${recipe.image.replace(
-                  /^\/?uploads\/?/,
-                  ""
-                )}`}
-                alt={recipe.name}
-              />
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography gutterBottom variant="h5" component="div">
-                  {recipe.name}
-                </Typography>
-                <Box display="flex" alignItems="center" mb={2}>
-                  <AccessTimeIcon sx={{ mr: 1 }} />
-                  <Typography variant="body2" color="text.secondary">
-                    {recipe.preparationTime}
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Ingredients: {recipe.ingredients.slice(0, 3).join(", ")}
-                  {recipe.ingredients.length > 3 && "..."}
-                </Typography>
-
-                <Paper
-                  elevation={3}
-                  sx={{
-                    maxHeight: 200,
-                    overflowY: "auto",
-                    padding: 2,
-                    backgroundColor: "background.subtle",
-                    borderRadius: 2,
-                    "&::-webkit-scrollbar": {
-                      width: "6px",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      backgroundColor: "scrollbar.track",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                      backgroundColor: "scrollbar.thumb",
-                      borderRadius: "3px",
-                    },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                      backgroundColor: "scrollbar.thumbHover",
-                    },
-                  }}
-                >
-                  {recipe.directions.map((step, index) => (
-                    <Box
-                      key={index}
-                      sx={{ mb: 2, display: "flex", alignItems: "flex-start" }}
-                    >
-                      <Typography variant="body2">{step}</Typography>
-                    </Box>
-                  ))}
-                </Paper>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  mt={2}
-                >
-                  <Box>
-                    <IconButton onClick={() => handleLikeRecipe(recipe._id)}>
-                      {userLikedRecipes.includes(recipe._id) ? (
-                        <FavoriteIcon color="error" />
-                      ) : (
-                        <FavoriteBorderIcon />
-                      )}
-                    </IconButton>
-                    <Typography variant="body2" component="span">
-                      {recipe.likeCount} likes
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <IconButton onClick={() => handleSaveRecipe(recipe._id)}>
-                      {userSavedRecipes.includes(recipe._id) ? (
-                        <BookmarkIcon color="primary" />
-                      ) : (
-                        <BookmarkBorderIcon />
-                      )}
-                    </IconButton>
-                    <Typography variant="body2" component="span">
-                      {userSavedRecipes.includes(recipe._id) ? "Saved" : "Save"}
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
+            <RecipeCard
+              recipe={recipe}
+              userLikedRecipes={userLikedRecipes}
+              userSavedRecipes={userSavedRecipes}
+              onLike={handleLikeRecipe}
+              onSave={handleSaveRecipe}
+            />
           </Grid>
         ))}
       </Grid>

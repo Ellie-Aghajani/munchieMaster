@@ -1,8 +1,25 @@
-import React from "react";
-import { Carousel } from "antd";
-import { Box } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import { Box, IconButton, Stack } from "@mui/material";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import RecipeCard from "./RecipeCard";
-import "./carouselStyles.css"; // Ensure styles for arrows, dots, and spacing are here
+
+const GAP = 24; // px between cards
+
+// Visible cards per breakpoint; on phones the next card peeks in
+const slideWidth = {
+  xs: "85%",
+  sm: `calc((100% - ${GAP}px) / 2)`,
+  md: `calc((100% - ${GAP * 2}px) / 3)`,
+  lg: `calc((100% - ${GAP * 3}px) / 4)`,
+};
+
+const arrowSx = {
+  backgroundColor: "common.white",
+  color: "primary.main",
+  boxShadow: (theme) => theme.customShadows.soft,
+  "&:hover": { backgroundColor: "accent.main", color: "accent.contrastText" },
+};
 
 const ResponsiveCarousel = ({
   recipes,
@@ -11,52 +28,53 @@ const ResponsiveCarousel = ({
   onLike,
   onSave,
 }) => {
-  const settings = {
-    dots: true,
-    arrows: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    responsive: [
-      {
-        breakpoint: 1200, // Desktop
-        settings: { slidesToShow: 3 },
-      },
-      {
-        breakpoint: 992, // Laptop
-        settings: { slidesToShow: 2 },
-      },
-      {
-        breakpoint: 768, // Tablet
-        settings: { slidesToShow: 1 },
-      },
-    ],
+  const trackRef = useRef(null);
+  const [canScroll, setCanScroll] = useState(false);
+
+  // Only show the arrows when the cards don't all fit
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const update = () => setCanScroll(track.scrollWidth > track.clientWidth + 1);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, [recipes.length]);
+
+  const scrollBySlide = (direction) => {
+    const track = trackRef.current;
+    const slide = track?.firstElementChild;
+    if (!slide) return;
+    track.scrollBy({
+      left: direction * (slide.offsetWidth + GAP),
+      behavior: "smooth",
+    });
   };
 
   return (
-    <Box
-      sx={{
-        padding: "20px",
-        position: "relative",
-        "& .custom-carousel .slick-prev, & .custom-carousel .slick-next": {
-          color: "carousel.active",
-        },
-        "& .custom-carousel .slick-dots li button": {
-          backgroundColor: "carousel.dot",
-        },
-        "& .custom-carousel .slick-dots li.slick-active button": {
-          backgroundColor: "carousel.active",
-        },
-      }}
-    >
-      <Carousel {...settings} className="custom-carousel">
+    <Box>
+      <Box
+        ref={trackRef}
+        sx={{
+          display: "flex",
+          gap: `${GAP}px`,
+          overflowX: "auto",
+          scrollSnapType: "x mandatory",
+          scrollbarWidth: "none",
+          "&::-webkit-scrollbar": { display: "none" },
+          // Room for the card hover lift and shadow
+          pt: 1,
+          pb: 2,
+        }}
+      >
         {recipes.map((recipe) => (
-          <div
+          <Box
             key={recipe._id}
-            style={{
-              padding: "10px", // Space between cards
-              boxSizing: "border-box",
+            sx={{
+              flex: "0 0 auto",
+              width: slideWidth,
+              scrollSnapAlign: "start",
             }}
           >
             <RecipeCard
@@ -66,9 +84,28 @@ const ResponsiveCarousel = ({
               onLike={onLike}
               onSave={onSave}
             />
-          </div>
+          </Box>
         ))}
-      </Carousel>
+      </Box>
+
+      {canScroll && (
+        <Stack direction="row" spacing={1.5} justifyContent="flex-end" mt={1}>
+          <IconButton
+            aria-label="Previous recipes"
+            onClick={() => scrollBySlide(-1)}
+            sx={arrowSx}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+          <IconButton
+            aria-label="Next recipes"
+            onClick={() => scrollBySlide(1)}
+            sx={arrowSx}
+          >
+            <ChevronRightIcon />
+          </IconButton>
+        </Stack>
+      )}
     </Box>
   );
 };
