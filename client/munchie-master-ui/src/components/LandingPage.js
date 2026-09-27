@@ -32,6 +32,16 @@ const sectionHeadingSx = {
   mb: 2,
 };
 
+// Keep in sync with server/utils/coinRules.js
+const coinRules = [
+  { amount: "+10", text: "Welcome coins when you join" },
+  { amount: "+5", text: "For every recipe you share" },
+  { amount: "+1", text: "For each like " },
+  { amount: "+2", text: "For each save your recipes get" },
+  { amount: "+5", text: "Each time someone unlocks your recipe" },
+  { amount: "−5", text: "To unlock a recipe from another user" },
+];
+
 const sectionBodySx = {
   fontSize: { xs: "1rem", md: "1.125rem" },
   lineHeight: 1.7,
@@ -163,15 +173,43 @@ const LandingPage = () => {
               <Typography variant="h3" sx={sectionHeadingSx}>
                 How it Works
               </Typography>
-              <Typography sx={sectionBodySx}>
-                Munchie Master helps you find recipes based on your available
-                ingredients, offering both free and featured recipes. Free
-                recipes include images and easy instructions, while featured
-                ones, shared by others, provide detailed steps and a comment
-                section for questions and advice. New users receive 10 coins at
-                sign-up, and you can earn more by sharing your recipes. When
-                others buy them, you gain coins to access more content.
+              <Typography sx={{ ...sectionBodySx, mb: 2.5 }}>
+                Every Munchie Master recipe is free. Recipes shared by users
+                cost coins to unlock, and you earn coins by sharing your own.
               </Typography>
+              <Stack
+                component="ul"
+                spacing={1.5}
+                sx={{ listStyle: "none", p: 0, m: 0 }}
+              >
+                {coinRules.map((rule) => (
+                  <Stack
+                    component="li"
+                    key={rule.text}
+                    direction="row"
+                    spacing={1.5}
+                    alignItems="center"
+                  >
+                    <Box
+                      sx={{
+                        flexShrink: 0,
+                        minWidth: 64,
+                        px: 1,
+                        py: 0.5,
+                        borderRadius: 999,
+                        border: "1px solid",
+                        borderColor: "primary.main",
+                        textAlign: "center",
+                        typography: "body1",
+                        fontSize: "0.95rem",
+                      }}
+                    >
+                      {rule.amount}
+                    </Box>
+                    <Typography sx={sectionBodySx}>{rule.text}</Typography>
+                  </Stack>
+                ))}
+              </Stack>
             </Box>
           </Grid>
         </Grid>
