@@ -1,295 +1,429 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
 import {
-  Container,
-  Typography,
-  Box,
-  Grid,
   Avatar,
+  Box,
   Button,
-  TextField,
+  Chip,
+  CircularProgress,
+  Container,
+  Divider,
+  Grid,
   IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import { useAuth } from "../contexts/AuthContext";
 import { useError } from "../contexts/ErrorContext";
-import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import DeleteIcon from "@mui/icons-material/Delete";
-import config from "../config";
+import { errorText } from "../api/recipeActions";
+import { uploadUrl } from "../utils/recipeUtils";
+import AvatarCropDialog from "./AvatarCropDialog";
+
+const MAX_PHOTO_MB = 10; // Before cropping; the saved photo is a small 512px JPEG
+const DESCRIPTION_MAX = 500;
+
+const FIELDS = [
+  "name",
+  "firstName",
+  "lastName",
+  "country",
+  "province",
+  "city",
+  "description",
+];
+
+const cardSx = {
+  p: { xs: 3, md: 4 },
+  borderRadius: 4,
+  color: "primary.main",
+  backgroundColor: "tiles.cream",
+  boxShadow: (theme) => theme.customShadows.raised,
+};
+
+const pillButtonSx = {
+  borderRadius: 999,
+  px: 3,
+  py: 1,
+  textTransform: "none",
+  fontSize: "1rem",
+};
+
+const accentButtonSx = {
+  ...pillButtonSx,
+  color: "accent.contrastText",
+  backgroundColor: "accent.main",
+  "&:hover": { backgroundColor: "accent.dark" },
+  "&.Mui-disabled": { color: "accent.contrastText", opacity: 0.5 },
+};
+
+const inputSx = { "& .MuiInputBase-root": { backgroundColor: "common.white" } };
+
+const sectionTitleSx = { fontSize: "1.25rem", mb: 2 };
+
+const authHeaders = () => ({ "x-auth-token": localStorage.getItem("token") });
+
+const formFromUser = (user) =>
+  Object.fromEntries(FIELDS.map((field) => [field, user?.[field] || ""]));
+
+const displayName = (user) =>
+  [user.firstName, user.lastName].filter(Boolean).join(" ") || user.name;
 
 function UserProfile() {
-  const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    country: "",
-    province: "",
-    city: "",
-    description: "",
-  });
-  const { showError } = useError();
+  const { currentUser, checkAuthStatus } = useAuth();
+  const { showError, showSuccess } = useError();
+  const [form, setForm] = useState(() => formFromUser(currentUser));
+  const [saving, setSaving] = useState(false);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const fileInputRef = useRef(null);
+  const [cropSrc, setCropSrc] = useState(null);
 
-  // Fetch user data on component mount
+  // Refill the form if the logged-in user changes
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userResponse = await axios.get(
-          `${config.serverUrl}/api/users/me`,
-          {
-            headers: {
-              "x-auth-token": localStorage.getItem("token"),
-            },
-          }
-        );
-        setUser(userResponse.data);
-        setFormData({
-          firstName: userResponse.data.firstName || "",
-          lastName: userResponse.data.lastName || "",
-          country: userResponse.data.country || "",
-          province: userResponse.data.province || "",
-          city: userResponse.data.city || "",
-          description: userResponse.data.description || "",
-        });
-      } catch (error) {
-        showError("Failed to fetch user data");
-      }
-    };
-    fetchUserData();
-  }, [showError]);
+    setForm(formFromUser(currentUser));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?._id]);
 
-  const handleInputChange = (e) => {
+  if (!currentUser?._id) return <Navigate replace to="/login" />;
+
+  const saved = formFromUser(currentUser);
+  const isDirty = FIELDS.some((field) => form[field].trim() !== saved[field]);
+  const nameError = form.name.trim().length < 3 ? "At least 3 characters" : "";
+  const location = [currentUser.city, currentUser.province, currentUser.country]
+    .filter(Boolean)
+    .join(", ");
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = async (e) => {
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (nameError) return;
+    setSaving(true);
+    try {
+      const trimmed = Object.fromEntries(
+        FIELDS.map((field) => [field, form[field].trim()]),
+      );
+      await axios.put("/api/users/me", trimmed, { headers: authHeaders() });
+      await checkAuthStatus();
+      setForm(trimmed);
+      showSuccess("Profile saved.");
+    } catch (error) {
+      showError(null, errorText(error, "Could not save your profile."));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const data = new FormData();
-      data.append("avatar", file);
-      try {
-        const response = await axios.put(
-          `${config.serverUrl}/api/users/avatar`,
-          data,
-          {
-            headers: {
-              "x-auth-token": localStorage.getItem("token"),
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        setUser(response.data.user); // Update user state with the new avatar
-      } catch (error) {
-        showError("Failed to update avatar");
-      }
+    e.target.value = ""; // Allow picking the same file again later
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showError(null, "Please choose an image file.");
+      return;
+    }
+    if (file.size > MAX_PHOTO_MB * 1024 * 1024) {
+      showError(null, `Please choose a photo under ${MAX_PHOTO_MB} MB.`);
+      return;
+    }
+
+    setCropSrc(URL.createObjectURL(file));
+  };
+
+  const closeCrop = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  };
+
+  // Upload the cropped photo chosen in the crop dialog
+  const handleCropped = async (blob) => {
+    const data = new FormData();
+    data.append("avatar", blob, "avatar.jpg");
+    setPhotoBusy(true);
+    try {
+      await axios.put("/api/users/avatar", data, { headers: authHeaders() });
+      await checkAuthStatus();
+      closeCrop();
+      showSuccess("Profile photo updated.");
+    } catch (error) {
+      showError(null, errorText(error, "Could not update your photo."));
+    } finally {
+      setPhotoBusy(false);
     }
   };
 
-  const handleDeleteAvatar = async () => {
+  const handleRemovePhoto = async () => {
+    setPhotoBusy(true);
     try {
-      const response = await axios.delete(
-        `${config.serverUrl}/api/users/avatar`,
-        {
-          headers: {
-            "x-auth-token": localStorage.getItem("token"),
-          },
-        }
-      );
-      setUser(response.data.user); // Update user state without the avatar
+      await axios.delete("/api/users/avatar", { headers: authHeaders() });
+      await checkAuthStatus();
+      showSuccess("Profile photo removed.");
     } catch (error) {
-      showError("Failed to delete avatar");
+      showError(null, errorText(error, "Could not remove your photo."));
+    } finally {
+      setPhotoBusy(false);
     }
   };
 
-  // Update profile data in the database and re-fetch updated user data
-  const handleUpdateProfile = async () => {
-    try {
-      await axios.put(`${config.serverUrl}/api/users/me`, formData, {
-        headers: {
-          "x-auth-token": localStorage.getItem("token"),
-        },
-      });
-      // Re-fetch updated user data
-      const updatedUserResponse = await axios.get(
-        `${config.serverUrl}/api/users/me`,
-        {
-          headers: {
-            "x-auth-token": localStorage.getItem("token"),
-          },
-        }
-      );
-      setUser(updatedUserResponse.data); // Update user state with fetched data
-    } catch (error) {
-      showError("Failed to update user data");
-    }
-  };
+  const textField = (name, label, extra = {}) => (
+    <TextField
+      fullWidth
+      name={name}
+      label={label}
+      value={form[name]}
+      onChange={handleChange}
+      inputProps={{ maxLength: 50 }}
+      sx={inputSx}
+      {...extra}
+    />
+  );
 
   return (
-    <Container
-      maxWidth={false}
-      sx={{
-        py: 6,
-        backgroundColor: "background.default",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-
-        color: "primary.main",
-      }}
-    >
-      {/* Live Preview Section */}
-      <Box
-        display="flex"
-        alignItems="center"
-        mb={4}
+    <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
+      <Button
+        component={Link}
+        to="/dashboard"
+        startIcon={<ArrowBackIcon />}
+        sx={{ ...pillButtonSx, px: 2, mb: 2, color: "page.text" }}
+      >
+        Dashboard
+      </Button>
+      <Typography
+        variant="h1"
         sx={{
-          // width: "100%",
-          // maxWidth: "800px",
-          backgroundColor: "background.default",
-          borderRadius: 2,
-          padding: 4,
-          color: "primary.main",
+          fontSize: { xs: "2rem", md: "2.75rem" },
+          color: "page.text",
+          mb: 1,
         }}
       >
-        <Box>
-          <Avatar
+        Edit Profile
+      </Typography>
+      <Typography sx={{ fontSize: "1.1rem", color: "page.text", mb: 4 }}>
+        This is how other parents see you next to the recipes you share.
+      </Typography>
+
+      <Grid container spacing={4} alignItems="flex-start">
+        {/* Profile summary and photo */}
+        <Grid item xs={12} md={4}>
+          <Box
             sx={{
-              width: 100,
-              height: 100,
-              mr: 2,
-              boxShadow: (theme) => theme.customShadows.raised,
+              ...cardSx,
+              textAlign: "center",
+              position: { md: "sticky" },
+              top: { md: 24 },
             }}
-            src={
-              user?.avatar
-                ? `${config.serverUrl}/uploads/${user.avatar.replace(
-                    /^\/?uploads\/?/,
-                    ""
-                  )}`
-                : ""
-            }
-            alt={`${formData.firstName} ${formData.lastName}`}
           >
-            {(formData.firstName[0] || "") + (formData.lastName[0] || "")}
-          </Avatar>
-          <Box>
-            <IconButton component="label">
-              <AddAPhotoIcon />
-              <input type="file" hidden onChange={handleImageChange} />
-            </IconButton>
-            <IconButton onClick={handleDeleteAvatar}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        </Box>
-        <Box ml={2}>
-          <Typography variant="h5">
-            {user?.firstName} {user?.lastName}
-          </Typography>
-          <Typography variant="body1">
-            {user?.city}, {user?.province}, {user?.country}
-          </Typography>
-          <Typography variant="body2" mt={1}>
-            {user?.description}
-          </Typography>
-        </Box>
-      </Box>
+            <Box sx={{ position: "relative", display: "inline-block", mb: 2 }}>
+              <Avatar
+                src={uploadUrl(currentUser.avatar)}
+                alt={displayName(currentUser)}
+                sx={{
+                  width: 128,
+                  height: 128,
+                  fontSize: "3rem",
+                  backgroundColor: "tiles.lavender",
+                  color: "primary.main",
+                  border: "4px solid",
+                  borderColor: "common.white",
+                  boxShadow: (theme) => theme.customShadows.soft,
+                }}
+              >
+                {displayName(currentUser)?.[0]?.toUpperCase()}
+              </Avatar>
+              {photoBusy && (
+                <CircularProgress
+                  size={136}
+                  thickness={2}
+                  sx={{ position: "absolute", top: -4, left: -4 }}
+                />
+              )}
+              <Tooltip title="Change photo">
+                <IconButton
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={photoBusy}
+                  aria-label="Change photo"
+                  sx={{
+                    position: "absolute",
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "accent.main",
+                    color: "accent.contrastText",
+                    boxShadow: (theme) => theme.customShadows.soft,
+                    "&:hover": { backgroundColor: "accent.dark" },
+                  }}
+                >
+                  <PhotoCameraIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <input
+                ref={fileInputRef}
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handlePhotoChange}
+              />
+            </Box>
 
-      {/* Edit Profile Section */}
-      <Box
-        sx={{
-          // flex: 1,
-          width: "60%",
-          backgroundColor: "tiles.cream",
-          padding: "2rem",
-          borderRadius: "15px",
-          boxShadow: (theme) => theme.customShadows.raised,
-        }}
-      >
-        <Typography variant="h5" mb={2}>
-          Edit Profile
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="First Name"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              InputProps={{ sx: { backgroundColor: "common.white" } }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Last Name"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              InputProps={{ sx: { backgroundColor: "common.white" } }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Country"
-              name="country"
-              value={formData.country}
-              onChange={handleInputChange}
-              InputProps={{ sx: { backgroundColor: "common.white" } }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Province"
-              name="province"
-              value={formData.province}
-              onChange={handleInputChange}
-              InputProps={{ sx: { backgroundColor: "common.white" } }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="City"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              InputProps={{ sx: { backgroundColor: "common.white" } }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              InputProps={{ sx: { backgroundColor: "common.white" } }}
-            />
-          </Grid>
-          <Grid item xs={12} textAlign="right">
-            <Button
-              variant="contained"
-              sx={{
-                mt: 2, // Margin top for spacing
-                alignItems: "center",
-                backgroundColor: "accent.main",
-                color: "accent.contrastText",
-                "&:hover": {
-                  backgroundColor: "accent.dark",
-                },
-              }}
-              // color="primary"
-              onClick={handleUpdateProfile}
+            <Typography sx={{ fontSize: "1.5rem", lineHeight: 1.3 }}>
+              {displayName(currentUser)}
+            </Typography>
+            <Stack
+              spacing={0.5}
+              alignItems="center"
+              sx={{ mt: 1, color: "text.secondary" }}
             >
-              Update Profile
-            </Button>
-          </Grid>
+              <Stack direction="row" spacing={0.75} alignItems="center">
+                <MailOutlineIcon fontSize="small" />
+                <Typography variant="body2">{currentUser.email}</Typography>
+              </Stack>
+              {location && (
+                <Stack direction="row" spacing={0.75} alignItems="center">
+                  <PlaceOutlinedIcon fontSize="small" />
+                  <Typography variant="body2">{location}</Typography>
+                </Stack>
+              )}
+            </Stack>
+
+            <Stack
+              direction="row"
+              spacing={1}
+              justifyContent="center"
+              flexWrap="wrap"
+              useFlexGap
+              sx={{ mt: 2.5 }}
+            >
+              <Chip
+                icon={<MonetizationOnIcon />}
+                label={`${currentUser.coins ?? 0} coins`}
+              />
+              <Chip
+                icon={<MenuBookIcon />}
+                label={`${currentUser.myRecipes?.length ?? 0} shared`}
+              />
+            </Stack>
+
+            {currentUser.avatar && (
+              <Button
+                onClick={handleRemovePhoto}
+                disabled={photoBusy}
+                color="error"
+                startIcon={<DeleteOutlineIcon />}
+                sx={{ ...pillButtonSx, mt: 2.5, px: 2 }}
+              >
+                Remove photo
+              </Button>
+            )}
+            <Typography
+              variant="body2"
+              sx={{
+                mt: currentUser.avatar ? 0.5 : 2.5,
+                color: "text.secondary",
+              }}
+            >
+              JPG or PNG, up to {MAX_PHOTO_MB} MB. You can crop it before
+              saving.
+            </Typography>
+          </Box>
         </Grid>
-      </Box>
+
+        {/* Editable details */}
+        <Grid item xs={12} md={8}>
+          <Box component="form" onSubmit={handleSave} sx={cardSx}>
+            <Typography sx={sectionTitleSx}>Personal info</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                {textField("name", "Display name", {
+                  required: true,
+                  error: !!nameError,
+                  helperText:
+                    nameError ||
+                    "Your account name. Recipes show your first name if you add one.",
+                })}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {textField("firstName", "First name")}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {textField("lastName", "Last name")}
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 3 }} />
+            <Typography sx={sectionTitleSx}>Location</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                {textField("city", "City")}
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                {textField("province", "Province / State")}
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                {textField("country", "Country")}
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 3 }} />
+            <Typography sx={sectionTitleSx}>About you</Typography>
+            {textField("description", "Bio", {
+              multiline: true,
+              minRows: 4,
+              placeholder:
+                "e.g. Mom of a picky 2-year-old who loves veggie muffins",
+              inputProps: { maxLength: DESCRIPTION_MAX },
+              helperText: `${form.description.length}/${DESCRIPTION_MAX}`,
+              FormHelperTextProps: { sx: { textAlign: "right" } },
+            })}
+
+            <Stack
+              direction={{ xs: "column-reverse", sm: "row" }}
+              spacing={1.5}
+              justifyContent="flex-end"
+              alignItems={{ sm: "center" }}
+              mt={4}
+            >
+              {isDirty && (
+                <Button
+                  onClick={() => setForm(saved)}
+                  disabled={saving}
+                  sx={{ ...pillButtonSx, color: "primary.main" }}
+                >
+                  Discard changes
+                </Button>
+              )}
+              <Button
+                type="submit"
+                disabled={!isDirty || !!nameError || saving}
+                sx={accentButtonSx}
+              >
+                {saving
+                  ? "Saving…"
+                  : isDirty
+                    ? "Save Changes"
+                    : "All changes saved"}
+              </Button>
+            </Stack>
+          </Box>
+        </Grid>
+      </Grid>
+
+      <AvatarCropDialog
+        imageSrc={cropSrc}
+        open={!!cropSrc}
+        onCancel={closeCrop}
+        onCropped={handleCropped}
+      />
     </Container>
   );
 }

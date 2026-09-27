@@ -23,7 +23,6 @@ import config from "../config";
 
 axios.defaults.baseURL = config.serverUrl;
 
-
 function Recipes() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,10 +57,10 @@ function Recipes() {
         ]);
       setRecipes(recipesResponse.data);
       setUserSavedRecipes(
-        savedRecipesResponse.data.savedRecipes?.map((recipe) => recipe._id)
+        savedRecipesResponse.data.savedRecipes?.map((recipe) => recipe._id),
       );
       setUserLikedRecipes(
-        likedRecipesResponse.data.likedRecipes?.map((recipe) => recipe._id)
+        likedRecipesResponse.data.likedRecipes?.map((recipe) => recipe._id),
       );
       setLoading(false);
     } catch (error) {
@@ -72,7 +71,8 @@ function Recipes() {
       }
       showError(
         error.response?.data,
-        error.response?.data?.message || "An error occurred while fetching data"
+        error.response?.data?.message ||
+          "An error occurred while fetching data",
       );
       setLoading(false);
     }
@@ -89,14 +89,14 @@ function Recipes() {
       setUserLikedRecipes((prevLiked) =>
         prevLiked.includes(recipeId)
           ? prevLiked.filter((id) => id !== recipeId)
-          : [...prevLiked, recipeId]
+          : [...prevLiked, recipeId],
       );
       setRecipes((prevRecipes) =>
         prevRecipes.map((recipe) =>
           recipe._id === recipeId
             ? { ...recipe, likeCount: data.likeCount }
-            : recipe
-        )
+            : recipe,
+        ),
       );
       const message = rewardMessage(data, "like");
       if (message) showSuccess(message);
@@ -112,7 +112,7 @@ function Recipes() {
       setUserSavedRecipes((prevSaved) =>
         prevSaved.includes(recipeId)
           ? prevSaved.filter((id) => id !== recipeId)
-          : [...prevSaved, recipeId]
+          : [...prevSaved, recipeId],
       );
       const message = rewardMessage(data, "save");
       if (message) showSuccess(message);
@@ -128,7 +128,7 @@ function Recipes() {
         alignItems="center"
         minHeight="100vh"
       >
-        <CircularProgress />
+        <CircularProgress sx={{ color: "page.text" }} />
       </Box>
     );
   }

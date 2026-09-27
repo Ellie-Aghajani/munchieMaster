@@ -9,6 +9,8 @@ const express = require("express");
 const { Recipe } = require("../models/recipe");
 const router = express.Router();
 const upload = require("../config/multerConfig");
+const Joi = require("joi");
+const { removeUpload } = require("../utils/uploads");
 const {
   COINS,
   RECIPE_SUMMARY_FIELDS,
@@ -73,22 +75,49 @@ router.post("/", async (req, res) => {
   res.send({ token: token });
 });
 
-// PUT: Update user profile data (newly added route)
+// Never send the password hash to the client
+const toSafeUser = (user) => {
+  const data = user.toObject();
+  delete data.password;
+  return data;
+};
+
+const PROFILE_FIELDS = [
+  "name",
+  "firstName",
+  "lastName",
+  "country",
+  "province",
+  "city",
+  "description",
+];
+
+const optionalText = (max) => Joi.string().trim().allow("").max(max);
+const profileSchema = Joi.object({
+  name: Joi.string().trim().min(3).max(50),
+  firstName: optionalText(50),
+  lastName: optionalText(50),
+  country: optionalText(50),
+  province: optionalText(50),
+  city: optionalText(50),
+  description: optionalText(500),
+});
+
+// PUT: Update profile fields; an empty value clears the field
 router.put("/me", auth, async (req, res) => {
+  const { error, value } = profileSchema.validate(_.pick(req.body, PROFILE_FIELDS));
+  if (error) return res.status(400).send(error.details[0].message);
+
   try {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).send("User not found");
 
-    // Update user fields from the request body
-    user.firstName = req.body.firstName || user.firstName;
-    user.lastName = req.body.lastName || user.lastName;
-    user.country = req.body.country || user.country;
-    user.province = req.body.province || user.province;
-    user.city = req.body.city || user.city;
-    user.description = req.body.description || user.description;
+    Object.entries(value).forEach(([field, fieldValue]) => {
+      user[field] = fieldValue === "" ? undefined : fieldValue;
+    });
 
     await user.save();
-    res.send({ success: true, message: "Profile updated successfully", user });
+    res.send({ success: true, user: toSafeUser(user) });
   } catch (error) {
     res.status(500).send("Server error");
   }
@@ -138,34 +167,44 @@ router.post("/save-recipe", auth, async (req, res) => {
   }
 });
 
-// PUT: Upload or update avatar
+// PUT: Upload or replace the profile photo
 router.put("/avatar", auth, upload.single("avatar"), async (req, res) => {
+  if (!req.file) return res.status(400).send("No file uploaded");
+  const newAvatar = `/uploads/${req.file.filename}`;
+  if (!req.file.mimetype.startsWith("image/")) {
+    removeUpload(newAvatar);
+    return res.status(400).send("Please choose an image file.");
+  }
+
   try {
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).send("User not found");
-
-    // Update avatar if a new file is uploaded
-    if (req.file) {
-      user.avatar = `/uploads/${req.file.filename}`; // Store relative path to image
-      await user.save();
-      res.send({ success: true, message: "Avatar updated successfully", user });
-    } else {
-      res.status(400).send("No file uploaded");
+    if (!user) {
+      removeUpload(newAvatar);
+      return res.status(404).send("User not found");
     }
+
+    const oldAvatar = user.avatar;
+    user.avatar = newAvatar;
+    await user.save();
+    removeUpload(oldAvatar);
+    res.send({ success: true, user: toSafeUser(user) });
   } catch (error) {
+    removeUpload(newAvatar);
     res.status(500).send("Server error");
   }
 });
 
-// DELETE: Delete avatar
+// DELETE: Remove the profile photo
 router.delete("/avatar", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).send("User not found");
 
-    user.avatar = null; // Remove avatar path
+    const oldAvatar = user.avatar;
+    user.avatar = undefined;
     await user.save();
-    res.send({ success: true, message: "Avatar deleted successfully" });
+    removeUpload(oldAvatar);
+    res.send({ success: true, user: toSafeUser(user) });
   } catch (error) {
     res.status(500).send("Server error");
   }

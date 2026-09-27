@@ -57,6 +57,8 @@ const RecipeCard = ({
         display: "flex",
         flexDirection: "column",
         borderRadius: 3,
+        border: "1px solid",
+        borderColor: "page.text",
         boxShadow: (theme) => theme.customShadows.soft,
         transition: "transform 0.2s",
         "&:hover": { transform: "translateY(-4px)" },
@@ -174,7 +176,11 @@ const RecipeCard = ({
               size="small"
               disabled={isLocked}
             >
-              {isLiked ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+              {isLiked ? (
+                <FavoriteIcon color="error" />
+              ) : (
+                <FavoriteBorderIcon />
+              )}
             </IconButton>
           </span>
         </Tooltip>

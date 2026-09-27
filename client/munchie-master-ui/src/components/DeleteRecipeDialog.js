@@ -102,7 +102,7 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
                 posting it
                 {details.buyerCount === 1 &&
                   `, plus ${coinsLabel(
-                    details.price
+                    details.price,
                   )} back to the member who unlocked it`}
                 {details.buyerCount > 1 &&
                   `, plus ${coinsLabel(details.price)} back to each of the ${
@@ -119,10 +119,10 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
               >
                 {canAfford
                   ? `You have ${coinsLabel(balance)}; ${coinsLabel(
-                      balance - cost
+                      balance - cost,
                     )} will be left.`
                   : `You have ${coinsLabel(
-                      balance
+                      balance,
                     )}, so you can't delete it yet.`}
               </Typography>
             )}

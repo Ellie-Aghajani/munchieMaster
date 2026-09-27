@@ -36,7 +36,8 @@ const ResponsiveCarousel = ({
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
-    const update = () => setCanScroll(track.scrollWidth > track.clientWidth + 1);
+    const update = () =>
+      setCanScroll(track.scrollWidth > track.clientWidth + 1);
     update();
     const observer = new ResizeObserver(update);
     observer.observe(track);

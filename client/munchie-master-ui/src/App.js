@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -20,7 +20,8 @@ import UserProfile from "./components/UserProfile";
 import LandingPage from "./components/LandingPage";
 import { ThemeProvider } from "@mui/material/styles";
 import GlobalStyles from "@mui/material/GlobalStyles";
-import theme from "./theme";
+import { createAppTheme } from "./theme";
+import { ColorModeProvider, useColorMode } from "./contexts/ColorModeContext";
 import Dashboard from "./components/Dashboard";
 import "@fontsource/roboto";
 import "./global.css";
@@ -59,12 +60,19 @@ function AppContent() {
   );
 }
 
-function App() {
+function ThemedApp() {
+  const { mode } = useColorMode();
+  const theme = useMemo(() => createAppTheme(mode), [mode]);
+
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles
         styles={(theme) => ({
-          body: { backgroundColor: theme.palette.background.default },
+          body: {
+            backgroundColor: theme.palette.background.default,
+            color: theme.palette.page.text,
+            transition: "background-color 0.3s",
+          },
         })}
       />
       <ErrorProvider>
@@ -75,6 +83,14 @@ function App() {
         </AuthProvider>
       </ErrorProvider>
     </ThemeProvider>
+  );
+}
+
+function App() {
+  return (
+    <ColorModeProvider>
+      <ThemedApp />
+    </ColorModeProvider>
   );
 }
 

@@ -49,7 +49,7 @@ const LandingPage = () => {
             <Box
               sx={{
                 textAlign: { xs: "center", md: "left" },
-                color: "primary.main",
+                color: "page.text",
               }}
             >
               <Typography
@@ -99,7 +99,9 @@ const LandingPage = () => {
                     fontSize: "1.1rem",
                     textTransform: "none",
                     borderWidth: 2,
-                    "&:hover": { borderWidth: 2 },
+                    color: "page.text",
+                    borderColor: "page.text",
+                    "&:hover": { borderWidth: 2, borderColor: "page.text" },
                   }}
                 >
                   How it Works
@@ -181,7 +183,7 @@ const LandingPage = () => {
         sx={{
           pb: { xs: 8, md: 12 },
           textAlign: "center",
-          color: "primary.main",
+          color: "page.text",
         }}
       >
         <Typography

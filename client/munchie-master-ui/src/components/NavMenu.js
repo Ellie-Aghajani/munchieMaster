@@ -19,9 +19,9 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
+import ColorModeToggle from "./ColorModeToggle";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import PersonIcon from "@mui/icons-material/Person";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
@@ -47,8 +47,11 @@ const NavMenu = () => {
   const sidebarLinks = [
     { label: "Dashboard", to: "/dashboard", icon: <DashboardIcon /> },
     { label: "Recipes", to: "/recipes", icon: <MenuBookIcon /> },
-    { label: "Profile", to: "/profile", icon: <PersonIcon /> },
-    { label: "Share Recipe", to: "/recipes/new", icon: <AddCircleOutlineIcon /> },
+    {
+      label: "Share Recipe",
+      to: "/recipes/new",
+      icon: <AddCircleOutlineIcon />,
+    },
   ];
 
   const coinChip = (
@@ -184,6 +187,7 @@ const NavMenu = () => {
             </Typography>
           </Box>
 
+          <ColorModeToggle sx={{ mr: { xs: 0.5, md: 1 } }} />
           {isLoggedIn && (
             <>
               {/* Desktop Menu */}

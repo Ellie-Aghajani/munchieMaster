@@ -33,7 +33,14 @@ const pillButtonSx = {
   fontSize: "1rem",
 };
 
-const inputSx = { "& .MuiInputBase-root": { backgroundColor: "common.white" } };
+// Field outlines and the photo box border use the page background color,
+// so they follow light/dark mode
+const inputSx = {
+  "& .MuiInputBase-root": { backgroundColor: "common.white" },
+  "& .MuiOutlinedInput-notchedOutline, & .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline, & .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+    { borderColor: "background.default" },
+  "& .MuiInputLabel-root.Mui-focused": { color: "primary.main" },
+};
 
 const emptyForm = {
   name: "",
@@ -97,7 +104,7 @@ const RecipeCreator = () => {
   if (loadingRecipe) {
     return (
       <Box display="flex" justifyContent="center" py={12}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: "page.text" }} />
       </Box>
     );
   }
@@ -164,13 +171,13 @@ const RecipeCreator = () => {
         variant="h1"
         sx={{
           fontSize: { xs: "2rem", md: "2.75rem" },
-          color: "primary.main",
+          color: "page.text",
           mb: 1,
         }}
       >
         {isEdit ? "Edit Recipe" : "Share a Recipe"}
       </Typography>
-      <Typography sx={{ fontSize: "1.1rem", color: "primary.main", mb: 3 }}>
+      <Typography sx={{ fontSize: "1.1rem", color: "page.text", mb: 3 }}>
         {isEdit
           ? "Update your recipe. Editing doesn't change your coins or its price."
           : "Share a favorite with others and earn coins."}
@@ -178,7 +185,15 @@ const RecipeCreator = () => {
 
       {/* How coins work */}
       {!isEdit && (
-        <Box sx={{ ...cardSx, backgroundColor: "tiles.blue", mb: 4, py: 3 }}>
+        <Box
+          sx={{
+            ...cardSx,
+            backgroundColor: "tiles.blue",
+            color: "tiles.contrastText",
+            mb: 4,
+            py: 3,
+          }}
+        >
           <Stack direction="row" spacing={2} alignItems="flex-start">
             <MonetizationOnIcon sx={{ fontSize: 32, mt: 0.25 }} />
             <Box>
@@ -267,7 +282,7 @@ const RecipeCreator = () => {
                 p: 2,
                 borderRadius: 3,
                 border: "2px dashed",
-                borderColor: "primary.main",
+                borderColor: "background.default",
                 backgroundColor: "common.white",
                 cursor: "pointer",
                 overflow: "hidden",

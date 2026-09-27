@@ -173,7 +173,7 @@ const RecipeDetail = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" py={12}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: "page.text" }} />
       </Box>
     );
   }
@@ -183,7 +183,7 @@ const RecipeDetail = () => {
       <Container maxWidth="sm" sx={{ py: 10, textAlign: "center" }}>
         <Typography
           variant="h1"
-          sx={{ fontSize: "2rem", color: "primary.main", mb: 3 }}
+          sx={{ fontSize: "2rem", color: "page.text", mb: 3 }}
         >
           Recipe not found
         </Typography>
@@ -191,7 +191,7 @@ const RecipeDetail = () => {
           component={Link}
           to="/recipes"
           variant="outlined"
-          sx={pillButtonSx}
+          sx={{ ...pillButtonSx, color: "page.text", borderColor: "page.text" }}
         >
           Back to Recipes
         </Button>
@@ -213,7 +213,7 @@ const RecipeDetail = () => {
         component={Link}
         to="/recipes"
         startIcon={<ArrowBackIcon />}
-        sx={{ ...pillButtonSx, px: 2, mb: 3, color: "primary.main" }}
+        sx={{ ...pillButtonSx, px: 2, mb: 3, color: "page.text" }}
       >
         All Recipes
       </Button>
@@ -349,9 +349,9 @@ const RecipeDetail = () => {
             Unlock this recipe
           </Typography>
           <Typography sx={{ fontSize: "1.1rem", lineHeight: 1.6, mb: 3 }}>
-            {authorNameOf(recipe)} shared this recipe with the community.
-            Unlock it for {coinsLabel(recipe.price)} to see the ingredients
-            and directions. {authorNameOf(recipe)} earns the coins you spend.
+            {authorNameOf(recipe)} shared this recipe with the community. Unlock
+            it for {coinsLabel(recipe.price)} to see the ingredients and
+            directions. {authorNameOf(recipe)} earns the coins you spend.
           </Typography>
 
           {isLoggedIn ? (

@@ -7,8 +7,7 @@ const { Recipe, validate } = require("../models/recipe");
 const { User } = require("../models/user");
 const upload = require("../config/multerConfig");
 const optionalAuth = require("../middleware/optionalAuth");
-const fs = require("fs");
-const path = require("path");
+const { removeUpload } = require("../utils/uploads");
 const {
   COINS,
   RECIPE_SUMMARY_FIELDS,
@@ -28,14 +27,6 @@ const toPublicRecipe = (recipe) => {
   delete data.likeRewardedBy;
   delete data.saveRewardedBy;
   return data;
-};
-
-const UPLOADS_DIR = path.join(__dirname, "../public/uploads");
-
-// Delete a file stored as "/uploads/<name>"; a missing file is not an error
-const removeUpload = (file) => {
-  if (file && file.startsWith("/uploads/"))
-    fs.unlink(path.join(UPLOADS_DIR, path.basename(file)), () => {});
 };
 
 // Authors manage their own recipes; admins manage all of them

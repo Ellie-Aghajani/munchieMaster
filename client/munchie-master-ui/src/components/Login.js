@@ -11,6 +11,8 @@ import {
   Tab,
 } from "@mui/material";
 
+const inputSx = { "& .MuiInputBase-root": { backgroundColor: "common.white" } };
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,30 +54,45 @@ function Login() {
   }, [navigate]);
 
   return (
-    <Container maxWidth="xs">
+    <Container maxWidth="xs" sx={{ py: { xs: 4, md: 8 } }}>
       <Box
         sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          p: { xs: 3, md: 4 },
+          borderRadius: 4,
+          color: "primary.main",
+          backgroundColor: "tiles.cream",
+          boxShadow: (theme) => theme.customShadows.raised,
         }}
       >
-        <Typography component="h1" variant="h5">
-          MunchieMaster
+        <Typography
+          component="h1"
+          sx={{ fontSize: "1.75rem", textAlign: "center", mb: 1 }}
+        >
+          Munchie Master
         </Typography>
         <Tabs
           value={isLogin ? 0 : 1}
           onChange={(e, newValue) => setIsLogin(newValue === 0)}
+          variant="fullWidth"
+          sx={{
+            mb: 1,
+            "& .MuiTab-root": { textTransform: "none", fontSize: "1rem" },
+            "& .MuiTabs-indicator": { backgroundColor: "accent.main" },
+          }}
         >
-          <Tab label="Login" />
+          <Tab label="Log in" />
           <Tab label="Register" />
         </Tabs>
-        {error && <Typography color="error">{error}</Typography>}
+        {error && (
+          <Typography color="error" sx={{ mt: 1 }}>
+            {error}
+          </Typography>
+        )}
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           {!isLogin && (
             <TextField
               margin="normal"
+              sx={inputSx}
               required
               fullWidth
               id="name"
@@ -89,6 +106,7 @@ function Login() {
           )}
           <TextField
             margin="normal"
+            sx={inputSx}
             required
             fullWidth
             id="email"
@@ -101,6 +119,7 @@ function Login() {
           />
           <TextField
             margin="normal"
+            sx={inputSx}
             required
             fullWidth
             name="password"
@@ -114,10 +133,18 @@ function Login() {
           <Button
             type="submit"
             fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{
+              mt: 3,
+              py: 1.25,
+              borderRadius: 999,
+              textTransform: "none",
+              fontSize: "1.05rem",
+              color: "accent.contrastText",
+              backgroundColor: "accent.main",
+              "&:hover": { backgroundColor: "accent.dark" },
+            }}
           >
-            {isLogin ? "Login" : "Register"}
+            {isLogin ? "Log in" : "Create account"}
           </Button>
         </Box>
       </Box>

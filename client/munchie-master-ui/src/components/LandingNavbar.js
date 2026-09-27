@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
+import ColorModeToggle from "./ColorModeToggle";
 import { Link } from "react-router-dom";
 
 const navLinks = [
@@ -58,6 +59,7 @@ const LandingNavbar = () => {
             </Typography>
           </Box>
 
+          <ColorModeToggle sx={{ mr: { xs: 0.5, md: 1 } }} />
           {/* Regular buttons for large screens */}
           <Box
             sx={{

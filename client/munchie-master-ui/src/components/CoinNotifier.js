@@ -32,12 +32,12 @@ const CoinNotifier = () => {
         if (earned.length) parts.push(`${earned.join(", ")} on your recipes`);
         if (data.refunds)
           parts.push(
-            `${plural(data.refunds, "refund")} for deleted recipes you had unlocked`
+            `${plural(data.refunds, "refund")} for deleted recipes you had unlocked`,
           );
         showSuccess(
           `Welcome back! You received ${coinsLabel(data.coins)}: ${parts.join(
-            "; "
-          )}.`
+            "; ",
+          )}.`,
         );
       })
       .catch(() => {

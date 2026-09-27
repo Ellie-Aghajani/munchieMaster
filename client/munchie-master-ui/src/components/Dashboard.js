@@ -11,8 +11,10 @@ import {
   Grid,
   Stack,
   Typography,
+  Tooltip,
 } from "@mui/material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import axios from "axios";
 import ResponsiveCarousel from "./ResponsiveCarousel";
 import DeleteRecipeDialog from "./DeleteRecipeDialog";
@@ -71,6 +73,16 @@ const cardSx = {
   boxShadow: (theme) => theme.customShadows.raised,
 };
 
+// Narrow white outline so cards and buttons stand out on the colored tiles
+const tileOutline = (theme) => `2px solid ${theme.palette.tiles.contrastText}`;
+const onTileSx = {
+  "& .MuiButton-root": { outline: tileOutline },
+  // Drawn inside the card edge so the carousel's edges can't clip it
+  "& .MuiCard-root": { outline: tileOutline, outlineOffset: "-2px" },
+  // Outlined buttons already have a border; the outline replaces it
+  "& .MuiButton-outlined, & .MuiButton-outlined:hover": { border: "none" },
+};
+
 const pillButtonSx = {
   borderRadius: 999,
   px: 3,
@@ -103,14 +115,14 @@ const Dashboard = () => {
       const [summaryResponse, ...listResponses] = await Promise.all([
         axios.get("/api/dashboard/summary", { headers: authHeaders() }),
         ...sections.map((section) =>
-          axios.get(section.endpoint, { headers: authHeaders() })
+          axios.get(section.endpoint, { headers: authHeaders() }),
         ),
       ]);
       setSummary(summaryResponse.data);
       setLists(
         Object.fromEntries(
-          sections.map((section, i) => [section.key, listResponses[i].data])
-        )
+          sections.map((section, i) => [section.key, listResponses[i].data]),
+        ),
       );
     } catch (error) {
       if (error.response?.status === 401) {
@@ -151,10 +163,10 @@ const Dashboard = () => {
       setLists((prev) => {
         const withCount = (list) =>
           list.map((r) =>
-            r._id === recipeId ? { ...r, likeCount: data.likeCount } : r
+            r._id === recipeId ? { ...r, likeCount: data.likeCount } : r,
           );
         const updated = Object.fromEntries(
-          Object.entries(prev).map(([key, list]) => [key, withCount(list)])
+          Object.entries(prev).map(([key, list]) => [key, withCount(list)]),
         );
         const recipe = findRecipe(recipeId);
         if (!recipe) return updated;
@@ -179,7 +191,10 @@ const Dashboard = () => {
       if (message) showSuccess(message);
       const recipe = findRecipe(recipeId);
       if (!recipe) return;
-      setLists((prev) => ({ ...prev, saved: toggleInList(prev.saved, recipe) }));
+      setLists((prev) => ({
+        ...prev,
+        saved: toggleInList(prev.saved, recipe),
+      }));
     } catch (error) {
       showError(null, errorText(error, "Could not update saved recipes."));
     }
@@ -201,7 +216,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" py={12}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: "accent.main" }} />
       </Box>
     );
   }
@@ -209,7 +224,7 @@ const Dashboard = () => {
   const avatarUrl = summary?.avatar
     ? `${config.serverUrl}/uploads/${summary.avatar.replace(
         /^\/?uploads\/?/,
-        ""
+        "",
       )}`
     : undefined;
 
@@ -223,9 +238,56 @@ const Dashboard = () => {
           alignItems={{ xs: "center", sm: "center" }}
           textAlign={{ xs: "center", sm: "left" }}
         >
-          <Avatar src={avatarUrl} sx={{ width: 72, height: 72 }}>
-            {summary?.name?.[0]}
-          </Avatar>
+          <Tooltip title="Edit profile">
+            <ButtonBase
+              component={Link}
+              to="/profile"
+              aria-label="Edit profile"
+              sx={{
+                position: "relative",
+                borderRadius: "50%",
+                flexShrink: 0,
+                // Pencil badge appears on hover and keyboard focus
+                "&:hover .avatar-edit, &:focus-visible .avatar-edit": {
+                  opacity: 1,
+                },
+              }}
+            >
+              <Avatar
+                src={avatarUrl}
+                sx={{
+                  width: 72,
+                  height: 72,
+                  fontSize: "2rem",
+                  backgroundColor: "tiles.lavender",
+                  color: "primary.main",
+                }}
+              >
+                {summary?.name?.[0]}
+              </Avatar>
+              <Box
+                className="avatar-edit"
+                sx={{
+                  position: "absolute",
+                  right: -2,
+                  bottom: -2,
+                  width: 28,
+                  height: 28,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "accent.main",
+                  color: "accent.contrastText",
+                  boxShadow: (theme) => theme.customShadows.soft,
+                  opacity: { xs: 1, md: 0 },
+                  transition: "opacity 0.2s",
+                }}
+              >
+                <EditOutlinedIcon sx={{ fontSize: 16 }} />
+              </Box>
+            </ButtonBase>
+          </Tooltip>
           <Box sx={{ flexGrow: 1 }}>
             <Typography
               variant="h1"
@@ -239,8 +301,8 @@ const Dashboard = () => {
               sx={{ fontSize: "1rem" }}
             />
             <Typography variant="body2" sx={{ mt: 1 }}>
-              Earn coins: +5 per recipe you share, +1 per like and +2 per
-              save it gets, +5 each time someone unlocks it.
+              Earn coins: +5 per recipe you share, +1 per like and +2 per save
+              it gets, +5 each time someone unlocks it.
             </Typography>
           </Box>
           <Stack direction="row" spacing={1.5}>
@@ -269,7 +331,7 @@ const Dashboard = () => {
                   py: 2,
                   borderRadius: 3,
                   backgroundColor: section.color,
-                  color: "primary.main",
+                  color: "tiles.contrastText",
                   transition: "transform 0.15s",
                   "&:hover": { transform: "translateY(-2px)" },
                 }}
@@ -295,7 +357,9 @@ const Dashboard = () => {
             sx={{
               ...cardSx,
               backgroundColor: section.color,
+              color: "tiles.contrastText",
               scrollMarginTop: 16,
+              ...onTileSx,
             }}
           >
             <Stack
@@ -313,11 +377,7 @@ const Dashboard = () => {
                 {section.title}
               </Typography>
               {section.key === "mine" && (
-                <Button
-                  component={Link}
-                  to="/recipes/new"
-                  sx={accentButtonSx}
-                >
+                <Button component={Link} to="/recipes/new" sx={accentButtonSx}>
                   Share a Recipe
                 </Button>
               )}
@@ -346,6 +406,7 @@ const Dashboard = () => {
                     component={Link}
                     to="/recipes"
                     variant="outlined"
+                    color="inherit"
                     sx={pillButtonSx}
                   >
                     Browse Recipes
