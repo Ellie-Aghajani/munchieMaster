@@ -429,6 +429,7 @@ const RecipeDetail = () => {
               sx={{
                 ...cardSx,
                 backgroundColor: "tiles.green",
+                color: "common.white",
                 position: { md: "sticky" },
                 top: { md: 24 },
               }}
@@ -451,7 +452,7 @@ const RecipeDetail = () => {
                   >
                     <CheckCircleIcon
                       fontSize="small"
-                      sx={{ mt: "3px", color: "secondary.main" }}
+                      sx={{ mt: "3px", color: "primary.main" }}
                     />
                     <Typography sx={{ fontSize: "1.05rem", lineHeight: 1.5 }}>
                       {ingredient}

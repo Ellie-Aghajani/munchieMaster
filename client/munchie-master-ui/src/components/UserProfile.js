@@ -211,7 +211,7 @@ function UserProfile() {
         Edit Profile
       </Typography>
       <Typography sx={{ fontSize: "1.1rem", color: "page.text", mb: 4 }}>
-        This is how other parents see you next to the recipes you share.
+        This is how other users see you next to the recipes you share.
       </Typography>
 
       <Grid container spacing={4} alignItems="flex-start">
