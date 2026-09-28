@@ -25,6 +25,7 @@ app.use("/uploads", express.static("public/uploads"));
 require("./startup/logging")();
 require("./startup/routes")(app);
 require("./startup/db")(); //we call the function
+require("./startup/translations")();
 require("./startup/config")();
 require("./startup/validation")();
 require("./startup/prod")(app);

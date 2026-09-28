@@ -14,6 +14,7 @@ import {
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import { useTheme } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
 
 const OUTPUT_SIZE = 512; // px; profile photos never show larger than this
 
@@ -65,6 +66,7 @@ async function cropToBlob(imageSrc, area, backgroundColor) {
 
 // Lets the user drag and zoom a photo inside a round frame before uploading it
 const AvatarCropDialog = ({ imageSrc, open, onCancel, onCropped }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -109,7 +111,7 @@ const AvatarCropDialog = ({ imageSrc, open, onCancel, onCropped }) => {
       }}
     >
       <DialogTitle sx={{ color: "primary.main", fontSize: "1.5rem" }}>
-        Crop your photo
+        {t("crop.title")}
       </DialogTitle>
       <DialogContent>
         <Box
@@ -140,7 +142,7 @@ const AvatarCropDialog = ({ imageSrc, open, onCancel, onCropped }) => {
           variant="body2"
           sx={{ color: "primary.main", mt: 1.5, textAlign: "center" }}
         >
-          Drag to position your photo
+          {t("crop.drag")}
         </Typography>
         <Stack
           direction="row"
@@ -155,7 +157,7 @@ const AvatarCropDialog = ({ imageSrc, open, onCancel, onCropped }) => {
             max={3}
             step={0.01}
             onChange={(_, value) => setZoom(value)}
-            aria-label="Zoom"
+            aria-label={t("crop.zoom")}
             sx={{ color: "accent.main" }}
           />
           <ZoomInIcon />
@@ -168,7 +170,7 @@ const AvatarCropDialog = ({ imageSrc, open, onCancel, onCropped }) => {
           variant="outlined"
           sx={pillButtonSx}
         >
-          Cancel
+          {t("form.cancel")}
         </Button>
         <Button
           onClick={handleSave}
@@ -181,7 +183,7 @@ const AvatarCropDialog = ({ imageSrc, open, onCancel, onCropped }) => {
             "&.Mui-disabled": { color: "accent.contrastText", opacity: 0.6 },
           }}
         >
-          {working ? "Saving…" : "Save photo"}
+          {working ? t("form.saving") : t("crop.save")}
         </Button>
       </DialogActions>
     </Dialog>

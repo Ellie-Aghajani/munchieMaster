@@ -17,6 +17,8 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import axios from "axios";
 import ResponsiveCarousel from "./ResponsiveCarousel";
+import { useTranslation } from "react-i18next";
+import { formatNumber } from "../i18n/format";
 import DeleteRecipeDialog from "./DeleteRecipeDialog";
 import { useAuth } from "../contexts/AuthContext";
 import { useError } from "../contexts/ErrorContext";
@@ -34,35 +36,26 @@ const sections = [
   {
     key: "saved",
     id: "savedRecipesSection",
-    title: "Saved Recipes",
     color: "tiles.green",
     endpoint: "/api/dashboard/saved-recipes",
-    empty: "You haven't saved any recipes yet.",
   },
   {
     key: "liked",
     id: "likedRecipesSection",
-    title: "Liked Recipes",
     color: "tiles.rose",
     endpoint: "/api/dashboard/liked-recipes",
-    empty: "You haven't liked any recipes yet.",
   },
   {
     key: "bought",
     id: "boughtRecipesSection",
-    title: "Bought Recipes",
     color: "tiles.blue",
     endpoint: "/api/dashboard/bought-recipes",
-    empty:
-      "Recipes shared by others cost 5 coins to unlock. The ones you unlock show up here.",
   },
   {
     key: "mine",
     id: "myRecipesSection",
-    title: "My Recipes",
     color: "tiles.lavender",
     endpoint: "/api/dashboard/my-recipes",
-    empty: "Share your first recipe and earn 5 coins.",
   },
 ];
 
@@ -88,6 +81,7 @@ const pillButtonSx = {
   px: 3,
   textTransform: "none",
   fontSize: "1rem",
+  whiteSpace: "nowrap", // Longer Persian labels shouldn't wrap
 };
 
 const accentButtonSx = {
@@ -98,6 +92,7 @@ const accentButtonSx = {
 };
 
 const Dashboard = () => {
+  const { t, i18n } = useTranslation();
   const { logout } = useAuth();
   const { showError, showSuccess } = useError();
   const navigate = useNavigate();
@@ -130,11 +125,11 @@ const Dashboard = () => {
         navigate("/login");
         return;
       }
-      showError(error.response?.data, "Failed to load your dashboard.");
+      showError(error.response?.data, t("errors.dashboard"));
     } finally {
       setLoading(false);
     }
-  }, [logout, navigate, showError]);
+  }, [logout, navigate, showError, t]);
 
   useEffect(() => {
     fetchDashboard();
@@ -179,7 +174,7 @@ const Dashboard = () => {
         };
       });
     } catch (error) {
-      showError(null, errorText(error, "Could not update the like."));
+      showError(null, errorText(error, t("errors.like")));
     }
   };
 
@@ -196,7 +191,7 @@ const Dashboard = () => {
         saved: toggleInList(prev.saved, recipe),
       }));
     } catch (error) {
-      showError(null, errorText(error, "Could not update saved recipes."));
+      showError(null, errorText(error, t("errors.save")));
     }
   };
 
@@ -238,11 +233,11 @@ const Dashboard = () => {
           alignItems={{ xs: "center", sm: "center" }}
           textAlign={{ xs: "center", sm: "left" }}
         >
-          <Tooltip title="Edit profile">
+          <Tooltip title={t("dashboard.editProfileTip")}>
             <ButtonBase
               component={Link}
               to="/profile"
-              aria-label="Edit profile"
+              aria-label={t("dashboard.editProfileTip")}
               sx={{
                 position: "relative",
                 borderRadius: "50%",
@@ -293,21 +288,20 @@ const Dashboard = () => {
               variant="h1"
               sx={{ fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 1 }}
             >
-              Welcome, {summary?.name}
+              {t("dashboard.welcome", { name: summary?.name })}
             </Typography>
             <Chip
               icon={<MonetizationOnIcon />}
-              label={`${summary?.coins ?? 0} coins`}
+              label={t("coins", { count: summary?.coins ?? 0 })}
               sx={{ fontSize: "1rem" }}
             />
             <Typography variant="body2" sx={{ mt: 1 }}>
-              Earn coins: +5 per recipe you share, +1 per like and +2 per save
-              it gets, +5 each time someone unlocks it.
+              {t("dashboard.earnCoins")}
             </Typography>
           </Box>
           <Stack direction="row" spacing={1.5}>
             <Button component={Link} to="/recipes" sx={accentButtonSx}>
-              Browse Recipes
+              {t("dashboard.browse")}
             </Button>
             <Button
               component={Link}
@@ -315,7 +309,7 @@ const Dashboard = () => {
               variant="outlined"
               sx={pillButtonSx}
             >
-              Edit Profile
+              {t("dashboard.editProfile")}
             </Button>
           </Stack>
         </Stack>
@@ -337,10 +331,10 @@ const Dashboard = () => {
                 }}
               >
                 <Typography sx={{ fontSize: "2rem", lineHeight: 1.2 }}>
-                  {lists[section.key].length}
+                  {formatNumber(lists[section.key].length, i18n.language)}
                 </Typography>
                 <Typography sx={{ fontSize: "1rem" }}>
-                  {section.title}
+                  {t(`dashboard.sections.${section.key}.title`)}
                 </Typography>
               </ButtonBase>
             </Grid>
@@ -374,11 +368,22 @@ const Dashboard = () => {
                 variant="h2"
                 sx={{ fontSize: { xs: "1.5rem", md: "1.875rem" } }}
               >
-                {section.title}
+                {t(`dashboard.sections.${section.key}.title`)}
               </Typography>
-              {section.key === "mine" && (
+              {/* Every section keeps its action in the header */}
+              {section.key === "mine" ? (
                 <Button component={Link} to="/recipes/new" sx={accentButtonSx}>
-                  Share a Recipe
+                  {t("dashboard.share")}
+                </Button>
+              ) : (
+                <Button
+                  component={Link}
+                  to="/recipes"
+                  variant="outlined"
+                  color="inherit"
+                  sx={pillButtonSx}
+                >
+                  {t("dashboard.browse")}
                 </Button>
               )}
             </Stack>
@@ -393,26 +398,9 @@ const Dashboard = () => {
                 onDelete={section.key === "mine" ? setDeleteTarget : undefined}
               />
             ) : (
-              <Stack
-                direction={{ xs: "column", sm: "row" }}
-                spacing={2}
-                alignItems={{ xs: "flex-start", sm: "center" }}
-              >
-                <Typography sx={{ fontSize: "1.05rem" }}>
-                  {section.empty}
-                </Typography>
-                {section.key !== "mine" && (
-                  <Button
-                    component={Link}
-                    to="/recipes"
-                    variant="outlined"
-                    color="inherit"
-                    sx={pillButtonSx}
-                  >
-                    Browse Recipes
-                  </Button>
-                )}
-              </Stack>
+              <Typography sx={{ fontSize: "1.05rem" }}>
+                {t(`dashboard.sections.${section.key}.empty`)}
+              </Typography>
             )}
           </Box>
         ))}

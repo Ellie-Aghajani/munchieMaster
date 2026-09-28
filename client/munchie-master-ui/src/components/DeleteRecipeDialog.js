@@ -20,6 +20,7 @@ import {
   errorText,
 } from "../api/recipeActions";
 import { isOwnRecipe } from "../utils/recipeUtils";
+import { Trans, useTranslation } from "react-i18next";
 
 const pillButtonSx = {
   borderRadius: 999,
@@ -30,6 +31,7 @@ const pillButtonSx = {
 
 // Confirms deleting a recipe and explains the coins it costs the author
 const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
+  const { t } = useTranslation();
   const { currentUser, checkAuthStatus } = useAuth();
   const { showError, showSuccess } = useError();
   const [details, setDetails] = useState(null);
@@ -46,10 +48,10 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
       })
       .then(({ data }) => setDetails(data))
       .catch((error) => {
-        showError(null, errorText(error, "Could not load this recipe."));
+        showError(null, errorText(error, t("errors.loadRecipe")));
         onCloseRef.current();
       });
-  }, [open, recipeId, showError]);
+  }, [open, recipeId, showError, t]);
 
   const isAuthor = details && isOwnRecipe(details, currentUser);
   const cost = details?.deletionCost ?? 0;
@@ -65,7 +67,7 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
       await checkAuthStatus();
       onDeleted(recipeId);
     } catch (error) {
-      showError(null, errorText(error, "Could not delete this recipe."));
+      showError(null, errorText(error, t("errors.delete")));
     } finally {
       setDeleting(false);
     }
@@ -82,7 +84,7 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
       }}
     >
       <DialogTitle sx={{ color: "primary.main", fontSize: "1.5rem" }}>
-        Delete this recipe?
+        {t("delete.title")}
       </DialogTitle>
       <DialogContent sx={{ color: "primary.main" }}>
         {!details ? (
@@ -92,23 +94,28 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
         ) : (
           <>
             <Typography sx={{ fontSize: "1.1rem", mb: 2 }}>
-              "{details.name.trim()}" will be removed for everyone. This can't
-              be undone.
+              {t("delete.warning", { name: details.name.trim() })}
             </Typography>
             {cost > 0 && (
               <Typography sx={{ lineHeight: 1.6, mb: 1.5 }}>
-                {isAuthor ? "It costs you " : "It costs the author "}
-                <strong>{coinsLabel(cost)}</strong>: the 5 coins earned for
-                posting it
-                {details.buyerCount === 1 &&
-                  `, plus ${coinsLabel(
-                    details.price,
-                  )} back to the member who unlocked it`}
-                {details.buyerCount > 1 &&
-                  `, plus ${coinsLabel(details.price)} back to each of the ${
-                    details.buyerCount
-                  } members who unlocked it`}
-                .
+                <Trans
+                  i18nKey={isAuthor ? "delete.costYou" : "delete.costAuthor"}
+                  values={{
+                    coins: coinsLabel(cost),
+                    refund:
+                      details.buyerCount === 1
+                        ? t("delete.refundOne", {
+                            coins: coinsLabel(details.price),
+                          })
+                        : details.buyerCount > 1
+                          ? t("delete.refundMany", {
+                              coins: coinsLabel(details.price),
+                              count: details.buyerCount,
+                            })
+                          : "",
+                  }}
+                  components={{ bold: <strong /> }}
+                />
               </Typography>
             )}
             {isAuthor && cost > 0 && (
@@ -118,12 +125,11 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
                 }}
               >
                 {canAfford
-                  ? `You have ${coinsLabel(balance)}; ${coinsLabel(
-                      balance - cost,
-                    )} will be left.`
-                  : `You have ${coinsLabel(
-                      balance,
-                    )}, so you can't delete it yet.`}
+                  ? t("delete.left", {
+                      balance: coinsLabel(balance),
+                      left: coinsLabel(balance - cost),
+                    })
+                  : t("delete.cantAfford", { balance: coinsLabel(balance) })}
               </Typography>
             )}
           </>
@@ -136,7 +142,7 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
           variant="outlined"
           sx={pillButtonSx}
         >
-          Cancel
+          {t("form.cancel")}
         </Button>
         <Button
           onClick={handleDelete}
@@ -146,7 +152,7 @@ const DeleteRecipeDialog = ({ recipeId, open, onClose, onDeleted }) => {
           startIcon={<DeleteOutlineIcon />}
           sx={pillButtonSx}
         >
-          {deleting ? "Deleting…" : "Delete"}
+          {deleting ? t("delete.deleting") : t("delete.confirm")}
         </Button>
       </DialogActions>
     </Dialog>

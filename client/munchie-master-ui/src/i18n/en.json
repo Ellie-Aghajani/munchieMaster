@@ -1,0 +1,289 @@
+{
+  "brand": "Munchie Master",
+  "brandLogoAlt": "Munchie Master logo",
+  "language": {
+    "switchTo": "فارسی"
+  },
+  "colorMode": {
+    "toDark": "Switch to dark mode",
+    "toLight": "Switch to light mode"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "recipes": "Recipes",
+    "shareRecipe": "Share Recipe",
+    "logout": "Logout",
+    "menu": "Menu",
+    "aboutMe": "About Me",
+    "howItWorks": "How it Works",
+    "join": "Join Munchie Family"
+  },
+  "coins_one": "{{count, number}} coin",
+  "coins_other": "{{count, number}} coins",
+  "landing": {
+    "heroTitle": "Make Mealtime Magic",
+    "heroSubtitle": "Munchie Master is where happy tummies and happy families meet!",
+    "logoAlt": "Munchie Master logo",
+    "aboutTitle": "About Me",
+    "about": [
+      "Trying to eat healthy, stay fit, and keep up with work and everyday life?",
+      "I know the struggle! I’m Ellie, a web developer, and I’ve found that one of the biggest challenges is simply figuring out what to eat when life gets busy.",
+      "Without a little meal prep, it’s so easy to reach for something quick and forget about those healthy goals. That’s why I created Munchie Master, a place to collect easy-to-prepare, nutritious, and healthy recipes.",
+      "Now, I’d love for you to be part of it! Share your favorite easy recipes, discover new meal ideas, and help us build a collection of simple, delicious, and nutritious meals that actually fit into our busy lives."
+    ],
+    "howTitle": "How it Works",
+    "howIntro": "Every Munchie Master recipe is free. Recipes shared by users cost coins to unlock, and you earn coins by sharing your own.",
+    "rules": {
+      "welcome": "Welcome coins when you join",
+      "share": "For every recipe you share",
+      "like": "For each like",
+      "save": "For each save your recipes get",
+      "unlocked": "Each time someone unlocks your recipe",
+      "unlock": "To unlock a recipe from another user"
+    },
+    "ctaTitle": "Ready to make mealtime easier?",
+    "footer": "© {{year}} MunchieMaster. All rights reserved."
+  },
+  "login": {
+    "loginTab": "Log in",
+    "registerTab": "Register",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "submitLogin": "Log in",
+    "submitRegister": "Create account",
+    "loginFailed": "Failed to log in",
+    "registerFailed": "Failed to register",
+    "error": "An error occurred"
+  },
+  "messages": {
+    "rewardLike": "{{name}} earned {{coins}} from your like!",
+    "rewardSave": "{{name}} earned {{coins}} from your save!",
+    "unlocked": "Recipe unlocked! You spent {{coins}} and {{name}} earned them.",
+    "posted": "Recipe posted! You earned {{coins}}.",
+    "deleted": "Recipe deleted.",
+    "deletedReturned": "{{coins}} returned.",
+    "deletedRefunded_one": "{{count, number}} member was refunded.",
+    "deletedRefunded_other": "{{count, number}} members were refunded.",
+    "welcomeBack": "Welcome back! You received {{coins}}: {{details}}.",
+    "onYourRecipes": "{{items}} on your recipes",
+    "forDeletedRecipes": "{{items}} for deleted recipes you had unlocked",
+    "groupSeparator": "; "
+  },
+  "counts": {
+    "likes_one": "{{count, number}} like",
+    "likes_other": "{{count, number}} likes",
+    "saves_one": "{{count, number}} save",
+    "saves_other": "{{count, number}} saves",
+    "unlocks_one": "{{count, number}} unlock",
+    "unlocks_other": "{{count, number}} unlocks",
+    "refunds_one": "{{count, number}} refund",
+    "refunds_other": "{{count, number}} refunds"
+  },
+  "errors": {
+    "details": "Details:",
+    "fetchRecipes": "Could not load recipes.",
+    "search": "Could not search recipes.",
+    "like": "Could not update the like.",
+    "save": "Could not update saved recipes.",
+    "dashboard": "Failed to load your dashboard.",
+    "loadRecipe": "Could not load this recipe.",
+    "unlock": "Could not unlock this recipe.",
+    "onlyOwnEdit": "You can only edit your own recipes.",
+    "needIngredientAndStep": "Add at least one ingredient and one step.",
+    "needCategory": "Choose at least one category.",
+    "saveChanges": "Could not save your changes.",
+    "post": "Could not post your recipe.",
+    "saveProfile": "Could not save your profile.",
+    "chooseImage": "Please choose an image file.",
+    "photoTooBig": "Please choose a photo under {{size}} MB.",
+    "updatePhoto": "Could not update your photo.",
+    "removePhoto": "Could not remove your photo.",
+    "delete": "Could not delete this recipe."
+  },
+  "tags": {
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "snack": "Snack",
+    "sweets": "Sweets & Treats",
+    "isVegetarian": "Vegetarian",
+    "isGlutenFree": "Gluten-free",
+    "isKetoFriendly": "Keto-friendly"
+  },
+  "recipes": {
+    "title": "From Pantry to Plate",
+    "subtitle": "Got a few ingredients on hand? Let’s turn them into something delicious.",
+    "searchPlaceholder": "e.g. eggs, spinach, cheese",
+    "searchPlaceholderMore": "Add another ingredient",
+    "searchHelp": "Press Enter or a comma after each ingredient",
+    "clearFilters": "Clear filters",
+    "showAll": "Show all recipes",
+    "searching": "Searching…",
+    "noResults": "No recipes match yet. Try removing a filter or ingredient.",
+    "resultCount_one": "{{count, number}} recipe",
+    "resultCount_other": "{{count, number}} recipes",
+    "forCategories": "for {{list}}",
+    "withIngredients": "with {{list}}",
+    "suggestions": [
+      "banana",
+      "broccoli",
+      "carrot",
+      "cheese",
+      "chicken",
+      "eggs",
+      "oats",
+      "rice",
+      "spinach",
+      "sweet potato",
+      "tortilla",
+      "yogurt"
+    ]
+  },
+  "card": {
+    "yourRecipe": "Your recipe",
+    "edit": "Edit recipe",
+    "delete": "Delete recipe",
+    "by": "by {{name}}",
+    "uses": "Uses {{list}}",
+    "unlockToLike": "Unlock this recipe to like it",
+    "like": "Like",
+    "unlike": "Unlike",
+    "save": "Save",
+    "unsave": "Remove from saved",
+    "unlock": "Unlock",
+    "view": "View"
+  },
+  "carousel": {
+    "previous": "Previous recipes",
+    "next": "Next recipes"
+  },
+  "dashboard": {
+    "sections": {
+      "saved": {
+        "title": "Saved Recipes",
+        "empty": "You haven't saved any recipes yet."
+      },
+      "liked": {
+        "title": "Liked Recipes",
+        "empty": "You haven't liked any recipes yet."
+      },
+      "bought": {
+        "title": "Bought Recipes",
+        "empty": "Recipes shared by others cost 5 coins to unlock. The ones you unlock show up here."
+      },
+      "mine": {
+        "title": "My Recipes",
+        "empty": "Share your first recipe and earn 5 coins."
+      }
+    },
+    "welcome": "Welcome, {{name}}",
+    "earnCoins": "Earn coins: +1 per like, +5 per recipe you share, +5 each time someone unlocks your recipe and +2 per save it gets.",
+    "browse": "Browse Recipes",
+    "editProfile": "Edit Profile",
+    "editProfileTip": "Edit profile",
+    "share": "Share a Recipe"
+  },
+  "detail": {
+    "notFound": "Recipe not found",
+    "backToRecipes": "Back to Recipes",
+    "allRecipes": "All Recipes",
+    "likes_one": "{{count, number}} like",
+    "likes_other": "{{count, number}} likes",
+    "ingredientCount_one": "{{count, number}} ingredient",
+    "ingredientCount_other": "{{count, number}} ingredients",
+    "toUnlock": "{{coins}} to unlock",
+    "unlocked": "Unlocked",
+    "like": "Like",
+    "liked": "Liked",
+    "save": "Save",
+    "saved": "Saved",
+    "edit": "Edit",
+    "delete": "Delete",
+    "unlockTitle": "Unlock this recipe",
+    "unlockBody": "{{name}} shared this recipe with the community. Unlock it for {{coins}} to see the ingredients and directions. {{name}} earns the coins you spend.",
+    "youHave": "You have {{coins}}",
+    "unlocking": "Unlocking…",
+    "unlockFor": "Unlock for {{coins}}",
+    "shareToEarn": "Share a recipe to earn coins",
+    "loginToUnlock": "Log in to unlock",
+    "ingredients": "Ingredients",
+    "directions": "Directions",
+    "stepImageAlt": "Cooking step {{step}}",
+    "autoTranslated": "Translated automatically"
+  },
+  "form": {
+    "editTitle": "Edit Recipe",
+    "shareTitle": "Share a Recipe",
+    "editSubtitle": "Update your recipe. Editing doesn't change your coins or its price.",
+    "shareSubtitle": "Share a favorite with others and earn coins.",
+    "coinsTitle": "You earn 5 coins for posting this recipe.",
+    "coinsAdmin": "As an admin, your recipes are free for everyone.",
+    "coinsMember": "Other members pay 5 coins to unlock it, and those coins go to you. You also earn 1 coin for every like and 2 coins for every save.",
+    "name": "Recipe name",
+    "prepTime": "Preparation time",
+    "prepTimePlaceholder": "e.g. 15-20 minutes",
+    "category": "Category *",
+    "dietary": "Dietary",
+    "ingredients": "Ingredients",
+    "ingredientsHelp": "One ingredient per line",
+    "directions": "Directions",
+    "directionsHelp": "One step per line; steps are numbered for you",
+    "photoAlt": "Recipe preview",
+    "addPhoto": "Add a photo of your recipe",
+    "changePhoto": "Click the photo to choose a different one.",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "saveChanges": "Save Changes",
+    "posting": "Posting…",
+    "post": "Post Recipe +5 coins",
+    "updated": "Recipe updated."
+  },
+  "profile": {
+    "title": "Edit Profile",
+    "subtitle": "This is how other users see you next to the recipes you share.",
+    "changePhoto": "Change photo",
+    "shared_one": "{{count, number}} shared",
+    "shared_other": "{{count, number}} shared",
+    "removePhoto": "Remove photo",
+    "photoHint": "JPG or PNG, up to {{size}} MB. You can crop it before saving.",
+    "personal": "Personal info",
+    "location": "Location",
+    "about": "About you",
+    "fields": {
+      "name": "Display name",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "city": "City",
+      "province": "Province / State",
+      "country": "Country",
+      "description": "Bio"
+    },
+    "nameHelp": "Your account name. Recipes show your first name if you add one.",
+    "nameError": "At least 3 characters",
+    "bioPlaceholder": "e.g. Mom of a picky 2-year-old who loves veggie muffins",
+    "discard": "Discard changes",
+    "allSaved": "All changes saved",
+    "saved": "Profile saved.",
+    "photoUpdated": "Profile photo updated.",
+    "photoRemoved": "Profile photo removed."
+  },
+  "crop": {
+    "title": "Crop your photo",
+    "drag": "Drag to position your photo",
+    "zoom": "Zoom",
+    "save": "Save photo"
+  },
+  "delete": {
+    "title": "Delete this recipe?",
+    "warning": "“{{name}}” will be removed for everyone. This can't be undone.",
+    "costYou": "It costs you <bold>{{coins}}</bold>: the 5 coins earned for posting it{{refund}}.",
+    "costAuthor": "It costs the author <bold>{{coins}}</bold>: the 5 coins earned for posting it{{refund}}.",
+    "refundOne": ", plus {{coins}} back to the member who unlocked it",
+    "refundMany": ", plus {{coins}} back to each of the {{count, number}} members who unlocked it",
+    "left": "You have {{balance}}; {{left}} will be left.",
+    "cantAfford": "You have {{balance}}, so you can't delete it yet.",
+    "deleting": "Deleting…",
+    "confirm": "Delete"
+  }
+}

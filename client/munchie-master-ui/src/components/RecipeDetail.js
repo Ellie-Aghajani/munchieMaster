@@ -22,6 +22,7 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import TranslateIcon from "@mui/icons-material/Translate";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
@@ -44,6 +45,8 @@ import {
 import DeleteRecipeDialog from "./DeleteRecipeDialog";
 import RecipeImage from "./RecipeImage";
 import TagChip from "./TagChip";
+import { useTranslation } from "react-i18next";
+import { formatNumber } from "../i18n/format";
 import { recipeTags } from "../utils/recipeTags";
 
 const authHeaders = () => ({ "x-auth-token": localStorage.getItem("token") });
@@ -76,6 +79,7 @@ const accentButtonSx = {
 };
 
 const RecipeDetail = () => {
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentUser, checkAuthStatus } = useAuth();
@@ -107,12 +111,12 @@ const RecipeDetail = () => {
       if (error.response?.status === 404 || error.response?.status === 400) {
         setNotFound(true);
       } else if (error.response?.status !== 401) {
-        showError(null, errorText(error, "Could not load this recipe."));
+        showError(null, errorText(error, t("errors.loadRecipe")));
       }
     } finally {
       setLoading(false);
     }
-  }, [id, showError]);
+  }, [id, showError, t]);
 
   useEffect(() => {
     setLoading(true);
@@ -138,7 +142,7 @@ const RecipeDetail = () => {
       if (message) showSuccess(message);
     } catch (error) {
       if (!requireLogin(error)) {
-        showError(null, errorText(error, "Could not update the like."));
+        showError(null, errorText(error, t("errors.like")));
       }
     }
   };
@@ -152,7 +156,7 @@ const RecipeDetail = () => {
       if (message) showSuccess(message);
     } catch (error) {
       if (!requireLogin(error)) {
-        showError(null, errorText(error, "Could not update saved recipes."));
+        showError(null, errorText(error, t("errors.save")));
       }
     }
   };
@@ -165,7 +169,7 @@ const RecipeDetail = () => {
       await Promise.all([fetchRecipe(), checkAuthStatus()]);
     } catch (error) {
       if (!requireLogin(error)) {
-        showError(null, errorText(error, "Could not unlock this recipe."));
+        showError(null, errorText(error, t("errors.unlock")));
       }
     } finally {
       setUnlocking(false);
@@ -187,7 +191,7 @@ const RecipeDetail = () => {
           variant="h1"
           sx={{ fontSize: "2rem", color: "page.text", mb: 3 }}
         >
-          Recipe not found
+          {t("detail.notFound")}
         </Typography>
         <Button
           component={Link}
@@ -195,7 +199,7 @@ const RecipeDetail = () => {
           variant="outlined"
           sx={{ ...pillButtonSx, color: "page.text", borderColor: "page.text" }}
         >
-          Back to Recipes
+          {t("detail.backToRecipes")}
         </Button>
       </Container>
     );
@@ -214,10 +218,18 @@ const RecipeDetail = () => {
       <Button
         component={Link}
         to="/recipes"
-        startIcon={<ArrowBackIcon />}
+        // Point "back" the reading direction's way
+        startIcon={
+          <ArrowBackIcon
+            sx={{
+              transform: (theme) =>
+                theme.direction === "rtl" ? "scaleX(-1)" : "none",
+            }}
+          />
+        }
         sx={{ ...pillButtonSx, px: 2, mb: 3, color: "page.text" }}
       >
-        All Recipes
+        {t("detail.allRecipes")}
       </Button>
 
       {/* Header: image and summary */}
@@ -239,14 +251,28 @@ const RecipeDetail = () => {
                 mb: 1.5,
               }}
             >
-              {recipe.name.trim()}
+              <bdi>{recipe.name.trim()}</bdi>
             </Typography>
             <Stack direction="row" alignItems="center" spacing={0.75} mb={2.5}>
               <PersonOutlineIcon />
               <Typography sx={{ fontSize: "1.1rem" }}>
-                by {authorNameOf(recipe)}
+                {t("card.by", { name: authorNameOf(recipe) })}
               </Typography>
             </Stack>
+            {recipe.isTranslated && (
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={0.75}
+                mb={2}
+                sx={{ color: "text.secondary" }}
+              >
+                <TranslateIcon fontSize="small" />
+                <Typography variant="body2">
+                  {t("detail.autoTranslated")}
+                </Typography>
+              </Stack>
+            )}
             {recipeTags(recipe).length > 0 && (
               <Stack
                 direction="row"
@@ -276,20 +302,20 @@ const RecipeDetail = () => {
               {recipe.preparationTime && (
                 <Chip
                   icon={<AccessTimeIcon />}
-                  label={recipe.preparationTime}
+                  label={<bdi>{recipe.preparationTime}</bdi>}
                   sx={{ fontSize: "1rem" }}
                 />
               )}
               <Chip
                 icon={<FavoriteIcon />}
-                label={`${recipe.likeCount || 0} likes`}
+                label={t("detail.likes", { count: recipe.likeCount || 0 })}
                 sx={{ fontSize: "1rem" }}
               />
               {!recipe.locked && (
                 <Chip
-                  label={`${ingredients.length} ingredient${
-                    ingredients.length === 1 ? "" : "s"
-                  }`}
+                  label={t("detail.ingredientCount", {
+                    count: ingredients.length,
+                  })}
                   sx={{ fontSize: "1rem" }}
                 />
               )}
@@ -298,8 +324,10 @@ const RecipeDetail = () => {
                   icon={recipe.locked ? <LockIcon /> : <LockOpenIcon />}
                   label={
                     recipe.locked
-                      ? `${coinsLabel(recipe.price)} to unlock`
-                      : "Unlocked"
+                      ? t("detail.toUnlock", {
+                          coins: coinsLabel(recipe.price),
+                        })
+                      : t("detail.unlocked")
                   }
                   sx={{ fontSize: "1rem" }}
                 />
@@ -315,7 +343,7 @@ const RecipeDetail = () => {
                   }
                   sx={accentButtonSx}
                 >
-                  {isLiked ? "Liked" : "Like"}
+                  {isLiked ? t("detail.liked") : t("detail.like")}
                 </Button>
               )}
               <Button
@@ -324,7 +352,7 @@ const RecipeDetail = () => {
                 startIcon={isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
                 sx={pillButtonSx}
               >
-                {isSaved ? "Saved" : "Save"}
+                {isSaved ? t("detail.saved") : t("detail.save")}
               </Button>
               {canManage && (
                 <Button
@@ -334,7 +362,7 @@ const RecipeDetail = () => {
                   startIcon={<EditOutlinedIcon />}
                   sx={pillButtonSx}
                 >
-                  Edit
+                  {t("detail.edit")}
                 </Button>
               )}
               {canManage && (
@@ -345,7 +373,7 @@ const RecipeDetail = () => {
                   startIcon={<DeleteOutlineIcon />}
                   sx={pillButtonSx}
                 >
-                  Delete
+                  {t("detail.delete")}
                 </Button>
               )}
             </Stack>
@@ -366,19 +394,20 @@ const RecipeDetail = () => {
         >
           <LockIcon sx={{ fontSize: 48, mb: 1 }} />
           <Typography variant="h2" sx={{ ...sectionHeadingSx, mb: 1.5 }}>
-            Unlock this recipe
+            {t("detail.unlockTitle")}
           </Typography>
           <Typography sx={{ fontSize: "1.1rem", lineHeight: 1.6, mb: 3 }}>
-            {authorNameOf(recipe)} shared this recipe with the community. Unlock
-            it for {coinsLabel(recipe.price)} to see the ingredients and
-            directions. {authorNameOf(recipe)} earns the coins you spend.
+            {t("detail.unlockBody", {
+              name: authorNameOf(recipe),
+              coins: coinsLabel(recipe.price),
+            })}
           </Typography>
 
           {isLoggedIn ? (
             <>
               <Chip
                 icon={<MonetizationOnIcon />}
-                label={`You have ${coinsLabel(balance)}`}
+                label={t("detail.youHave", { coins: coinsLabel(balance) })}
                 sx={{ fontSize: "1rem", mb: 3 }}
               />
               <Stack
@@ -400,8 +429,10 @@ const RecipeDetail = () => {
                   }}
                 >
                   {unlocking
-                    ? "Unlocking…"
-                    : `Unlock for ${coinsLabel(recipe.price)}`}
+                    ? t("detail.unlocking")
+                    : t("detail.unlockFor", {
+                        coins: coinsLabel(recipe.price),
+                      })}
                 </Button>
                 {!canAfford && (
                   <Button
@@ -410,14 +441,14 @@ const RecipeDetail = () => {
                     variant="outlined"
                     sx={pillButtonSx}
                   >
-                    Share a recipe to earn coins
+                    {t("detail.shareToEarn")}
                   </Button>
                 )}
               </Stack>
             </>
           ) : (
             <Button component={Link} to="/login" sx={accentButtonSx}>
-              Log in to unlock
+              {t("detail.loginToUnlock")}
             </Button>
           )}
         </Box>
@@ -435,7 +466,7 @@ const RecipeDetail = () => {
               }}
             >
               <Typography variant="h2" sx={sectionHeadingSx}>
-                Ingredients
+                {t("detail.ingredients")}
               </Typography>
               <Stack
                 component="ul"
@@ -455,7 +486,7 @@ const RecipeDetail = () => {
                       sx={{ mt: "3px", color: "primary.main" }}
                     />
                     <Typography sx={{ fontSize: "1.05rem", lineHeight: 1.5 }}>
-                      {ingredient}
+                      <bdi>{ingredient}</bdi>
                     </Typography>
                   </Stack>
                 ))}
@@ -466,7 +497,7 @@ const RecipeDetail = () => {
           <Grid item xs={12} md={7}>
             <Box sx={{ ...cardSx, backgroundColor: "tiles.cream" }}>
               <Typography variant="h2" sx={sectionHeadingSx}>
-                Directions
+                {t("detail.directions")}
               </Typography>
               <Stack
                 component="ol"
@@ -495,12 +526,12 @@ const RecipeDetail = () => {
                         fontSize: "1.05rem",
                       }}
                     >
-                      {index + 1}
+                      {formatNumber(index + 1, i18n.language)}
                     </Box>
                     <Typography
                       sx={{ fontSize: "1.05rem", lineHeight: 1.6, pt: 0.5 }}
                     >
-                      {step}
+                      <bdi>{step}</bdi>
                     </Typography>
                   </Stack>
                 ))}
@@ -513,7 +544,9 @@ const RecipeDetail = () => {
                       <Box
                         component="img"
                         src={uploadUrl(image)}
-                        alt={`Cooking step ${index + 1}`}
+                        alt={t("detail.stepImageAlt", {
+                          step: formatNumber(index + 1, i18n.language),
+                        })}
                         sx={{
                           display: "block",
                           width: "100%",

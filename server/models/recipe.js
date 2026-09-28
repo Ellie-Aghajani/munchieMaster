@@ -6,6 +6,14 @@ const CATEGORIES = ["breakfast", "lunch", "dinner", "snack", "sweets"];
 // Dietary flags a recipe can have
 const DIETS = ["isVegetarian", "isGlutenFree", "isKetoFriendly"];
 
+// One language version of the translatable recipe text
+const translatedVersion = {
+  name: String,
+  preparationTime: String,
+  ingredients: [String],
+  directions: [String],
+};
+
 const recipeSchema = new mongoose.Schema({
   name: { type: String, required: true, minLength: 3, maxLength: 50 },
   image: { type: String },
@@ -27,6 +35,20 @@ const recipeSchema = new mongoose.Schema({
   isVegetarian: { type: Boolean, default: false },
   isGlutenFree: { type: Boolean, default: false },
   isKetoFriendly: { type: Boolean, default: false },
+  // Automatic English/Persian translation (see utils/translate.js)
+  sourceLanguage: { type: String, enum: ["en", "fa"] },
+  translations: {
+    en: translatedVersion,
+    fa: translatedVersion,
+  },
+  translationStatus: {
+    type: String,
+    enum: ["pending", "done", "failed"],
+    default: "pending",
+  },
+  translationAttempts: { type: Number, default: 0 },
+  // Bumped on every content edit so a slow translation of old text is discarded
+  contentVersion: { type: Number, default: 0 },
 });
 
 const Recipe = mongoose.model("Recipe", recipeSchema);

@@ -1,4 +1,5 @@
 import config from "../config";
+import i18n from "../i18n";
 
 // Build a full URL for a file served from the server's /uploads folder
 export const uploadUrl = (path) =>
@@ -19,7 +20,7 @@ export const authorIdOf = (recipe) => recipe.author?._id ?? recipe.author;
 export const authorNameOf = (recipe) =>
   recipe.author
     ? recipe.author.firstName || recipe.author.name || "A member"
-    : "MunchieMaster";
+    : i18n.t("brand");
 
 export const isOwnRecipe = (recipe, user) =>
   !!user?._id && authorIdOf(recipe) === user._id;

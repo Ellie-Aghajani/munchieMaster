@@ -2,6 +2,8 @@ import React from "react";
 import LandingNavbar from "./LandingNavbar";
 import { Box, Container, Grid, Stack, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { formatNumber, formatSigned } from "../i18n/format";
 
 const ctaButtonSx = {
   width: { xs: "100%", sm: "auto" },
@@ -34,12 +36,12 @@ const sectionHeadingSx = {
 
 // Keep in sync with server/utils/coinRules.js
 const coinRules = [
-  { amount: "+10", text: "Welcome coins when you join" },
-  { amount: "+5", text: "For every recipe you share" },
-  { amount: "+1", text: "For each like " },
-  { amount: "+2", text: "For each save your recipes get" },
-  { amount: "+5", text: "Each time someone unlocks your recipe" },
-  { amount: "−5", text: "To unlock a recipe from another user" },
+  { amount: 10, key: "welcome" },
+  { amount: 5, key: "share" },
+  { amount: 1, key: "like" },
+  { amount: 2, key: "save" },
+  { amount: 5, key: "unlocked" },
+  { amount: -5, key: "unlock" },
 ];
 
 const sectionBodySx = {
@@ -48,6 +50,9 @@ const sectionBodySx = {
 };
 
 const LandingPage = () => {
+  const { t, i18n } = useTranslation();
+  const aboutParagraphs = t("landing.about", { returnObjects: true });
+
   return (
     <Box>
       <LandingNavbar />
@@ -70,7 +75,7 @@ const LandingPage = () => {
                   mb: 2,
                 }}
               >
-                Make Mealtime Magic
+                {t("landing.heroTitle")}
               </Typography>
               <Typography
                 variant="h2"
@@ -81,7 +86,7 @@ const LandingPage = () => {
                   maxWidth: { md: 520 },
                 }}
               >
-                Munchie Master is where happy tummies and happy families meet!
+                {t("landing.heroSubtitle")}
               </Typography>
               <Stack
                 direction={{ xs: "column", sm: "row" }}
@@ -95,7 +100,7 @@ const LandingPage = () => {
                   to="/signup"
                   sx={ctaButtonSx}
                 >
-                  Join Munchie Family
+                  {t("nav.join")}
                 </Button>
                 <Button
                   variant="outlined"
@@ -114,7 +119,7 @@ const LandingPage = () => {
                     "&:hover": { borderWidth: 2, borderColor: "page.text" },
                   }}
                 >
-                  How it Works
+                  {t("nav.howItWorks")}
                 </Button>
               </Stack>
             </Box>
@@ -124,7 +129,7 @@ const LandingPage = () => {
             <Box
               component="img"
               src="/images/logo.png"
-              alt="Munchie Master Logo"
+              alt={t("landing.logoAlt")}
               sx={{
                 display: "block",
                 width: "100%",
@@ -146,21 +151,15 @@ const LandingPage = () => {
               sx={{ ...sectionCardSx, backgroundColor: "tiles.aqua" }}
             >
               <Typography variant="h3" sx={sectionHeadingSx}>
-                About Me
+                {t("landing.aboutTitle")}
               </Typography>
               <Typography sx={sectionBodySx}>
-                Trying to eat healthy, stay fit, and keep up with work and
-                everyday life? <br /> I know the struggle! I’m Ellie, a web
-                developer, and I’ve found that one of the biggest challenges is
-                simply figuring out what to eat when life gets busy. <br />{" "}
-                Without a little meal prep, it’s so easy to reach for something
-                quick and forget about those healthy goals. That’s why I created
-                Munchie Master, a place to collect easy-to-prepare, nutritious,
-                and healthy recipes. <br />
-                Now, I’d love for you to be part of it! Share your favorite easy
-                recipes, discover new meal ideas, and help us build a collection
-                of simple, delicious, and nutritious meals that actually fit
-                into our busy lives.
+                {aboutParagraphs.map((paragraph, index) => (
+                  <React.Fragment key={index}>
+                    {index > 0 && <br />}
+                    {paragraph}
+                  </React.Fragment>
+                ))}
               </Typography>
             </Box>
           </Grid>
@@ -171,11 +170,10 @@ const LandingPage = () => {
               sx={{ ...sectionCardSx, backgroundColor: "tiles.sky" }}
             >
               <Typography variant="h3" sx={sectionHeadingSx}>
-                How it Works
+                {t("landing.howTitle")}
               </Typography>
               <Typography sx={{ ...sectionBodySx, mb: 2.5 }}>
-                Every Munchie Master recipe is free. Recipes shared by users
-                cost coins to unlock, and you earn coins by sharing your own.
+                {t("landing.howIntro")}
               </Typography>
               <Stack
                 component="ul"
@@ -185,7 +183,7 @@ const LandingPage = () => {
                 {coinRules.map((rule) => (
                   <Stack
                     component="li"
-                    key={rule.text}
+                    key={rule.key}
                     direction="row"
                     spacing={1.5}
                     alignItems="center"
@@ -203,10 +201,13 @@ const LandingPage = () => {
                         typography: "body1",
                         fontSize: "0.95rem",
                       }}
+                      dir="ltr" // Keep the sign before the number in Persian
                     >
-                      {rule.amount}
+                      {formatSigned(rule.amount, i18n.language)}
                     </Box>
-                    <Typography sx={sectionBodySx}>{rule.text}</Typography>
+                    <Typography sx={sectionBodySx}>
+                      {t(`landing.rules.${rule.key}`)}
+                    </Typography>
                   </Stack>
                 ))}
               </Stack>
@@ -228,7 +229,7 @@ const LandingPage = () => {
           variant="h2"
           sx={{ fontSize: { xs: "1.75rem", md: "2.5rem" }, mb: 3 }}
         >
-          Ready to make mealtime easier?
+          {t("landing.ctaTitle")}
         </Typography>
         <Button
           variant="contained"
@@ -236,7 +237,7 @@ const LandingPage = () => {
           to="/signup"
           sx={ctaButtonSx}
         >
-          Join Munchie Family
+          {t("nav.join")}
         </Button>
       </Container>
 
@@ -250,7 +251,11 @@ const LandingPage = () => {
         }}
       >
         <Typography variant="body2">
-          &copy; {new Date().getFullYear()} MunchieMaster. All rights reserved.
+          {t("landing.footer", {
+            year: formatNumber(new Date().getFullYear(), i18n.language, {
+              useGrouping: false,
+            }),
+          })}
         </Typography>
       </Box>
     </Box>

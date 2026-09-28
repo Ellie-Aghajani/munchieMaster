@@ -3,6 +3,8 @@ import { Box, IconButton, Stack } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import RecipeCard from "./RecipeCard";
+import { useTheme } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
 
 const GAP = 24; // px between cards
 
@@ -29,6 +31,9 @@ const ResponsiveCarousel = ({
   onSave,
   onDelete,
 }) => {
+  const { t } = useTranslation();
+  // In right-to-left mode "next" is to the left, so arrows and scrolling flip
+  const isRtl = useTheme().direction === "rtl";
   const trackRef = useRef(null);
   const [canScroll, setCanScroll] = useState(false);
 
@@ -49,7 +54,7 @@ const ResponsiveCarousel = ({
     const slide = track?.firstElementChild;
     if (!slide) return;
     track.scrollBy({
-      left: direction * (slide.offsetWidth + GAP),
+      left: direction * (isRtl ? -1 : 1) * (slide.offsetWidth + GAP),
       behavior: "smooth",
     });
   };
@@ -94,18 +99,18 @@ const ResponsiveCarousel = ({
       {canScroll && (
         <Stack direction="row" spacing={1.5} justifyContent="flex-end" mt={1}>
           <IconButton
-            aria-label="Previous recipes"
+            aria-label={t("carousel.previous")}
             onClick={() => scrollBySlide(-1)}
             sx={arrowSx}
           >
-            <ChevronLeftIcon />
+            {isRtl ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
           <IconButton
-            aria-label="Next recipes"
+            aria-label={t("carousel.next")}
             onClick={() => scrollBySlide(1)}
             sx={arrowSx}
           >
-            <ChevronRightIcon />
+            {isRtl ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </Stack>
       )}

@@ -12,6 +12,7 @@ const {
 const { User } = require("../models/user");
 const upload = require("../config/multerConfig");
 const optionalAuth = require("../middleware/optionalAuth");
+const { queueTranslation } = require("../startup/translations");
 const { removeUpload } = require("../utils/uploads");
 const {
   COINS,
@@ -57,10 +58,17 @@ const canManageRecipe = (recipe, user) => {
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-// "eggs" should also match "egg" and "tomatoes" match "tomato"
+// "eggs" should also match "egg" and "tomatoes" match "tomato". Persian
+// words are written with a space, a half-space (ZWNJ) or a hyphen
+// (تخم مرغ / تخم‌مرغ), and ی / ک also have Arabic-keyboard forms.
 const ingredientPattern = (term) => {
   const stem = term.length > 3 ? term.replace(/(es|s)$/, "") : term;
-  return new RegExp(escapeRegex(stem), "i");
+  const pattern = escapeRegex(stem)
+    // Literal half-space in the class: MongoDB's regex engine rejects \u escapes
+    .replace(/[\s\u200c-]+/g, "[\\s\u200c-]*")
+    .replace(/[یي]/g, "[یي]")
+    .replace(/[کك]/g, "[کك]");
+  return new RegExp(pattern, "i");
 };
 
 // GET all recipes (summary fields for cards), optionally filtered by
@@ -92,17 +100,36 @@ router.get("/", async (req, res) => {
     }
 
     const patterns = terms.map(ingredientPattern);
+    // Match the original ingredients or either translation
     const matches = await Recipe.find({
       ...filter,
-      ingredients: { $in: patterns },
+      $or: [
+        { ingredients: { $in: patterns } },
+        { "translations.en.ingredients": { $in: patterns } },
+        { "translations.fa.ingredients": { $in: patterns } },
+      ],
     })
-      .select(`${RECIPE_SUMMARY_FIELDS} ingredients`)
+      // Whole translations (for matching), so drop the summary's translation sub-fields
+      .select(
+        `${RECIPE_SUMMARY_FIELDS.replace(/translations\.\S+/g, "")} ingredients translations`
+      )
       .populate("author", AUTHOR_FIELDS);
 
     const results = matches
       .map((recipe) => {
-        const text = recipe.ingredients.join("\n");
+        const text = [
+          ...recipe.ingredients,
+          ...(recipe.translations?.en?.ingredients || []),
+          ...(recipe.translations?.fa?.ingredients || []),
+        ].join("\n");
+        // Never send ingredient text in search results
         const { ingredients, ...summary } = recipe.toObject();
+        if (summary.translations) {
+          summary.translations = {
+            en: { name: recipe.translations.en?.name, preparationTime: recipe.translations.en?.preparationTime },
+            fa: { name: recipe.translations.fa?.name, preparationTime: recipe.translations.fa?.preparationTime },
+          };
+        }
         return {
           ...summary,
           matchedIngredients: terms.filter((_, i) => patterns[i].test(text)),
@@ -161,6 +188,7 @@ router.post(
       user.myRecipes.push(recipe._id);
       user.coins += COINS.POST_REWARD;
       await user.save();
+      queueTranslation(recipe._id);
       res.send({
         recipe: toPublicRecipe(recipe),
         coinsEarned: COINS.POST_REWARD,
@@ -219,11 +247,30 @@ router.put(
       return reject(403, "You can only edit your own recipes.");
 
     const oldImage = recipe.image;
+    const textBefore = JSON.stringify([
+      recipe.name,
+      recipe.preparationTime,
+      recipe.ingredients,
+      recipe.directions,
+    ]);
     recipe.name = req.body.name;
     recipe.preparationTime = req.body.preparationTime;
     recipe.ingredients = req.body.ingredients;
     recipe.directions = req.body.directions;
     Object.assign(recipe, tagFields(value));
+    const textChanged =
+      textBefore !==
+      JSON.stringify([
+        recipe.name,
+        recipe.preparationTime,
+        recipe.ingredients,
+        recipe.directions,
+      ]);
+    if (textChanged) {
+      recipe.contentVersion += 1; // Discards any translation of the old text
+      recipe.translationStatus = "pending";
+      recipe.translationAttempts = 0;
+    }
     if (newImage) recipe.image = `/uploads/${newImage.filename}`;
 
     try {
@@ -232,6 +279,7 @@ router.put(
       return reject(500, "Could not update the recipe.");
     }
     if (newImage && oldImage) removeUpload(oldImage);
+    if (textChanged) queueTranslation(recipe._id);
     await recipe.populate("author", AUTHOR_FIELDS);
     res.send({ recipe: toPublicRecipe(recipe) });
   }

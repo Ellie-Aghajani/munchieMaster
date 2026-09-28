@@ -8,11 +8,14 @@ const users = require("../routes/users");
 const auth = require("../routes/auth");
 const home = require("../routes/home");
 const dashboard = require("../routes/dashboard");
+const localize = require("../middleware/localize");
 
 module.exports = function (app) {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(express.static("public"));
+  // Recipes in API responses come back in the reader's language
+  app.use("/api", localize);
   app.use("/api/recipes", recipes);
   app.use("/api/customers", customers);
   app.use("/api/meals", meals);

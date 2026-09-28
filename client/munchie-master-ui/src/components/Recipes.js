@@ -19,7 +19,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import RecipeCard from "./RecipeCard";
 import SelectableChip from "./SelectableChip";
-import { CATEGORY_OPTIONS, DIET_OPTIONS } from "../utils/recipeTags";
+import { CATEGORY_OPTIONS, DIET_OPTIONS, tagLabel } from "../utils/recipeTags";
+import { useTranslation } from "react-i18next";
 import {
   errorText,
   likeRecipe,
@@ -32,22 +33,6 @@ import { useNavigate } from "react-router-dom";
 import config from "../config";
 
 axios.defaults.baseURL = config.serverUrl;
-
-// Suggestions for the ingredient search; any other ingredient can be typed
-const COMMON_INGREDIENTS = [
-  "banana",
-  "broccoli",
-  "carrot",
-  "cheese",
-  "chicken",
-  "eggs",
-  "oats",
-  "rice",
-  "spinach",
-  "sweet potato",
-  "tortilla",
-  "yogurt",
-];
 
 // Search field outlines follow the page background, like the recipe form
 const searchInputSx = {
@@ -63,13 +48,15 @@ const searchInputSx = {
 const toIngredients = (values) => [
   ...new Set(
     values
-      .flatMap((value) => value.split(","))
+      .flatMap((value) => value.split(/[,،]/)) // English or Persian comma
       .map((value) => value.trim().toLowerCase())
       .filter(Boolean),
   ),
 ];
 
 function Recipes() {
+  const { t, i18n } = useTranslation();
+  const suggestions = t("recipes.suggestions", { returnObjects: true });
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userLikedRecipes, setUserLikedRecipes] = useState([]);
@@ -120,14 +107,10 @@ function Recipes() {
         logout();
         navigate("/login");
       }
-      showError(
-        error.response?.data,
-        error.response?.data?.message ||
-          "An error occurred while fetching data",
-      );
+      showError(error.response?.data, t("errors.fetchRecipes"));
       setLoading(false);
     }
-  }, [logout, navigate, showError]);
+  }, [logout, navigate, showError, t]);
 
   useEffect(() => {
     fetchRecipes();
@@ -153,14 +136,12 @@ function Recipes() {
         },
       })
       .then(({ data }) => !cancelled && setSearchResults(data))
-      .catch((error) =>
-        showError(null, errorText(error, "Could not search recipes.")),
-      )
+      .catch((error) => showError(null, errorText(error, t("errors.search"))))
       .finally(() => !cancelled && setSearching(false));
     return () => {
       cancelled = true;
     };
-  }, [isFiltering, ingredients, categories, diets, showError]);
+  }, [isFiltering, ingredients, categories, diets, showError, t]);
 
   const toggle = (setList, value) =>
     setList((prev) =>
@@ -175,18 +156,18 @@ function Recipes() {
     setDiets([]);
   };
 
-  // e.g. "6 recipes for Breakfast or Snack · Vegetarian · with egg, spinach"
-  const labelsFor = (options, values) =>
-    options
-      .filter((option) => values.includes(option.value))
-      .map((o) => o.label);
+  // e.g. "6 recipes for Breakfast or Snack · Vegetarian · with egg and spinach"
+  const list = (items, type = "conjunction") =>
+    new Intl.ListFormat(i18n.language, { type }).format(items);
   const resultsSummary = () => {
-    const count = searchResults.length;
-    const parts = [`${count} recipe${count === 1 ? "" : "s"}`];
+    const parts = [t("recipes.resultCount", { count: searchResults.length })];
     if (categories.length)
-      parts[0] += ` for ${labelsFor(CATEGORY_OPTIONS, categories).join(" or ")}`;
-    if (diets.length) parts.push(labelsFor(DIET_OPTIONS, diets).join(", "));
-    if (ingredients.length) parts.push(`with ${ingredients.join(", ")}`);
+      parts[0] += ` ${t("recipes.forCategories", {
+        list: list(categories.map(tagLabel), "disjunction"),
+      })}`;
+    if (diets.length) parts.push(list(diets.map(tagLabel)));
+    if (ingredients.length)
+      parts.push(t("recipes.withIngredients", { list: list(ingredients) }));
     return parts.join(" · ");
   };
 
@@ -213,7 +194,7 @@ function Recipes() {
       const message = rewardMessage(data, "like");
       if (message) showSuccess(message);
     } catch (error) {
-      showError(null, errorText(error, "Could not update the like."));
+      showError(null, errorText(error, t("errors.like")));
     }
   };
 
@@ -229,7 +210,7 @@ function Recipes() {
       const message = rewardMessage(data, "save");
       if (message) showSuccess(message);
     } catch (error) {
-      showError(null, errorText(error, "Could not update saved recipes."));
+      showError(null, errorText(error, t("errors.save")));
     }
   };
   if (loading) {
@@ -269,7 +250,7 @@ function Recipes() {
             mb: 1.5,
           }}
         >
-          From Pantry to Plate
+          {t("recipes.title")}
         </Typography>
         <Typography
           sx={{
@@ -280,14 +261,13 @@ function Recipes() {
             mb: 3,
           }}
         >
-          Got a few ingredients on hand? Let’s turn them into something
-          delicious.
+          {t("recipes.subtitle")}
         </Typography>
 
         <Autocomplete
           multiple
           freeSolo
-          options={COMMON_INGREDIENTS}
+          options={suggestions}
           value={ingredients}
           onChange={(_, values) => setIngredients(toIngredients(values))}
           filterSelectedOptions
@@ -311,13 +291,13 @@ function Recipes() {
               {...params}
               placeholder={
                 ingredients.length
-                  ? "Add another ingredient"
-                  : "e.g. eggs, spinach, cheese"
+                  ? t("recipes.searchPlaceholderMore")
+                  : t("recipes.searchPlaceholder")
               }
-              helperText="Press Enter or a comma after each ingredient"
+              helperText={t("recipes.searchHelp")}
               onKeyDown={(e) => {
                 // A comma adds the typed ingredient, like Enter does
-                if (e.key === "," && e.target.value.trim()) {
+                if ((e.key === "," || e.key === "،") && e.target.value.trim()) {
                   e.preventDefault();
                   const typed = e.target.value;
                   setIngredients((prev) => toIngredients([...prev, typed]));
@@ -355,7 +335,7 @@ function Recipes() {
                 key={option.value}
                 tagKey={option.value}
                 Icon={option.Icon}
-                label={option.label}
+                label={tagLabel(option.value)}
                 selected={categories.includes(option.value)}
                 onClick={() => toggle(setCategories, option.value)}
               />
@@ -373,7 +353,7 @@ function Recipes() {
                 key={option.value}
                 tagKey={option.value}
                 Icon={option.Icon}
-                label={option.label}
+                label={tagLabel(option.value)}
                 selected={diets.includes(option.value)}
                 onClick={() => toggle(setDiets, option.value)}
               />
@@ -391,7 +371,7 @@ function Recipes() {
                 color: "accent.main",
               }}
             >
-              Clear filters
+              {t("recipes.clearFilters")}
             </Button>
           )}
         </Stack>
@@ -411,10 +391,10 @@ function Recipes() {
         >
           <Typography sx={{ fontSize: "1.2rem" }}>
             {searching
-              ? "Searching…"
+              ? t("recipes.searching")
               : searchResults.length
                 ? resultsSummary()
-                : "No recipes match yet. Try removing a filter or ingredient."}
+                : t("recipes.noResults")}
           </Typography>
           <Button
             onClick={clearFilters}
@@ -429,7 +409,7 @@ function Recipes() {
               "&:hover": { borderColor: "page.text" },
             }}
           >
-            Show all recipes
+            {t("recipes.showAll")}
           </Button>
         </Box>
       )}

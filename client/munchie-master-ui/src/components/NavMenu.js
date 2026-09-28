@@ -26,8 +26,11 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import isEmpty from "lodash/isEmpty";
+import { useTranslation } from "react-i18next";
+import LanguageToggle from "./LanguageToggle";
 
 const NavMenu = () => {
+  const { t } = useTranslation();
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,10 +48,10 @@ const NavMenu = () => {
   };
 
   const sidebarLinks = [
-    { label: "Dashboard", to: "/dashboard", icon: <DashboardIcon /> },
-    { label: "Recipes", to: "/recipes", icon: <MenuBookIcon /> },
+    { label: t("nav.dashboard"), to: "/dashboard", icon: <DashboardIcon /> },
+    { label: t("nav.recipes"), to: "/recipes", icon: <MenuBookIcon /> },
     {
-      label: "Share Recipe",
+      label: t("nav.shareRecipe"),
       to: "/recipes/new",
       icon: <AddCircleOutlineIcon />,
     },
@@ -60,7 +63,7 @@ const NavMenu = () => {
       to="/dashboard"
       clickable
       icon={<MonetizationOnIcon />}
-      label={`${currentUser?.coins ?? 0} coins`}
+      label={t("coins", { count: currentUser?.coins ?? 0 })}
       sx={{
         fontSize: "0.95rem",
         color: "common.white",
@@ -109,10 +112,10 @@ const NavMenu = () => {
         <Box
           component="img"
           src={process.env.PUBLIC_URL + "/images/logo.png"}
-          alt="MunchieMaster Logo"
+          alt={t("brandLogoAlt")}
           sx={{ height: 40 }}
         />
-        <Typography sx={{ fontSize: "1.25rem" }}>Munchie Master</Typography>
+        <Typography sx={{ fontSize: "1.25rem" }}>{t("brand")}</Typography>
       </Box>
       {isLoggedIn && <Box sx={{ px: 3, pb: 2 }}>{coinChip}</Box>}
       <Divider
@@ -149,7 +152,7 @@ const NavMenu = () => {
             <LogoutIcon />
           </ListItemIcon>
           <ListItemText
-            primary="Logout"
+            primary={t("nav.logout")}
             primaryTypographyProps={{ fontSize: "1.05rem" }}
           />
         </ListItemButton>
@@ -176,17 +179,18 @@ const NavMenu = () => {
             <Box
               component="img"
               src={process.env.PUBLIC_URL + "/images/logo.png"}
-              alt="MunchieMaster Logo"
+              alt={t("brandLogoAlt")}
               sx={{ height: { xs: 40, md: 48 } }}
             />
             <Typography
               component="span"
               sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}
             >
-              Munchie Master
+              {t("brand")}
             </Typography>
           </Box>
 
+          <LanguageToggle />
           <ColorModeToggle sx={{ mr: { xs: 0.5, md: 1 } }} />
           {isLoggedIn && (
             <>
@@ -231,7 +235,7 @@ const NavMenu = () => {
                     textTransform: "none",
                   }}
                 >
-                  Logout
+                  {t("nav.logout")}
                 </Button>
               </Box>
 
@@ -239,7 +243,7 @@ const NavMenu = () => {
               <IconButton
                 edge="end"
                 color="inherit"
-                aria-label="menu"
+                aria-label={t("nav.menu")}
                 sx={{ display: { xs: "inline-flex", md: "none" } }}
                 onClick={handleDrawerToggle}
               >

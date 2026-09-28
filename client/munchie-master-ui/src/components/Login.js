@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   TextField,
@@ -14,6 +15,7 @@ import {
 const inputSx = { "& .MuiInputBase-root": { backgroundColor: "common.white" } };
 
 function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -31,18 +33,18 @@ function Login() {
         if (success) {
           navigate("/recipes");
         } else {
-          setError("Failed to log in");
+          setError(t("login.loginFailed"));
         }
       } else {
         const success = await register(name, email, password);
         if (success) {
           navigate("/recipes");
         } else {
-          setError("Failed to register");
+          setError(t("login.registerFailed"));
         }
       }
     } catch (error) {
-      setError("An error occurred");
+      setError(t("login.error"));
     }
   };
 
@@ -68,7 +70,7 @@ function Login() {
           component="h1"
           sx={{ fontSize: "1.75rem", textAlign: "center", mb: 1 }}
         >
-          Munchie Master
+          {t("brand")}
         </Typography>
         <Tabs
           value={isLogin ? 0 : 1}
@@ -80,8 +82,8 @@ function Login() {
             "& .MuiTabs-indicator": { backgroundColor: "accent.main" },
           }}
         >
-          <Tab label="Log in" />
-          <Tab label="Register" />
+          <Tab label={t("login.loginTab")} />
+          <Tab label={t("login.registerTab")} />
         </Tabs>
         {error && (
           <Typography color="error" sx={{ mt: 1 }}>
@@ -96,7 +98,7 @@ function Login() {
               required
               fullWidth
               id="name"
-              label="Full Name"
+              label={t("login.fullName")}
               name="name"
               autoComplete="name"
               autoFocus
@@ -110,7 +112,7 @@ function Login() {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label={t("login.email")}
             name="email"
             autoComplete="email"
             autoFocus={isLogin}
@@ -123,7 +125,7 @@ function Login() {
             required
             fullWidth
             name="password"
-            label="Password"
+            label={t("login.password")}
             type="password"
             id="password"
             autoComplete="current-password"
@@ -144,7 +146,7 @@ function Login() {
               "&:hover": { backgroundColor: "accent.dark" },
             }}
           >
-            {isLogin ? "Log in" : "Create account"}
+            {isLogin ? t("login.submitLogin") : t("login.submitRegister")}
           </Button>
         </Box>
       </Box>

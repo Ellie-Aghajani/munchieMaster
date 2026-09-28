@@ -1,4 +1,9 @@
 import React, { useMemo } from "react";
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
+import { prefixer } from "stylis";
+import rtlPlugin from "stylis-plugin-rtl";
+import { useTranslation } from "react-i18next";
 import {
   BrowserRouter as Router,
   Route,
@@ -60,29 +65,40 @@ function AppContent() {
   );
 }
 
+// Separate style caches so right-to-left CSS (flipped margins, left/right)
+// is generated only for Persian
+const styleCaches = {
+  ltr: createCache({ key: "mui" }),
+  rtl: createCache({ key: "muirtl", stylisPlugins: [prefixer, rtlPlugin] }),
+};
+
 function ThemedApp() {
   const { mode } = useColorMode();
-  const theme = useMemo(() => createAppTheme(mode), [mode]);
+  const { i18n } = useTranslation();
+  const language = i18n.language;
+  const theme = useMemo(() => createAppTheme(mode, language), [mode, language]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyles
-        styles={(theme) => ({
-          body: {
-            backgroundColor: theme.palette.background.default,
-            color: theme.palette.page.text,
-            transition: "background-color 0.3s",
-          },
-        })}
-      />
-      <ErrorProvider>
-        <AuthProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </AuthProvider>
-      </ErrorProvider>
-    </ThemeProvider>
+    <CacheProvider value={styleCaches[theme.direction]}>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles
+          styles={(theme) => ({
+            body: {
+              backgroundColor: theme.palette.background.default,
+              color: theme.palette.page.text,
+              transition: "background-color 0.3s",
+            },
+          })}
+        />
+        <ErrorProvider>
+          <AuthProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </AuthProvider>
+        </ErrorProvider>
+      </ThemeProvider>
+    </CacheProvider>
   );
 }
 

@@ -17,13 +17,16 @@ import { alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import ColorModeToggle from "./ColorModeToggle";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageToggle from "./LanguageToggle";
 
 const navLinks = [
-  { label: "About Me", href: "#about-us" },
-  { label: "How it Works", href: "#how-it-works" },
+  { labelKey: "nav.aboutMe", href: "#about-us" },
+  { labelKey: "nav.howItWorks", href: "#how-it-works" },
 ];
 
 const LandingNavbar = () => {
+  const { t } = useTranslation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const toggleDrawer = (open) => () => {
@@ -48,17 +51,18 @@ const LandingNavbar = () => {
             <Box
               component="img"
               src={process.env.PUBLIC_URL + "/images/logo.png"}
-              alt="MunchieMaster Logo"
+              alt={t("brandLogoAlt")}
               sx={{ height: { xs: 40, md: 48 } }}
             />
             <Typography
               component="span"
               sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}
             >
-              Munchie Master
+              {t("brand")}
             </Typography>
           </Box>
 
+          <LanguageToggle />
           <ColorModeToggle sx={{ mr: { xs: 0.5, md: 1 } }} />
           {/* Regular buttons for large screens */}
           <Box
@@ -75,7 +79,7 @@ const LandingNavbar = () => {
                 href={link.href}
                 sx={{ fontSize: "1rem", textTransform: "none", px: 2 }}
               >
-                {link.label}
+                {t(link.labelKey)}
               </Button>
             ))}
             <Button
@@ -94,14 +98,14 @@ const LandingNavbar = () => {
                 },
               }}
             >
-              Join Munchie Family
+              {t("nav.join")}
             </Button>
           </Box>
 
           <IconButton
             edge="end"
             color="inherit"
-            aria-label="menu"
+            aria-label={t("nav.menu")}
             sx={{ display: { xs: "inline-flex", md: "none" } }}
             onClick={toggleDrawer(true)}
           >
@@ -127,10 +131,10 @@ const LandingNavbar = () => {
           <Box
             component="img"
             src={process.env.PUBLIC_URL + "/images/logo.png"}
-            alt="MunchieMaster Logo"
+            alt={t("brandLogoAlt")}
             sx={{ height: 40 }}
           />
-          <Typography sx={{ fontSize: "1.25rem" }}>Munchie Master</Typography>
+          <Typography sx={{ fontSize: "1.25rem" }}>{t("brand")}</Typography>
         </Box>
         <Divider
           sx={{
@@ -157,7 +161,7 @@ const LandingNavbar = () => {
               }}
             >
               <ListItemText
-                primary={link.label}
+                primary={t(link.labelKey)}
                 primaryTypographyProps={{ fontSize: "1.05rem" }}
               />
             </ListItemButton>
@@ -181,7 +185,7 @@ const LandingNavbar = () => {
               },
             }}
           >
-            Join Munchie Family
+            {t("nav.join")}
           </Button>
         </Box>
       </Drawer>

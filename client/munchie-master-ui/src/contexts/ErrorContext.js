@@ -1,10 +1,12 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
 import { Snackbar, Alert, Typography } from '@mui/material';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import { useTranslation } from 'react-i18next';
 
 const ErrorContext = createContext();
 
 export function ErrorProvider({ children }) {
+  const { t } = useTranslation();
   const [notice, setNotice] = useState(null);
 
   const showError = useCallback((data, message) => {
@@ -37,7 +39,7 @@ export function ErrorProvider({ children }) {
           <Typography variant="body1">{notice?.message}</Typography>
           {notice?.data && (
             <Typography variant="body2" sx={{ mt: 1 }}>
-              Details: {JSON.stringify(notice.data)}
+              {t('errors.details')} {JSON.stringify(notice.data)}
             </Typography>
           )}
         </Alert>

@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Ellie-Aghajani/munchieMaster#readme",
   "description": "",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
     "bcrypt": "^5.1.1",
     "compression": "^1.7.4",
     "config": "^3.3.11",

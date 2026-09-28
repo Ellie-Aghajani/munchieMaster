@@ -11,8 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { CATEGORY_OPTIONS, DIET_OPTIONS } from "../utils/recipeTags";
+import { CATEGORY_OPTIONS, DIET_OPTIONS, tagLabel } from "../utils/recipeTags";
 import SelectableChip from "./SelectableChip";
+import { useTranslation } from "react-i18next";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
@@ -63,6 +64,7 @@ const splitLines = (text) =>
 
 // Posts a new recipe at /recipes/new and edits one at /recipes/:id/edit
 const RecipeCreator = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const isEdit = !!id;
   const { currentUser, checkAuthStatus } = useAuth();
@@ -79,12 +81,12 @@ const RecipeCreator = () => {
     if (!isEdit || !currentUser?._id) return;
     setLoadingRecipe(true);
     axios
-      .get(`/api/recipes/${id}`, {
+      .get(`/api/recipes/${id}?original=1`, {
         headers: { "x-auth-token": localStorage.getItem("token") },
       })
       .then(({ data }) => {
         if (!isOwnRecipe(data, currentUser) && !currentUser.isAdmin) {
-          showError(null, "You can only edit your own recipes.");
+          showError(null, t("errors.onlyOwnEdit"));
           navigate(`/recipes/${id}`, { replace: true });
           return;
         }
@@ -102,7 +104,7 @@ const RecipeCreator = () => {
         setLoadingRecipe(false);
       })
       .catch((error) => {
-        showError(null, errorText(error, "Could not load this recipe."));
+        showError(null, errorText(error, t("errors.loadRecipe")));
         navigate("/dashboard", { replace: true });
       });
     // Load once per recipe; currentUser changes (like a new coin balance) shouldn't reload
@@ -146,14 +148,14 @@ const RecipeCreator = () => {
     const ingredients = splitLines(form.ingredients);
     const directions = splitLines(form.directions);
     if (!ingredients.length || !directions.length) {
-      showError(null, "Add at least one ingredient and one step.");
+      showError(null, t("errors.needIngredientAndStep"));
       return;
     }
 
     // The "[]" suffix makes the server read these as arrays, even with one line
     const data = new FormData();
     if (!form.categories.length) {
-      showError(null, "Choose at least one category.");
+      showError(null, t("errors.needCategory"));
       return;
     }
     data.append("name", form.name.trim());
@@ -171,7 +173,7 @@ const RecipeCreator = () => {
     try {
       if (isEdit) {
         await axios.put(`/api/recipes/${id}`, data, { headers });
-        showSuccess("Recipe updated.");
+        showSuccess(t("form.updated"));
         navigate(`/recipes/${id}`);
       } else {
         const response = await axios.post("/api/recipes", data, { headers });
@@ -184,9 +186,7 @@ const RecipeCreator = () => {
         null,
         errorText(
           error,
-          isEdit
-            ? "Could not save your changes."
-            : "Could not post your recipe.",
+          isEdit ? t("errors.saveChanges") : t("errors.post"),
         ),
       );
     } finally {
@@ -204,12 +204,12 @@ const RecipeCreator = () => {
           mb: 1,
         }}
       >
-        {isEdit ? "Edit Recipe" : "Share a Recipe"}
+        {isEdit ? t("form.editTitle") : t("form.shareTitle")}
       </Typography>
       <Typography sx={{ fontSize: "1.1rem", color: "page.text", mb: 3 }}>
         {isEdit
-          ? "Update your recipe. Editing doesn't change your coins or its price."
-          : "Share a favorite with others and earn coins."}
+          ? t("form.editSubtitle")
+          : t("form.shareSubtitle")}
       </Typography>
 
       {/* How coins work */}
@@ -227,12 +227,12 @@ const RecipeCreator = () => {
             <MonetizationOnIcon sx={{ fontSize: 32, mt: 0.25 }} />
             <Box>
               <Typography sx={{ fontSize: "1.1rem", mb: 0.5 }}>
-                You earn 5 coins for posting this recipe.
+                {t("form.coinsTitle")}
               </Typography>
               <Typography sx={{ lineHeight: 1.6 }}>
                 {currentUser.isAdmin
-                  ? "As an admin, your recipes are free for everyone."
-                  : "Other members pay 5 coins to unlock it, and those coins go to you. You also earn 1 coin for every like and 2 coins for every save."}
+                  ? t("form.coinsAdmin")
+                  : t("form.coinsMember")}
               </Typography>
             </Box>
           </Stack>
@@ -250,7 +250,7 @@ const RecipeCreator = () => {
               fullWidth
               required
               name="name"
-              label="Recipe name"
+              label={t("form.name")}
               value={form.name}
               onChange={handleChange}
               inputProps={{ minLength: 3, maxLength: 50 }}
@@ -262,22 +262,22 @@ const RecipeCreator = () => {
               fullWidth
               required
               name="preparationTime"
-              label="Preparation time"
-              placeholder="e.g. 15-20 minutes"
+              label={t("form.prepTime")}
+              placeholder={t("form.prepTimePlaceholder")}
               value={form.preparationTime}
               onChange={handleChange}
               sx={inputSx}
             />
           </Grid>
           <Grid item xs={12} sm={7}>
-            <Typography sx={{ mb: 1 }}>Category *</Typography>
+            <Typography sx={{ mb: 1 }}>{t("form.category")}</Typography>
             <Stack direction="row" flexWrap="wrap" useFlexGap spacing={1}>
               {CATEGORY_OPTIONS.map((option) => (
                 <SelectableChip
                   key={option.value}
                   tagKey={option.value}
                   Icon={option.Icon}
-                  label={option.label}
+                  label={tagLabel(option.value)}
                   selected={form.categories.includes(option.value)}
                   onClick={() => toggleCategory(option.value)}
                 />
@@ -285,14 +285,14 @@ const RecipeCreator = () => {
             </Stack>
           </Grid>
           <Grid item xs={12} sm={5}>
-            <Typography sx={{ mb: 1 }}>Dietary</Typography>
+            <Typography sx={{ mb: 1 }}>{t("form.dietary")}</Typography>
             <Stack direction="row" flexWrap="wrap" useFlexGap spacing={1}>
               {DIET_OPTIONS.map((option) => (
                 <SelectableChip
                   key={option.value}
                   tagKey={option.value}
                   Icon={option.Icon}
-                  label={option.label}
+                  label={tagLabel(option.value)}
                   selected={form[option.value]}
                   onClick={() => toggleDiet(option.value)}
                 />
@@ -306,8 +306,8 @@ const RecipeCreator = () => {
               multiline
               minRows={5}
               name="ingredients"
-              label="Ingredients"
-              helperText="One ingredient per line"
+              label={t("form.ingredients")}
+              helperText={t("form.ingredientsHelp")}
               value={form.ingredients}
               onChange={handleChange}
               sx={inputSx}
@@ -320,8 +320,8 @@ const RecipeCreator = () => {
               multiline
               minRows={6}
               name="directions"
-              label="Directions"
-              helperText="One step per line; steps are numbered for you"
+              label={t("form.directions")}
+              helperText={t("form.directionsHelp")}
               value={form.directions}
               onChange={handleChange}
               sx={inputSx}
@@ -351,7 +351,7 @@ const RecipeCreator = () => {
                 <Box
                   component="img"
                   src={imagePreview}
-                  alt="Recipe preview"
+                  alt={t("form.photoAlt")}
                   sx={{
                     maxWidth: "100%",
                     maxHeight: 280,
@@ -362,7 +362,7 @@ const RecipeCreator = () => {
               ) : (
                 <>
                   <AddPhotoAlternateIcon sx={{ fontSize: 40 }} />
-                  <Typography>Add a photo of your recipe</Typography>
+                  <Typography>{t("form.addPhoto")}</Typography>
                 </>
               )}
               <input
@@ -374,7 +374,7 @@ const RecipeCreator = () => {
             </Box>
             {imagePreview && (
               <Typography variant="body2" sx={{ mt: 1 }}>
-                Click the photo to choose a different one.
+                {t("form.changePhoto")}
               </Typography>
             )}
           </Grid>
@@ -392,7 +392,7 @@ const RecipeCreator = () => {
             variant="outlined"
             sx={pillButtonSx}
           >
-            Cancel
+            {t("form.cancel")}
           </Button>
           <Button
             type="submit"
@@ -407,11 +407,11 @@ const RecipeCreator = () => {
           >
             {isEdit
               ? submitting
-                ? "Saving…"
-                : "Save Changes"
+                ? t("form.saving")
+                : t("form.saveChanges")
               : submitting
-                ? "Posting…"
-                : "Post Recipe · +5 coins"}
+                ? t("form.posting")
+                : t("form.post")}
           </Button>
         </Stack>
       </Box>

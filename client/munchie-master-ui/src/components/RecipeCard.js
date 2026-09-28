@@ -30,6 +30,8 @@ import {
 } from "../utils/recipeUtils";
 import RecipeImage from "./RecipeImage";
 import TagChip from "./TagChip";
+import { useTranslation } from "react-i18next";
+import { formatNumber } from "../i18n/format";
 import { recipeTags } from "../utils/recipeTags";
 
 const manageButtonSx = {
@@ -49,6 +51,7 @@ const RecipeCard = ({
   onDelete, // Optional; shows edit and delete buttons on the user's own recipes
   matchedIngredients, // Optional; the searched ingredients this recipe uses
 }) => {
+  const { t, i18n } = useTranslation();
   const { currentUser } = useAuth();
   const detailPath = `/recipes/${recipe._id}`;
   const isLiked = userLikedRecipes.includes(recipe._id);
@@ -85,7 +88,11 @@ const RecipeCard = ({
           <Chip
             size="small"
             icon={isLocked ? <LockIcon /> : undefined}
-            label={isLocked ? `${recipe.price} coins` : "Your recipe"}
+            label={
+              isLocked
+                ? t("coins", { count: recipe.price })
+                : t("card.yourRecipe")
+            }
             sx={{
               position: "absolute",
               top: 12,
@@ -102,11 +109,11 @@ const RecipeCard = ({
             spacing={1}
             sx={{ position: "absolute", top: 8, right: 8 }}
           >
-            <Tooltip title="Edit recipe">
+            <Tooltip title={t("card.edit")}>
               <IconButton
                 component={Link}
                 to={`/recipes/${recipe._id}/edit`}
-                aria-label="Edit recipe"
+                aria-label={t("card.edit")}
                 size="small"
                 sx={{
                   ...manageButtonSx,
@@ -120,10 +127,10 @@ const RecipeCard = ({
                 <EditOutlinedIcon fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Delete recipe">
+            <Tooltip title={t("card.delete")}>
               <IconButton
                 onClick={() => onDelete(recipe)}
-                aria-label="Delete recipe"
+                aria-label={t("card.delete")}
                 size="small"
                 sx={{
                   ...manageButtonSx,
@@ -158,19 +165,19 @@ const RecipeCard = ({
             mb: 1,
           }}
         >
-          {recipe.name?.trim()}
+          <bdi>{recipe.name?.trim()}</bdi>
         </Typography>
         <Stack spacing={0.5}>
           <Stack direction="row" alignItems="center" spacing={0.75}>
             <AccessTimeIcon fontSize="small" color="action" />
             <Typography variant="body2" color="text.secondary">
-              {recipe.preparationTime || "—"}
+              <bdi>{recipe.preparationTime || "—"}</bdi>
             </Typography>
           </Stack>
           <Stack direction="row" alignItems="center" spacing={0.75}>
             <PersonOutlineIcon fontSize="small" color="action" />
             <Typography variant="body2" color="text.secondary" noWrap>
-              by {authorNameOf(recipe)}
+              {t("card.by", { name: authorNameOf(recipe) })}
             </Typography>
           </Stack>
           {/* One line of tags; always rendered so cards line up */}
@@ -183,10 +190,14 @@ const RecipeCard = ({
               <TagChip key={tag.key} tag={tag} />
             ))}
             {hiddenTags.length > 0 && (
-              <Tooltip title={hiddenTags.map((tag) => tag.label).join(", ")}>
+              <Tooltip
+                title={new Intl.ListFormat(i18n.language).format(
+                  hiddenTags.map((tag) => tag.label),
+                )}
+              >
                 <Chip
                   size="small"
-                  label={`+${hiddenTags.length}`}
+                  label={`+${formatNumber(hiddenTags.length, i18n.language)}`}
                   sx={{
                     flexShrink: 0,
                     backgroundColor: "transparent",
@@ -209,7 +220,11 @@ const RecipeCard = ({
                 sx={{ color: "secondary.main" }}
                 noWrap
               >
-                Uses {matchedIngredients.join(", ")}
+                {t("card.uses", {
+                  list: new Intl.ListFormat(i18n.language).format(
+                    matchedIngredients,
+                  ),
+                })}
               </Typography>
             </Stack>
           )}
@@ -217,11 +232,11 @@ const RecipeCard = ({
       </CardContent>
 
       <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
-        <Tooltip title={isLocked ? "Unlock this recipe to like it" : ""}>
+        <Tooltip title={isLocked ? t("card.unlockToLike") : ""}>
           <span>
             <IconButton
               onClick={() => onLike(recipe._id)}
-              aria-label={isLiked ? "Unlike" : "Like"}
+              aria-label={isLiked ? t("card.unlike") : t("card.like")}
               size="small"
               disabled={isLocked}
             >
@@ -234,11 +249,11 @@ const RecipeCard = ({
           </span>
         </Tooltip>
         <Typography variant="body2" color="text.secondary">
-          {recipe.likeCount || 0}
+          {formatNumber(recipe.likeCount || 0, i18n.language)}
         </Typography>
         <IconButton
           onClick={() => onSave(recipe._id)}
-          aria-label={isSaved ? "Remove from saved" : "Save"}
+          aria-label={isSaved ? t("card.unsave") : t("card.save")}
           size="small"
           sx={{ ml: 1 }}
         >
@@ -251,7 +266,9 @@ const RecipeCard = ({
           size="small"
           startIcon={isLocked ? <LockIcon /> : undefined}
           sx={{
-            flexShrink: 0,
+            // Stay on one line; if a label is still too wide, shorten it with "…"
+            // rather than letting it spill off the card
+            minWidth: 0,
             whiteSpace: "nowrap",
             borderRadius: 999,
             px: 2,
@@ -262,7 +279,12 @@ const RecipeCard = ({
             "&:hover": { backgroundColor: "accent.dark" },
           }}
         >
-          {isLocked ? "Unlock" : "View Recipe"}
+          <Box
+            component="span"
+            sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+          >
+            {isLocked ? t("card.unlock") : t("card.view")}
+          </Box>
         </Button>
       </CardActions>
     </Card>

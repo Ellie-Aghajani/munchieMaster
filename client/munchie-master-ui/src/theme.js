@@ -7,8 +7,15 @@ const pageColors = {
   dark: { background: "#0b3057", text: "#FFFFFF" },
 };
 
-export const createAppTheme = (mode = "light") =>
+// Itim has no Persian letters, so Persian uses Vazirmatn
+const fonts = {
+  en: "'Itim', cursive",
+  fa: "'Vazirmatn', sans-serif",
+};
+
+export const createAppTheme = (mode = "light", language = "en") =>
   createTheme({
+    direction: language === "fa" ? "rtl" : "ltr",
     palette: {
       primary: {
         main: "#10375C", // Navbar color
@@ -61,6 +68,6 @@ export const createAppTheme = (mode = "light") =>
       text: "2px 2px 4px rgba(0, 0, 0, 0.1)",
     },
     typography: {
-      fontFamily: "'Itim', cursive",
+      fontFamily: fonts[language] || fonts.en,
     },
   });

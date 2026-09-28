@@ -28,6 +28,8 @@ import { useError } from "../contexts/ErrorContext";
 import { errorText } from "../api/recipeActions";
 import { uploadUrl } from "../utils/recipeUtils";
 import AvatarCropDialog from "./AvatarCropDialog";
+import { useTranslation } from "react-i18next";
+import { formatNumber } from "../i18n/format";
 
 const MAX_PHOTO_MB = 10; // Before cropping; the saved photo is a small 512px JPEG
 const DESCRIPTION_MAX = 500;
@@ -79,6 +81,7 @@ const displayName = (user) =>
   [user.firstName, user.lastName].filter(Boolean).join(" ") || user.name;
 
 function UserProfile() {
+  const { t, i18n } = useTranslation();
   const { currentUser, checkAuthStatus } = useAuth();
   const { showError, showSuccess } = useError();
   const [form, setForm] = useState(() => formFromUser(currentUser));
@@ -97,7 +100,7 @@ function UserProfile() {
 
   const saved = formFromUser(currentUser);
   const isDirty = FIELDS.some((field) => form[field].trim() !== saved[field]);
-  const nameError = form.name.trim().length < 3 ? "At least 3 characters" : "";
+  const nameError = form.name.trim().length < 3 ? t("profile.nameError") : "";
   const location = [currentUser.city, currentUser.province, currentUser.country]
     .filter(Boolean)
     .join(", ");
@@ -118,9 +121,9 @@ function UserProfile() {
       await axios.put("/api/users/me", trimmed, { headers: authHeaders() });
       await checkAuthStatus();
       setForm(trimmed);
-      showSuccess("Profile saved.");
+      showSuccess(t("profile.saved"));
     } catch (error) {
-      showError(null, errorText(error, "Could not save your profile."));
+      showError(null, errorText(error, t("errors.saveProfile")));
     } finally {
       setSaving(false);
     }
@@ -131,11 +134,16 @@ function UserProfile() {
     e.target.value = ""; // Allow picking the same file again later
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      showError(null, "Please choose an image file.");
+      showError(null, t("errors.chooseImage"));
       return;
     }
     if (file.size > MAX_PHOTO_MB * 1024 * 1024) {
-      showError(null, `Please choose a photo under ${MAX_PHOTO_MB} MB.`);
+      showError(
+        null,
+        t("errors.photoTooBig", {
+          size: formatNumber(MAX_PHOTO_MB, i18n.language),
+        }),
+      );
       return;
     }
 
@@ -156,9 +164,9 @@ function UserProfile() {
       await axios.put("/api/users/avatar", data, { headers: authHeaders() });
       await checkAuthStatus();
       closeCrop();
-      showSuccess("Profile photo updated.");
+      showSuccess(t("profile.photoUpdated"));
     } catch (error) {
-      showError(null, errorText(error, "Could not update your photo."));
+      showError(null, errorText(error, t("errors.updatePhoto")));
     } finally {
       setPhotoBusy(false);
     }
@@ -169,19 +177,19 @@ function UserProfile() {
     try {
       await axios.delete("/api/users/avatar", { headers: authHeaders() });
       await checkAuthStatus();
-      showSuccess("Profile photo removed.");
+      showSuccess(t("profile.photoRemoved"));
     } catch (error) {
-      showError(null, errorText(error, "Could not remove your photo."));
+      showError(null, errorText(error, t("errors.removePhoto")));
     } finally {
       setPhotoBusy(false);
     }
   };
 
-  const textField = (name, label, extra = {}) => (
+  const textField = (name, extra = {}) => (
     <TextField
       fullWidth
       name={name}
-      label={label}
+      label={t(`profile.fields.${name}`)}
       value={form[name]}
       onChange={handleChange}
       inputProps={{ maxLength: 50 }}
@@ -195,10 +203,18 @@ function UserProfile() {
       <Button
         component={Link}
         to="/dashboard"
-        startIcon={<ArrowBackIcon />}
+        // Point "back" the reading direction's way
+        startIcon={
+          <ArrowBackIcon
+            sx={{
+              transform: (theme) =>
+                theme.direction === "rtl" ? "scaleX(-1)" : "none",
+            }}
+          />
+        }
         sx={{ ...pillButtonSx, px: 2, mb: 2, color: "page.text" }}
       >
-        Dashboard
+        {t("nav.dashboard")}
       </Button>
       <Typography
         variant="h1"
@@ -208,10 +224,10 @@ function UserProfile() {
           mb: 1,
         }}
       >
-        Edit Profile
+        {t("profile.title")}
       </Typography>
       <Typography sx={{ fontSize: "1.1rem", color: "page.text", mb: 4 }}>
-        This is how other users see you next to the recipes you share.
+        {t("profile.subtitle")}
       </Typography>
 
       <Grid container spacing={4} alignItems="flex-start">
@@ -249,11 +265,11 @@ function UserProfile() {
                   sx={{ position: "absolute", top: -4, left: -4 }}
                 />
               )}
-              <Tooltip title="Change photo">
+              <Tooltip title={t("profile.changePhoto")}>
                 <IconButton
                   onClick={() => fileInputRef.current?.click()}
                   disabled={photoBusy}
-                  aria-label="Change photo"
+                  aria-label={t("profile.changePhoto")}
                   sx={{
                     position: "absolute",
                     right: 0,
@@ -306,11 +322,13 @@ function UserProfile() {
             >
               <Chip
                 icon={<MonetizationOnIcon />}
-                label={`${currentUser.coins ?? 0} coins`}
+                label={t("coins", { count: currentUser.coins ?? 0 })}
               />
               <Chip
                 icon={<MenuBookIcon />}
-                label={`${currentUser.myRecipes?.length ?? 0} shared`}
+                label={t("profile.shared", {
+                  count: currentUser.myRecipes?.length ?? 0,
+                })}
               />
             </Stack>
 
@@ -322,7 +340,7 @@ function UserProfile() {
                 startIcon={<DeleteOutlineIcon />}
                 sx={{ ...pillButtonSx, mt: 2.5, px: 2 }}
               >
-                Remove photo
+                {t("profile.removePhoto")}
               </Button>
             )}
             <Typography
@@ -332,8 +350,9 @@ function UserProfile() {
                 color: "text.secondary",
               }}
             >
-              JPG or PNG, up to {MAX_PHOTO_MB} MB. You can crop it before
-              saving.
+              {t("profile.photoHint", {
+                size: formatNumber(MAX_PHOTO_MB, i18n.language),
+              })}
             </Typography>
           </Box>
         </Grid>
@@ -341,48 +360,45 @@ function UserProfile() {
         {/* Editable details */}
         <Grid item xs={12} md={8}>
           <Box component="form" onSubmit={handleSave} sx={cardSx}>
-            <Typography sx={sectionTitleSx}>Personal info</Typography>
+            <Typography sx={sectionTitleSx}>{t("profile.personal")}</Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                {textField("name", "Display name", {
+                {textField("name", {
                   required: true,
                   error: !!nameError,
-                  helperText:
-                    nameError ||
-                    "Your account name. Recipes show your first name if you add one.",
+                  helperText: nameError || t("profile.nameHelp"),
                 })}
               </Grid>
               <Grid item xs={12} sm={6}>
-                {textField("firstName", "First name")}
+                {textField("firstName")}
               </Grid>
               <Grid item xs={12} sm={6}>
-                {textField("lastName", "Last name")}
+                {textField("lastName")}
               </Grid>
             </Grid>
 
             <Divider sx={{ my: 3 }} />
-            <Typography sx={sectionTitleSx}>Location</Typography>
+            <Typography sx={sectionTitleSx}>{t("profile.location")}</Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
-                {textField("city", "City")}
+                {textField("city")}
               </Grid>
               <Grid item xs={12} sm={4}>
-                {textField("province", "Province / State")}
+                {textField("province")}
               </Grid>
               <Grid item xs={12} sm={4}>
-                {textField("country", "Country")}
+                {textField("country")}
               </Grid>
             </Grid>
 
             <Divider sx={{ my: 3 }} />
-            <Typography sx={sectionTitleSx}>About you</Typography>
-            {textField("description", "Bio", {
+            <Typography sx={sectionTitleSx}>{t("profile.about")}</Typography>
+            {textField("description", {
               multiline: true,
               minRows: 4,
-              placeholder:
-                "e.g. Mom of a picky 2-year-old who loves veggie muffins",
+              placeholder: t("profile.bioPlaceholder"),
               inputProps: { maxLength: DESCRIPTION_MAX },
-              helperText: `${form.description.length}/${DESCRIPTION_MAX}`,
+              helperText: `${formatNumber(form.description.length, i18n.language)}/${formatNumber(DESCRIPTION_MAX, i18n.language)}`,
               FormHelperTextProps: { sx: { textAlign: "right" } },
             })}
 
@@ -399,7 +415,7 @@ function UserProfile() {
                   disabled={saving}
                   sx={{ ...pillButtonSx, color: "primary.main" }}
                 >
-                  Discard changes
+                  {t("profile.discard")}
                 </Button>
               )}
               <Button
@@ -408,10 +424,10 @@ function UserProfile() {
                 sx={accentButtonSx}
               >
                 {saving
-                  ? "Saving…"
+                  ? t("form.saving")
                   : isDirty
-                    ? "Save Changes"
-                    : "All changes saved"}
+                    ? t("form.saveChanges")
+                    : t("profile.allSaved")}
               </Button>
             </Stack>
           </Box>
