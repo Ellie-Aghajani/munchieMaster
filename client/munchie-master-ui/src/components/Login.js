@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
+import CheckEmailPanel from "./CheckEmailPanel";
 import {
   Box,
   TextField,
@@ -21,6 +22,8 @@ function Login() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [isLogin, setIsLogin] = useState(true);
+  // Set when we're waiting for the user to confirm their email
+  const [pending, setPending] = useState(null);
   const { login, register } = useAuth();
   const navigate = useNavigate();
 
@@ -29,16 +32,23 @@ function Login() {
     setError("");
     try {
       if (isLogin) {
-        const success = await login(email, password);
-        if (success) {
+        const result = await login(email, password);
+        if (result.ok) {
           navigate("/recipes");
+        } else if (result.code === "EMAIL_NOT_VERIFIED") {
+          setPending({ email: result.email, messageKey: "verify.notVerified" });
         } else {
           setError(t("login.loginFailed"));
         }
       } else {
-        const success = await register(name, email, password);
-        if (success) {
-          navigate("/recipes");
+        const result = await register(name, email, password);
+        if (result.ok) {
+          setPending({
+            email: result.email,
+            note: result.verificationSent ? undefined : t("login.emailNotSent"),
+          });
+        } else if (result.code === "ALREADY_REGISTERED") {
+          setError(t("login.alreadyRegistered"));
         } else {
           setError(t("login.registerFailed"));
         }
@@ -72,83 +82,98 @@ function Login() {
         >
           {t("brand")}
         </Typography>
-        <Tabs
-          value={isLogin ? 0 : 1}
-          onChange={(e, newValue) => setIsLogin(newValue === 0)}
-          variant="fullWidth"
-          sx={{
-            mb: 1,
-            "& .MuiTab-root": { textTransform: "none", fontSize: "1rem" },
-            "& .MuiTabs-indicator": { backgroundColor: "accent.main" },
-          }}
-        >
-          <Tab label={t("login.loginTab")} />
-          <Tab label={t("login.registerTab")} />
-        </Tabs>
-        {error && (
-          <Typography color="error" sx={{ mt: 1 }}>
-            {error}
-          </Typography>
-        )}
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          {!isLogin && (
-            <TextField
-              margin="normal"
-              sx={inputSx}
-              required
-              fullWidth
-              id="name"
-              label={t("login.fullName")}
-              name="name"
-              autoComplete="name"
-              autoFocus
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          )}
-          <TextField
-            margin="normal"
-            sx={inputSx}
-            required
-            fullWidth
-            id="email"
-            label={t("login.email")}
-            name="email"
-            autoComplete="email"
-            autoFocus={isLogin}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            sx={inputSx}
-            required
-            fullWidth
-            name="password"
-            label={t("login.password")}
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            sx={{
-              mt: 3,
-              py: 1.25,
-              borderRadius: 999,
-              textTransform: "none",
-              fontSize: "1.05rem",
-              color: "accent.contrastText",
-              backgroundColor: "accent.main",
-              "&:hover": { backgroundColor: "accent.dark" },
+        {pending ? (
+          <CheckEmailPanel
+            email={pending.email}
+            messageKey={pending.messageKey}
+            note={pending.note}
+            onBack={() => {
+              setPending(null);
+              setIsLogin(true);
+              setPassword("");
             }}
-          >
-            {isLogin ? t("login.submitLogin") : t("login.submitRegister")}
-          </Button>
-        </Box>
+          />
+        ) : (
+          <>
+            <Tabs
+              value={isLogin ? 0 : 1}
+              onChange={(e, newValue) => setIsLogin(newValue === 0)}
+              variant="fullWidth"
+              sx={{
+                mb: 1,
+                "& .MuiTab-root": { textTransform: "none", fontSize: "1rem" },
+                "& .MuiTabs-indicator": { backgroundColor: "accent.main" },
+              }}
+            >
+              <Tab label={t("login.loginTab")} />
+              <Tab label={t("login.registerTab")} />
+            </Tabs>
+            {error && (
+              <Typography color="error" sx={{ mt: 1 }}>
+                {error}
+              </Typography>
+            )}
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              {!isLogin && (
+                <TextField
+                  margin="normal"
+                  sx={inputSx}
+                  required
+                  fullWidth
+                  id="name"
+                  label={t("login.fullName")}
+                  name="name"
+                  autoComplete="name"
+                  autoFocus
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              )}
+              <TextField
+                margin="normal"
+                sx={inputSx}
+                required
+                fullWidth
+                id="email"
+                label={t("login.email")}
+                name="email"
+                autoComplete="email"
+                autoFocus={isLogin}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <TextField
+                margin="normal"
+                sx={inputSx}
+                required
+                fullWidth
+                name="password"
+                label={t("login.password")}
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                sx={{
+                  mt: 3,
+                  py: 1.25,
+                  borderRadius: 999,
+                  textTransform: "none",
+                  fontSize: "1.05rem",
+                  color: "accent.contrastText",
+                  backgroundColor: "accent.main",
+                  "&:hover": { backgroundColor: "accent.dark" },
+                }}
+              >
+                {isLogin ? t("login.submitLogin") : t("login.submitRegister")}
+              </Button>
+            </Box>
+          </>
+        )}
       </Box>
     </Container>
   );

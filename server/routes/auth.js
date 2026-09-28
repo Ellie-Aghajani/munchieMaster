@@ -20,14 +20,19 @@ const router = express.Router();
 // };
 
 router.post("/", async (req, res) => {
-  // const {error} = validate(req.body);
-  // if(error) return res.status(400).send(error.details[0].message);
+  const { email, password } = req.body;
+  if (typeof email !== "string" || typeof password !== "string")
+    return res.status(400).send("Invalid email or password.");
 
-  let user = await User.findOne({ email: req.body.email });
+  const user = await User.findOne({ email });
   if (!user) return res.status(400).send("Invalid email or password.");
 
-  const validPassword = bcrypt.compare(req.body.password, user.password);
+  const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) return res.status(400).send("Invalid email or password.");
+
+  // Accounts from before email verification have no value and count as verified
+  if (user.emailVerified === false)
+    return res.status(403).send({ code: "EMAIL_NOT_VERIFIED", email: user.email });
 
   const token = user.generateAuthToken();
 

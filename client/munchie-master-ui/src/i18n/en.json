@@ -54,7 +54,9 @@
     "submitRegister": "Create account",
     "loginFailed": "Failed to log in",
     "registerFailed": "Failed to register",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "alreadyRegistered": "An account with this email already exists. Try logging in.",
+    "emailNotSent": "Your account was created, but we couldn't send the email. Try sending it again below."
   },
   "messages": {
     "rewardLike": "{{name}} earned {{coins}} from your like!",
@@ -285,5 +287,20 @@
     "cantAfford": "You have {{balance}}, so you can't delete it yet.",
     "deleting": "Deleting…",
     "confirm": "Delete"
+  },
+  "verify": {
+    "checkTitle": "Check your email",
+    "checkBody": "We sent a confirmation link to <bold>{{email}}</bold>. Open it to activate your account, then you can log in.",
+    "notVerified": "Please confirm your email first. We sent a link to <bold>{{email}}</bold>.",
+    "spamHint": "Can't find it? Check your spam folder.",
+    "resend": "Send the link again",
+    "resendIn": "Send again in {{seconds, number}}s",
+    "resent": "A new link is on its way.",
+    "backToLogin": "Back to log in",
+    "verifying": "Confirming your email…",
+    "success": "Email confirmed! Welcome to Munchie Master.",
+    "invalidTitle": "This link doesn't work",
+    "invalidBody": "It may have been used already. Try logging in; if your email isn't confirmed yet, you can get a new link there.",
+    "expiredTitle": "This link has expired"
   }
 }

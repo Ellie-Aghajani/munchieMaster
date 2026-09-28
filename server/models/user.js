@@ -41,6 +41,12 @@ const userSchema = new mongoose.Schema({
   boughtRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
   avatar: { type: String },
   coins: { type: Number, default: COINS.WELCOME },
+  // New accounts start unverified; accounts created before email
+  // verification existed have no value and count as verified
+  emailVerified: { type: Boolean },
+  verificationTokenHash: { type: String },
+  verificationExpires: { type: Date },
+  verificationSentAt: { type: Date },
   // Coins earned from other users' actions, shown once on the next visit
   unseenEarnings: {
     coins: { type: Number, default: 0 },

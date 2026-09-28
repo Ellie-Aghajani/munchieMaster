@@ -11,6 +11,12 @@ const router = express.Router();
 const upload = require("../config/multerConfig");
 const Joi = require("joi");
 const { removeUpload } = require("../utils/uploads");
+const winston = require("winston");
+const {
+  sendVerificationEmail,
+  hashToken,
+  canResend,
+} = require("../utils/verification");
 const {
   COINS,
   RECIPE_SUMMARY_FIELDS,
@@ -21,7 +27,9 @@ const {
 // GET current user data (without password)
 router.get("/me", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findById(req.user._id).select(
+      "-password -verificationTokenHash -verificationExpires -verificationSentAt"
+    );
     if (!user) return res.status(404).send("User not found");
     res.send(user);
   } catch (error) {
@@ -69,16 +77,58 @@ router.post("/", async (req, res) => {
   user = new User(_.pick(req.body, ["name", "email", "password"]));
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
+  user.emailVerified = false;
   await user.save();
 
-  const token = user.generateAuthToken();
-  res.send({ token: token });
+  // No login until the email is confirmed; the link in the email logs them in
+  try {
+    await sendVerificationEmail(user, req);
+  } catch (error) {
+    winston.error(`Verification email to ${user.email} failed: ${error.message}`);
+    return res.send({ verificationSent: false, email: user.email });
+  }
+  res.send({ verificationSent: true, email: user.email });
+});
+
+// POST: Confirm an email address with the token from the verification link
+router.post("/verify-email", async (req, res) => {
+  const token = typeof req.body.token === "string" ? req.body.token : "";
+  if (!token) return res.status(400).send({ code: "INVALID_LINK" });
+
+  const user = await User.findOne({ verificationTokenHash: hashToken(token) });
+  if (!user) return res.status(400).send({ code: "INVALID_LINK" });
+  if (user.verificationExpires < new Date())
+    return res.status(400).send({ code: "EXPIRED_LINK", email: user.email });
+
+  user.emailVerified = true;
+  user.verificationTokenHash = undefined;
+  user.verificationExpires = undefined;
+  await user.save();
+  res.send({ token: user.generateAuthToken() });
+});
+
+// POST: Send a new verification link. The reply is the same whether or not
+// the email exists, so this can't be used to find out who has an account.
+router.post("/resend-verification", async (req, res) => {
+  const email = typeof req.body.email === "string" ? req.body.email.trim() : "";
+  const user = email ? await User.findOne({ email }) : null;
+  if (user && user.emailVerified === false && canResend(user)) {
+    try {
+      await sendVerificationEmail(user, req);
+    } catch (error) {
+      winston.error(`Verification email to ${user.email} failed: ${error.message}`);
+    }
+  }
+  res.send({ success: true });
 });
 
 // Never send the password hash to the client
 const toSafeUser = (user) => {
   const data = user.toObject();
   delete data.password;
+  delete data.verificationTokenHash;
+  delete data.verificationExpires;
+  delete data.verificationSentAt;
   return data;
 };
 

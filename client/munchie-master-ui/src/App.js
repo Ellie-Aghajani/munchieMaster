@@ -16,6 +16,7 @@ import NavMenu from "./components/NavMenu";
 import Login from "./components/Login";
 import Recipes from "./components/Recipes";
 import RecipeDetail from "./components/RecipeDetail";
+import VerifyEmail from "./components/VerifyEmail";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import isEmpty from "lodash/isEmpty";
 import RecipeCreator from "./components/RecipeCreator";
@@ -49,6 +50,7 @@ function AppContent() {
           }
         />
         <Route path="/login" element={<Login />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/recipes" element={<Recipes />} />
         <Route path="/recipes/:id" element={<RecipeDetail />} />
         <Route path="/recipes/new" element={<RecipeCreator />} />

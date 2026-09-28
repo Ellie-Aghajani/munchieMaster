@@ -51,22 +51,32 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Save a login token and load the user
+  const startSession = async (token) => {
+    const user = jwtDecode(token);
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+    axios.defaults.headers.common["x-auth-token"] = token;
+    await checkAuthStatus();
+  };
+
+  // Returns { ok } or { ok: false, code, email } (code "EMAIL_NOT_VERIFIED"
+  // when the account exists but its email isn't confirmed yet)
   const login = async (email, password) => {
     try {
       const response = await axios.post("/api/auth", { email, password });
-      const { token } = response.data;
-      const user = jwtDecode(token);
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      axios.defaults.headers.common["x-auth-token"] = token;
-      await checkAuthStatus();
-      return true;
+      await startSession(response.data.token);
+      return { ok: true };
     } catch (error) {
-      console.error("Login error:", error);
-      return false;
+      return {
+        ok: false,
+        code: error.response?.data?.code,
+        email: error.response?.data?.email,
+      };
     }
   };
 
+  // Creates the account and emails a confirmation link; does not log in
   const register = async (name, email, password) => {
     try {
       const response = await axios.post("/api/users", {
@@ -74,15 +84,39 @@ export function AuthProvider({ children }) {
         email,
         password,
       });
-      const { token } = response.data;
-      const user = jwtDecode(token);
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      axios.defaults.headers.common["x-auth-token"] = token;
-      await checkAuthStatus();
+      return { ok: true, ...response.data };
+    } catch (error) {
+      const message = error.response?.data;
+      return {
+        ok: false,
+        code:
+          typeof message === "string" && /already registered/i.test(message)
+            ? "ALREADY_REGISTERED"
+            : undefined,
+      };
+    }
+  };
+
+  // Confirms the email from the link's token and logs the user in
+  const verifyEmail = async (token) => {
+    try {
+      const response = await axios.post("/api/users/verify-email", { token });
+      await startSession(response.data.token);
+      return { ok: true };
+    } catch (error) {
+      return {
+        ok: false,
+        code: error.response?.data?.code,
+        email: error.response?.data?.email,
+      };
+    }
+  };
+
+  const resendVerification = async (email) => {
+    try {
+      await axios.post("/api/users/resend-verification", { email });
       return true;
     } catch (error) {
-      console.error("Registration error:", error);
       return false;
     }
   };
@@ -99,6 +133,8 @@ export function AuthProvider({ children }) {
     login,
     logout,
     register,
+    verifyEmail,
+    resendVerification,
     loading,
     checkAuthStatus,
     setLoading: (loading) => setLoading(loading),
