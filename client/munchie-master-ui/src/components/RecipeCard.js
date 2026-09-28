@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -28,11 +29,16 @@ import {
   isRecipeLocked,
 } from "../utils/recipeUtils";
 import RecipeImage from "./RecipeImage";
+import TagChip from "./TagChip";
+import { recipeTags } from "../utils/recipeTags";
 
 const manageButtonSx = {
   backgroundColor: "common.white",
   boxShadow: (theme) => theme.customShadows.soft,
 };
+
+// Cards show a couple of tags and a "+N" for the rest, so they fit on one line
+const MAX_CARD_TAGS = 2;
 
 const RecipeCard = ({
   recipe,
@@ -41,6 +47,7 @@ const RecipeCard = ({
   onLike,
   onSave,
   onDelete, // Optional; shows edit and delete buttons on the user's own recipes
+  matchedIngredients, // Optional; the searched ingredients this recipe uses
 }) => {
   const { currentUser } = useAuth();
   const detailPath = `/recipes/${recipe._id}`;
@@ -48,6 +55,8 @@ const RecipeCard = ({
   const isSaved = userSavedRecipes.includes(recipe._id);
   const isLocked = isRecipeLocked(recipe, currentUser);
   const isOwn = isOwnRecipe(recipe, currentUser);
+  const tags = recipeTags(recipe);
+  const hiddenTags = tags.slice(MAX_CARD_TAGS);
   const canManage = !!onDelete && (isOwn || currentUser?.isAdmin);
 
   return (
@@ -164,6 +173,46 @@ const RecipeCard = ({
               by {authorNameOf(recipe)}
             </Typography>
           </Stack>
+          {/* One line of tags; always rendered so cards line up */}
+          <Stack
+            direction="row"
+            spacing={0.5}
+            sx={{ pt: 0.5, minHeight: 28, overflow: "hidden" }}
+          >
+            {tags.slice(0, MAX_CARD_TAGS).map((tag) => (
+              <TagChip key={tag.key} tag={tag} />
+            ))}
+            {hiddenTags.length > 0 && (
+              <Tooltip title={hiddenTags.map((tag) => tag.label).join(", ")}>
+                <Chip
+                  size="small"
+                  label={`+${hiddenTags.length}`}
+                  sx={{
+                    flexShrink: 0,
+                    backgroundColor: "transparent",
+                    border: "1px solid",
+                    borderColor: "primary.main",
+                    color: "primary.main",
+                  }}
+                />
+              </Tooltip>
+            )}
+          </Stack>
+          {matchedIngredients?.length > 0 && (
+            <Stack direction="row" alignItems="center" spacing={0.75}>
+              <CheckCircleOutlineIcon
+                fontSize="small"
+                sx={{ color: "secondary.main" }}
+              />
+              <Typography
+                variant="body2"
+                sx={{ color: "secondary.main" }}
+                noWrap
+              >
+                Uses {matchedIngredients.join(", ")}
+              </Typography>
+            </Stack>
+          )}
         </Stack>
       </CardContent>
 

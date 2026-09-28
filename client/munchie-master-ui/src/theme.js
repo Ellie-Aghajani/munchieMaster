@@ -42,6 +42,17 @@ export const createAppTheme = (mode = "light") =>
         lavender: "#f4a032", // My recipes
         contrastText: "#FFFFFF", // Light text on the colored dashboard tiles
       },
+      // Recipe tag colors; keys match the category and diet values
+      tags: {
+        breakfast: { main: "#F9D84A", contrastText: "#10375C" }, // yellow
+        lunch: { main: "#D9611E", contrastText: "#FFFFFF" }, // dark orange
+        dinner: { main: "#F7A65A", contrastText: "#10375C" }, // light orange
+        snack: { main: "#8FD0D9", contrastText: "#10375C" }, // light blue
+        sweets: { main: "#F4A6C8", contrastText: "#10375C" }, // pink
+        isVegetarian: { main: "#3E9B4F", contrastText: "#FFFFFF" }, // green
+        isKetoFriendly: { main: "#9E2A2B", contrastText: "#FFFFFF" }, // dark red
+        isGlutenFree: { main: "#C9A227", contrastText: "#10375C" }, // gold
+      },
     },
     customShadows: {
       raised:

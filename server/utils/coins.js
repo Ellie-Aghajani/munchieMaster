@@ -3,7 +3,7 @@ const COINS = require("./coinRules");
 
 // Fields sent for recipe cards; ingredients and directions only go to the detail page
 const RECIPE_SUMMARY_FIELDS =
-  "name image preparationTime likeCount price isFeatured author";
+  "name image preparationTime likeCount price isFeatured author categories isVegetarian isGlutenFree isKetoFriendly";
 
 const idOf = (value) => (value && value._id ? value._id : value);
 

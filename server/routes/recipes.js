@@ -3,7 +3,12 @@ const auth = require("../middleware/auth");
 const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
-const { Recipe, validate } = require("../models/recipe");
+const {
+  Recipe,
+  validate,
+  CATEGORIES,
+  DIETS,
+} = require("../models/recipe");
 const { User } = require("../models/user");
 const upload = require("../config/multerConfig");
 const optionalAuth = require("../middleware/optionalAuth");
@@ -29,20 +34,86 @@ const toPublicRecipe = (recipe) => {
   return data;
 };
 
+// Category and diet fields from validated form data
+const tagFields = (value) => ({
+  categories: value.categories,
+  isVegetarian: !!value.isVegetarian,
+  isGlutenFree: !!value.isGlutenFree,
+  isKetoFriendly: !!value.isKetoFriendly,
+});
+
+// "a,b" query value → ["a", "b"], keeping only allowed values
+const listParam = (value, allowed) =>
+  String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter((item) => allowed.includes(item));
+
 // Authors manage their own recipes; admins manage all of them
 const canManageRecipe = (recipe, user) => {
   const authorId = authorIdOf(recipe);
   return !!user.isAdmin || (!!authorId && authorId.equals(user._id));
 };
 
-// GET all recipes (summary fields for cards)
+const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// "eggs" should also match "egg" and "tomatoes" match "tomato"
+const ingredientPattern = (term) => {
+  const stem = term.length > 3 ? term.replace(/(es|s)$/, "") : term;
+  return new RegExp(escapeRegex(stem), "i");
+};
+
+// GET all recipes (summary fields for cards), optionally filtered by
+// category and diet (see below).
+// With ?ingredients=eggs,spinach it returns recipes using any of them, best
+// matches first. Ingredient text itself is never sent, so locked recipes stay locked.
 router.get("/", async (req, res) => {
   try {
-    const recipes = await Recipe.find()
-      .select(RECIPE_SUMMARY_FIELDS)
-      .populate("author", AUTHOR_FIELDS)
-      .sort("name");
-    res.send(recipes);
+    const terms = String(req.query.ingredients || "")
+      .split(",")
+      .map((term) => term.trim().toLowerCase())
+      .filter(Boolean)
+      .slice(0, 10);
+
+    // ?categories=breakfast,snack matches any; ?diets=isVegetarian,isKetoFriendly matches all
+    const filter = {};
+    const categories = listParam(req.query.categories, CATEGORIES);
+    if (categories.length) filter.categories = { $in: categories };
+    listParam(req.query.diets, DIETS).forEach((diet) => {
+      filter[diet] = true;
+    });
+
+    if (!terms.length) {
+      const recipes = await Recipe.find(filter)
+        .select(RECIPE_SUMMARY_FIELDS)
+        .populate("author", AUTHOR_FIELDS)
+        .sort("name");
+      return res.send(recipes);
+    }
+
+    const patterns = terms.map(ingredientPattern);
+    const matches = await Recipe.find({
+      ...filter,
+      ingredients: { $in: patterns },
+    })
+      .select(`${RECIPE_SUMMARY_FIELDS} ingredients`)
+      .populate("author", AUTHOR_FIELDS);
+
+    const results = matches
+      .map((recipe) => {
+        const text = recipe.ingredients.join("\n");
+        const { ingredients, ...summary } = recipe.toObject();
+        return {
+          ...summary,
+          matchedIngredients: terms.filter((_, i) => patterns[i].test(text)),
+        };
+      })
+      .sort(
+        (a, b) =>
+          b.matchedIngredients.length - a.matchedIngredients.length ||
+          a.name.trim().localeCompare(b.name.trim())
+      );
+    res.send(results);
   } catch (ex) {
     res.status(500).send("Could not retrieve recipes.");
   }
@@ -59,7 +130,7 @@ router.post(
     ]),
   ],
   async (req, res) => {
-    const { error } = validate(req.body);
+    const { error, value } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     // Store paths of uploaded cooking step images in an array
@@ -79,6 +150,7 @@ router.post(
       ingredients: req.body.ingredients,
       directions: req.body.directions,
       cookingStepImages: cookingStepImages,
+      ...tagFields(value),
       author: user._id,
       isFeatured: isPaid,
       price: isPaid ? COINS.RECIPE_PRICE : 0,
@@ -138,7 +210,7 @@ router.put(
       return res.status(status).send(message);
     };
 
-    const { error } = validate(req.body);
+    const { error, value } = validate(req.body);
     if (error) return reject(400, error.details[0].message);
 
     const recipe = await Recipe.findById(req.params.id);
@@ -151,6 +223,7 @@ router.put(
     recipe.preparationTime = req.body.preparationTime;
     recipe.ingredients = req.body.ingredients;
     recipe.directions = req.body.directions;
+    Object.assign(recipe, tagFields(value));
     if (newImage) recipe.image = `/uploads/${newImage.filename}`;
 
     try {

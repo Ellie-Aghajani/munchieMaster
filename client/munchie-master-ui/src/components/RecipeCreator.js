@@ -11,6 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import { CATEGORY_OPTIONS, DIET_OPTIONS } from "../utils/recipeTags";
+import SelectableChip from "./SelectableChip";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
@@ -47,6 +49,10 @@ const emptyForm = {
   preparationTime: "",
   ingredients: "",
   directions: "",
+  categories: [],
+  isVegetarian: false,
+  isGlutenFree: false,
+  isKetoFriendly: false,
 };
 
 const splitLines = (text) =>
@@ -86,6 +92,10 @@ const RecipeCreator = () => {
           name: data.name.trim(),
           preparationTime: data.preparationTime || "",
           ingredients: toLines(data.ingredients).join("\n"),
+          categories: data.categories || [],
+          isVegetarian: !!data.isVegetarian,
+          isGlutenFree: !!data.isGlutenFree,
+          isKetoFriendly: !!data.isKetoFriendly,
           directions: toLines(data.directions).join("\n"),
         });
         setImagePreview(uploadUrl(data.image) || null);
@@ -109,6 +119,17 @@ const RecipeCreator = () => {
     );
   }
 
+  const toggleCategory = (value) =>
+    setForm((prev) => ({
+      ...prev,
+      categories: prev.categories.includes(value)
+        ? prev.categories.filter((category) => category !== value)
+        : [...prev.categories, value],
+    }));
+
+  const toggleDiet = (value) =>
+    setForm((prev) => ({ ...prev, [value]: !prev[value] }));
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -131,10 +152,18 @@ const RecipeCreator = () => {
 
     // The "[]" suffix makes the server read these as arrays, even with one line
     const data = new FormData();
+    if (!form.categories.length) {
+      showError(null, "Choose at least one category.");
+      return;
+    }
     data.append("name", form.name.trim());
     data.append("preparationTime", form.preparationTime.trim());
     ingredients.forEach((line) => data.append("ingredients[]", line));
     directions.forEach((line) => data.append("directions[]", line));
+    form.categories.forEach((category) =>
+      data.append("categories[]", category),
+    );
+    DIET_OPTIONS.forEach(({ value }) => data.append(value, form[value]));
     if (image) data.append("image", image);
 
     setSubmitting(true);
@@ -239,6 +268,36 @@ const RecipeCreator = () => {
               onChange={handleChange}
               sx={inputSx}
             />
+          </Grid>
+          <Grid item xs={12} sm={7}>
+            <Typography sx={{ mb: 1 }}>Category *</Typography>
+            <Stack direction="row" flexWrap="wrap" useFlexGap spacing={1}>
+              {CATEGORY_OPTIONS.map((option) => (
+                <SelectableChip
+                  key={option.value}
+                  tagKey={option.value}
+                  Icon={option.Icon}
+                  label={option.label}
+                  selected={form.categories.includes(option.value)}
+                  onClick={() => toggleCategory(option.value)}
+                />
+              ))}
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={5}>
+            <Typography sx={{ mb: 1 }}>Dietary</Typography>
+            <Stack direction="row" flexWrap="wrap" useFlexGap spacing={1}>
+              {DIET_OPTIONS.map((option) => (
+                <SelectableChip
+                  key={option.value}
+                  tagKey={option.value}
+                  Icon={option.Icon}
+                  label={option.label}
+                  selected={form[option.value]}
+                  onClick={() => toggleDiet(option.value)}
+                />
+              ))}
+            </Stack>
           </Grid>
           <Grid item xs={12}>
             <TextField

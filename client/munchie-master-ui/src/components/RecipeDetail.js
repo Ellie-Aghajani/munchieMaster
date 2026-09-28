@@ -43,6 +43,8 @@ import {
 } from "../utils/recipeUtils";
 import DeleteRecipeDialog from "./DeleteRecipeDialog";
 import RecipeImage from "./RecipeImage";
+import TagChip from "./TagChip";
+import { recipeTags } from "../utils/recipeTags";
 
 const authHeaders = () => ({ "x-auth-token": localStorage.getItem("token") });
 
@@ -245,6 +247,24 @@ const RecipeDetail = () => {
                 by {authorNameOf(recipe)}
               </Typography>
             </Stack>
+            {recipeTags(recipe).length > 0 && (
+              <Stack
+                direction="row"
+                spacing={1}
+                flexWrap="wrap"
+                useFlexGap
+                mb={2}
+              >
+                {recipeTags(recipe).map((tag) => (
+                  <TagChip
+                    key={tag.key}
+                    tag={tag}
+                    size="medium"
+                    sx={{ fontSize: "0.95rem" }}
+                  />
+                ))}
+              </Stack>
+            )}
 
             <Stack
               direction="row"
